@@ -88,15 +88,15 @@ clean:  ## Remove all build files.
 .PHONY: build
 build:  ## Compile (in parallel) without installing.
 	@# "build_ext -i" copies compiled *.so files in ./psutil directory in order
-	@# to allow "import psutil" when using the interactive interpreter from
+	@# to allow "import matrix_psutil" when using the interactive interpreter from
 	@# within  this directory.
 	PYTHONWARNINGS=all $(PYTHON) setup.py build_ext -i $(BUILD_OPTS)
-	$(PYTHON) -c "import psutil"  # make sure it actually worked
+	$(PYTHON) -c "import matrix_psutil"  # make sure it actually worked
 
 install:  ## Install this package as current user in "edit" mode.
 	${MAKE} build
 	PYTHONWARNINGS=all $(PYTHON) setup.py develop $(INSTALL_OPTS)
-	$(PYTHON) -c "import psutil"  # make sure it actually worked
+	$(PYTHON) -c "import matrix_psutil"  # make sure it actually worked
 
 uninstall:  ## Uninstall this package via pip.
 	cd ..; $(PYTHON) -m pip uninstall -y -v psutil || true
@@ -173,7 +173,7 @@ test-posix:  ## POSIX specific tests.
 
 test-platform:  ## Run specific platform tests only.
 	${MAKE} build
-	$(TEST_PREFIX) $(PYTHON) $(TSCRIPT) $(ARGS) psutil/tests/test_`$(PYTHON) -c 'import psutil; print([x.lower() for x in ("LINUX", "BSD", "OSX", "SUNOS", "WINDOWS", "AIX") if getattr(psutil, x)][0])'`.py
+	$(TEST_PREFIX) $(PYTHON) $(TSCRIPT) $(ARGS) psutil/tests/test_`$(PYTHON) -c 'import matrix_psutil; print([x.lower() for x in ("LINUX", "BSD", "OSX", "SUNOS", "WINDOWS", "AIX") if getattr(psutil, x)][0])'`.py
 
 test-memleaks:  ## Memory leak tests.
 	${MAKE} build
@@ -256,7 +256,7 @@ download-wheels-appveyor:  ## Download latest wheels hosted on appveyor.
 check-sdist:  ## Check sanity of source distribution.
 	$(PYTHON) -m virtualenv --clear --no-wheel --quiet build/venv
 	build/venv/bin/python -m pip install -v --isolated --quiet dist/*.tar.gz
-	build/venv/bin/python -c "import os; os.chdir('build/venv'); import psutil"
+	build/venv/bin/python -c "import os; os.chdir('build/venv'); import matrix_psutil"
 	$(PYTHON) -m twine check --strict dist/*.tar.gz
 
 check-wheels:  ## Check sanity of wheels.

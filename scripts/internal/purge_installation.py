@@ -16,7 +16,7 @@ import shutil
 import site
 
 
-PKGNAME = "psutil"
+PKGNAME = "matrix_psutil"
 
 
 def rmpath(path):

@@ -253,7 +253,7 @@ def build():
         p.wait()
 
     # Make sure it actually worked.
-    sh('%s -c "import psutil"' % PYTHON)
+    sh('%s -c "import matrix_psutil"' % PYTHON)
     win_colorprint("build + import successful", GREEN)
 
 
