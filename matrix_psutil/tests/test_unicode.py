@@ -80,34 +80,34 @@ import unittest
 import warnings
 from contextlib import closing
 
-import psutil
-from psutil import BSD
-from psutil import POSIX
-from psutil import WINDOWS
-from psutil._compat import PY3
-from psutil._compat import u
-from psutil.tests import APPVEYOR
-from psutil.tests import ASCII_FS
-from psutil.tests import CI_TESTING
-from psutil.tests import HAS_CONNECTIONS_UNIX
-from psutil.tests import HAS_ENVIRON
-from psutil.tests import HAS_MEMORY_MAPS
-from psutil.tests import INVALID_UNICODE_SUFFIX
-from psutil.tests import PYPY
-from psutil.tests import TESTFN_PREFIX
-from psutil.tests import UNICODE_SUFFIX
-from psutil.tests import PsutilTestCase
-from psutil.tests import bind_unix_socket
-from psutil.tests import chdir
-from psutil.tests import copyload_shared_lib
-from psutil.tests import create_exe
-from psutil.tests import get_testfn
-from psutil.tests import safe_mkdir
-from psutil.tests import safe_rmpath
-from psutil.tests import serialrun
-from psutil.tests import skip_on_access_denied
-from psutil.tests import spawn_testproc
-from psutil.tests import terminate
+import matrix_psutil
+from matrix_psutil import BSD
+from matrix_psutil import POSIX
+from matrix_psutil import WINDOWS
+from matrix_psutil._compat import PY3
+from matrix_psutil._compat import u
+from matrix_psutil.tests import APPVEYOR
+from matrix_psutil.tests import ASCII_FS
+from matrix_psutil.tests import CI_TESTING
+from matrix_psutil.tests import HAS_CONNECTIONS_UNIX
+from matrix_psutil.tests import HAS_ENVIRON
+from matrix_psutil.tests import HAS_MEMORY_MAPS
+from matrix_psutil.tests import INVALID_UNICODE_SUFFIX
+from matrix_psutil.tests import PYPY
+from matrix_psutil.tests import TESTFN_PREFIX
+from matrix_psutil.tests import UNICODE_SUFFIX
+from matrix_psutil.tests import PsutilTestCase
+from matrix_psutil.tests import bind_unix_socket
+from matrix_psutil.tests import chdir
+from matrix_psutil.tests import copyload_shared_lib
+from matrix_psutil.tests import create_exe
+from matrix_psutil.tests import get_testfn
+from matrix_psutil.tests import safe_mkdir
+from matrix_psutil.tests import safe_rmpath
+from matrix_psutil.tests import serialrun
+from matrix_psutil.tests import skip_on_access_denied
+from matrix_psutil.tests import spawn_testproc
+from matrix_psutil.tests import terminate
 
 
 if APPVEYOR:
@@ -122,7 +122,7 @@ if APPVEYOR:
         # https://github.com/giampaolo/psutil/blob/
         #     68c7a70728a31d8b8b58f4be6c4c0baa2f449eda/psutil/arch/
         #     windows/process_info.c#L146
-        from psutil.tests import safe_rmpath as rm
+        from matrix_psutil.tests import safe_rmpath as rm
         try:
             return rm(path)
         except WindowsError:
@@ -194,7 +194,7 @@ class TestFSAPIs(BaseUnicodeTest):
 
     def test_proc_exe(self):
         subp = self.spawn_testproc(cmd=[self.funky_name])
-        p = psutil.Process(subp.pid)
+        p = matrix_psutil.Process(subp.pid)
         exe = p.exe()
         self.assertIsInstance(exe, str)
         if self.expect_exact_path_match():
@@ -203,14 +203,14 @@ class TestFSAPIs(BaseUnicodeTest):
 
     def test_proc_name(self):
         subp = self.spawn_testproc(cmd=[self.funky_name])
-        name = psutil.Process(subp.pid).name()
+        name = matrix_psutil.Process(subp.pid).name()
         self.assertIsInstance(name, str)
         if self.expect_exact_path_match():
             self.assertEqual(name, os.path.basename(self.funky_name))
 
     def test_proc_cmdline(self):
         subp = self.spawn_testproc(cmd=[self.funky_name])
-        p = psutil.Process(subp.pid)
+        p = matrix_psutil.Process(subp.pid)
         cmdline = p.cmdline()
         for part in cmdline:
             self.assertIsInstance(part, str)
@@ -222,7 +222,7 @@ class TestFSAPIs(BaseUnicodeTest):
         self.addCleanup(safe_rmpath, dname)
         safe_mkdir(dname)
         with chdir(dname):
-            p = psutil.Process()
+            p = matrix_psutil.Process()
             cwd = p.cwd()
         self.assertIsInstance(p.cwd(), str)
         if self.expect_exact_path_match():
@@ -230,7 +230,7 @@ class TestFSAPIs(BaseUnicodeTest):
 
     @unittest.skipIf(PYPY and WINDOWS, "fails on PYPY + WINDOWS")
     def test_proc_open_files(self):
-        p = psutil.Process()
+        p = matrix_psutil.Process()
         start = set(p.open_files())
         with open(self.funky_name, 'rb'):
             new = set(p.open_files())
@@ -254,7 +254,7 @@ class TestFSAPIs(BaseUnicodeTest):
             else:
                 raise unittest.SkipTest("not supported")
         with closing(sock):
-            conn = psutil.Process().connections('unix')[0]
+            conn = matrix_psutil.Process().connections('unix')[0]
             self.assertIsInstance(conn.laddr, str)
             self.assertEqual(conn.laddr, name)
 
@@ -277,7 +277,7 @@ class TestFSAPIs(BaseUnicodeTest):
             else:
                 raise unittest.SkipTest("not supported")
         with closing(sock):
-            cons = psutil.net_connections(kind='unix')
+            cons = matrix_psutil.net_connections(kind='unix')
             conn = find_sock(cons)
             self.assertIsInstance(conn.laddr, str)
             self.assertEqual(conn.laddr, name)
@@ -286,7 +286,7 @@ class TestFSAPIs(BaseUnicodeTest):
         dname = self.funky_name + "2"
         self.addCleanup(safe_rmpath, dname)
         safe_mkdir(dname)
-        psutil.disk_usage(dname)
+        matrix_psutil.disk_usage(dname)
 
     @unittest.skipIf(not HAS_MEMORY_MAPS, "not supported")
     @unittest.skipIf(not PY3, "ctypes does not support unicode on PY2")
@@ -298,7 +298,7 @@ class TestFSAPIs(BaseUnicodeTest):
             def normpath(p):
                 return os.path.realpath(os.path.normcase(p))
             libpaths = [normpath(x.path)
-                        for x in psutil.Process().memory_maps()]
+                        for x in matrix_psutil.Process().memory_maps()]
             # ...just to have a clearer msg in case of failure
             libpaths = [x for x in libpaths if TESTFN_PREFIX in x]
             self.assertIn(normpath(funky_path), libpaths)
@@ -336,7 +336,7 @@ class TestNonFSAPIS(BaseUnicodeTest):
         env = os.environ.copy()
         env['FUNNY_ARG'] = self.funky_suffix
         sproc = self.spawn_testproc(env=env)
-        p = psutil.Process(sproc.pid)
+        p = matrix_psutil.Process(sproc.pid)
         env = p.environ()
         for k, v in env.items():
             self.assertIsInstance(k, str)
@@ -345,5 +345,5 @@ class TestNonFSAPIS(BaseUnicodeTest):
 
 
 if __name__ == '__main__':
-    from psutil.tests.runner import run_from_name
+    from matrix_psutil.tests.runner import run_from_name
     run_from_name(__file__)

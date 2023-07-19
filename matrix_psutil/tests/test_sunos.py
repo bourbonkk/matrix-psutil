@@ -9,10 +9,10 @@
 import os
 import unittest
 
-import psutil
-from psutil import SUNOS
-from psutil.tests import PsutilTestCase
-from psutil.tests import sh
+import matrix_psutil
+from matrix_psutil import SUNOS
+from matrix_psutil.tests import PsutilTestCase
+from matrix_psutil.tests import sh
 
 
 @unittest.skipIf(not SUNOS, "SUNOS only")
@@ -30,16 +30,16 @@ class SunOSSpecificTestCase(PsutilTestCase):
             free = int(fields[4]) * 512
         used = total - free
 
-        psutil_swap = psutil.swap_memory()
+        psutil_swap = matrix_psutil.swap_memory()
         self.assertEqual(psutil_swap.total, total)
         self.assertEqual(psutil_swap.used, used)
         self.assertEqual(psutil_swap.free, free)
 
     def test_cpu_count(self):
         out = sh("/usr/sbin/psrinfo")
-        self.assertEqual(psutil.cpu_count(), len(out.split('\n')))
+        self.assertEqual(matrix_psutil.cpu_count(), len(out.split('\n')))
 
 
 if __name__ == '__main__':
-    from psutil.tests.runner import run_from_name
+    from matrix_psutil.tests.runner import run_from_name
     run_from_name(__file__)

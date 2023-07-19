@@ -18,42 +18,42 @@ import stat
 import subprocess
 import unittest
 
-import psutil
-import psutil.tests
-from psutil import FREEBSD
-from psutil import NETBSD
-from psutil import POSIX
-from psutil._common import open_binary
-from psutil._common import open_text
-from psutil._common import supports_ipv6
-from psutil.tests import CI_TESTING
-from psutil.tests import COVERAGE
-from psutil.tests import HAS_CONNECTIONS_UNIX
-from psutil.tests import PYTHON_EXE
-from psutil.tests import PYTHON_EXE_ENV
-from psutil.tests import PsutilTestCase
-from psutil.tests import TestMemoryLeak
-from psutil.tests import bind_socket
-from psutil.tests import bind_unix_socket
-from psutil.tests import call_until
-from psutil.tests import chdir
-from psutil.tests import create_sockets
-from psutil.tests import get_free_port
-from psutil.tests import is_namedtuple
-from psutil.tests import mock
-from psutil.tests import process_namespace
-from psutil.tests import reap_children
-from psutil.tests import retry
-from psutil.tests import retry_on_failure
-from psutil.tests import safe_mkdir
-from psutil.tests import safe_rmpath
-from psutil.tests import serialrun
-from psutil.tests import system_namespace
-from psutil.tests import tcp_socketpair
-from psutil.tests import terminate
-from psutil.tests import unix_socketpair
-from psutil.tests import wait_for_file
-from psutil.tests import wait_for_pid
+import matrix_psutil
+import matrix_psutil.tests
+from matrix_psutil import FREEBSD
+from matrix_psutil import NETBSD
+from matrix_psutil import POSIX
+from matrix_psutil._common import open_binary
+from matrix_psutil._common import open_text
+from matrix_psutil._common import supports_ipv6
+from matrix_psutil.tests import CI_TESTING
+from matrix_psutil.tests import COVERAGE
+from matrix_psutil.tests import HAS_CONNECTIONS_UNIX
+from matrix_psutil.tests import PYTHON_EXE
+from matrix_psutil.tests import PYTHON_EXE_ENV
+from matrix_psutil.tests import PsutilTestCase
+from matrix_psutil.tests import TestMemoryLeak
+from matrix_psutil.tests import bind_socket
+from matrix_psutil.tests import bind_unix_socket
+from matrix_psutil.tests import call_until
+from matrix_psutil.tests import chdir
+from matrix_psutil.tests import create_sockets
+from matrix_psutil.tests import get_free_port
+from matrix_psutil.tests import is_namedtuple
+from matrix_psutil.tests import mock
+from matrix_psutil.tests import process_namespace
+from matrix_psutil.tests import reap_children
+from matrix_psutil.tests import retry
+from matrix_psutil.tests import retry_on_failure
+from matrix_psutil.tests import safe_mkdir
+from matrix_psutil.tests import safe_rmpath
+from matrix_psutil.tests import serialrun
+from matrix_psutil.tests import system_namespace
+from matrix_psutil.tests import tcp_socketpair
+from matrix_psutil.tests import terminate
+from matrix_psutil.tests import unix_socketpair
+from matrix_psutil.tests import wait_for_file
+from matrix_psutil.tests import wait_for_pid
 
 
 # ===================================================================
@@ -131,9 +131,9 @@ class TestSyncTestUtils(PsutilTestCase):
 
     def test_wait_for_pid(self):
         wait_for_pid(os.getpid())
-        nopid = max(psutil.pids()) + 99999
+        nopid = max(matrix_psutil.pids()) + 99999
         with mock.patch('psutil.tests.retry.__iter__', return_value=iter([0])):
-            self.assertRaises(psutil.NoSuchProcess, wait_for_pid, nopid)
+            self.assertRaises(matrix_psutil.NoSuchProcess, wait_for_pid, nopid)
 
     def test_wait_for_file(self):
         testfn = self.get_testfn()
@@ -215,21 +215,21 @@ class TestProcessUtils(PsutilTestCase):
 
     def test_reap_children(self):
         subp = self.spawn_testproc()
-        p = psutil.Process(subp.pid)
+        p = matrix_psutil.Process(subp.pid)
         assert p.is_running()
         reap_children()
         assert not p.is_running()
-        assert not psutil.tests._pids_started
-        assert not psutil.tests._subprocesses_started
+        assert not matrix_psutil.tests._pids_started
+        assert not matrix_psutil.tests._subprocesses_started
 
     def test_spawn_children_pair(self):
         child, grandchild = self.spawn_children_pair()
         self.assertNotEqual(child.pid, grandchild.pid)
         assert child.is_running()
         assert grandchild.is_running()
-        children = psutil.Process().children()
+        children = matrix_psutil.Process().children()
         self.assertEqual(children, [child])
-        children = psutil.Process().children(recursive=True)
+        children = matrix_psutil.Process().children(recursive=True)
         self.assertEqual(len(children), 2)
         self.assertIn(child, children)
         self.assertIn(grandchild, children)
@@ -246,7 +246,7 @@ class TestProcessUtils(PsutilTestCase):
     @unittest.skipIf(not POSIX, "POSIX only")
     def test_spawn_zombie(self):
         parent, zombie = self.spawn_zombie()
-        self.assertEqual(zombie.status(), psutil.STATUS_ZOMBIE)
+        self.assertEqual(zombie.status(), matrix_psutil.STATUS_ZOMBIE)
 
     def test_terminate(self):
         # by subprocess.Popen
@@ -255,14 +255,14 @@ class TestProcessUtils(PsutilTestCase):
         self.assertProcessGone(p)
         terminate(p)
         # by psutil.Process
-        p = psutil.Process(self.spawn_testproc().pid)
+        p = matrix_psutil.Process(self.spawn_testproc().pid)
         terminate(p)
         self.assertProcessGone(p)
         terminate(p)
         # by psutil.Popen
         cmd = [PYTHON_EXE, "-c", "import time; time.sleep(60);"]
-        p = psutil.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                         env=PYTHON_EXE_ENV)
+        p = matrix_psutil.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                env=PYTHON_EXE_ENV)
         terminate(p)
         self.assertProcessGone(p)
         terminate(p)
@@ -318,7 +318,7 @@ class TestNetUtils(PsutilTestCase):
     @unittest.skipIf(NETBSD or FREEBSD,
                      "/var/run/log UNIX socket opened by default")
     def test_unix_socketpair(self):
-        p = psutil.Process()
+        p = matrix_psutil.Process()
         num_fds = p.num_fds()
         assert not p.connections(kind='unix')
         name = self.get_testfn()
@@ -421,7 +421,7 @@ class TestMemLeakClass(TestMemoryLeak):
 class TestTestingUtils(PsutilTestCase):
 
     def test_process_namespace(self):
-        p = psutil.Process()
+        p = matrix_psutil.Process()
         ns = process_namespace(p)
         ns.test()
         fun = [x for x in ns.iter(ns.getters) if x[1] == 'ppid'][0][0]
@@ -430,7 +430,7 @@ class TestTestingUtils(PsutilTestCase):
     def test_system_namespace(self):
         ns = system_namespace()
         fun = [x for x in ns.iter(ns.getters) if x[1] == 'net_if_addrs'][0][0]
-        self.assertEqual(fun(), psutil.net_if_addrs())
+        self.assertEqual(fun(), matrix_psutil.net_if_addrs())
 
 
 class TestOtherUtils(PsutilTestCase):
@@ -441,5 +441,5 @@ class TestOtherUtils(PsutilTestCase):
 
 
 if __name__ == '__main__':
-    from psutil.tests.runner import run_from_name
+    from matrix_psutil.tests.runner import run_from_name
     run_from_name(__file__)

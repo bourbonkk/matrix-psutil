@@ -43,8 +43,8 @@ try:
 except ImportError:
     sys.exit('platform not supported')
 
-import psutil
-from psutil._common import bytes2human
+import matrix_psutil
+from matrix_psutil._common import bytes2human
 
 
 win = curses.initscr()
@@ -84,7 +84,7 @@ def poll(interval):
     time.sleep(interval)
     procs = []
     procs_status = {}
-    for p in psutil.process_iter():
+    for p in matrix_psutil.process_iter():
         try:
             p.dict = p.as_dict(['username', 'nice', 'memory_info',
                                 'memory_percent', 'cpu_percent',
@@ -93,7 +93,7 @@ def poll(interval):
                 procs_status[p.dict['status']] += 1
             except KeyError:
                 procs_status[p.dict['status']] = 1
-        except psutil.NoSuchProcess:
+        except matrix_psutil.NoSuchProcess:
             pass
         else:
             procs.append(p)
@@ -122,14 +122,14 @@ def print_header(procs_status, num_procs):
         return dashes, empty_dashes
 
     # cpu usage
-    percs = psutil.cpu_percent(interval=0, percpu=True)
+    percs = matrix_psutil.cpu_percent(interval=0, percpu=True)
     for cpu_num, perc in enumerate(percs):
         dashes, empty_dashes = get_dashes(perc)
         line = " CPU%-2s [%s%s] %5s%%" % (cpu_num, dashes, empty_dashes, perc)
         printl(line, color=get_color(perc))
 
     # memory usage
-    mem = psutil.virtual_memory()
+    mem = matrix_psutil.virtual_memory()
     dashes, empty_dashes = get_dashes(mem.percent)
     line = " Mem   [%s%s] %5s%% %6s / %s" % (
         dashes, empty_dashes,
@@ -140,7 +140,7 @@ def print_header(procs_status, num_procs):
     printl(line, color=get_color(mem.percent))
 
     # swap usage
-    swap = psutil.swap_memory()
+    swap = matrix_psutil.swap_memory()
     dashes, empty_dashes = get_dashes(swap.percent)
     line = " Swap  [%s%s] %5s%% %6s / %s" % (
         dashes, empty_dashes,
@@ -159,8 +159,8 @@ def print_header(procs_status, num_procs):
     printl(" Processes: %s (%s)" % (num_procs, ', '.join(st)))
     # load average, uptime
     uptime = datetime.datetime.now() - \
-        datetime.datetime.fromtimestamp(psutil.boot_time())
-    av1, av2, av3 = psutil.getloadavg()
+        datetime.datetime.fromtimestamp(matrix_psutil.boot_time())
+    av1, av2, av3 = matrix_psutil.getloadavg()
     line = " Load average: %.2f %.2f %.2f  Uptime: %s" \
         % (av1, av2, av3, str(uptime).split('.')[0])
     printl(line)

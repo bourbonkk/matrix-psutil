@@ -15,31 +15,31 @@ import subprocess
 import time
 import unittest
 
-import psutil
-from psutil import AIX
-from psutil import BSD
-from psutil import LINUX
-from psutil import MACOS
-from psutil import OPENBSD
-from psutil import POSIX
-from psutil import SUNOS
-from psutil.tests import HAS_NET_IO_COUNTERS
-from psutil.tests import PYTHON_EXE
-from psutil.tests import PsutilTestCase
-from psutil.tests import mock
-from psutil.tests import retry_on_failure
-from psutil.tests import sh
-from psutil.tests import skip_on_access_denied
-from psutil.tests import spawn_testproc
-from psutil.tests import terminate
-from psutil.tests import which
+import matrix_psutil
+from matrix_psutil import AIX
+from matrix_psutil import BSD
+from matrix_psutil import LINUX
+from matrix_psutil import MACOS
+from matrix_psutil import OPENBSD
+from matrix_psutil import POSIX
+from matrix_psutil import SUNOS
+from matrix_psutil.tests import HAS_NET_IO_COUNTERS
+from matrix_psutil.tests import PYTHON_EXE
+from matrix_psutil.tests import PsutilTestCase
+from matrix_psutil.tests import mock
+from matrix_psutil.tests import retry_on_failure
+from matrix_psutil.tests import sh
+from matrix_psutil.tests import skip_on_access_denied
+from matrix_psutil.tests import spawn_testproc
+from matrix_psutil.tests import terminate
+from matrix_psutil.tests import which
 
 
 if POSIX:
     import mmap
     import resource
 
-    from psutil._psutil_posix import getpagesize
+    from matrix_psutil._psutil_posix import getpagesize
 
 
 def ps(fmt, pid=None):
@@ -147,29 +147,29 @@ class TestProcess(PsutilTestCase):
 
     def test_ppid(self):
         ppid_ps = ps('ppid', self.pid)
-        ppid_psutil = psutil.Process(self.pid).ppid()
+        ppid_psutil = matrix_psutil.Process(self.pid).ppid()
         self.assertEqual(ppid_ps, ppid_psutil)
 
     def test_uid(self):
         uid_ps = ps('uid', self.pid)
-        uid_psutil = psutil.Process(self.pid).uids().real
+        uid_psutil = matrix_psutil.Process(self.pid).uids().real
         self.assertEqual(uid_ps, uid_psutil)
 
     def test_gid(self):
         gid_ps = ps('rgid', self.pid)
-        gid_psutil = psutil.Process(self.pid).gids().real
+        gid_psutil = matrix_psutil.Process(self.pid).gids().real
         self.assertEqual(gid_ps, gid_psutil)
 
     def test_username(self):
         username_ps = ps('user', self.pid)
-        username_psutil = psutil.Process(self.pid).username()
+        username_psutil = matrix_psutil.Process(self.pid).username()
         self.assertEqual(username_ps, username_psutil)
 
     def test_username_no_resolution(self):
         # Emulate a case where the system can't resolve the uid to
         # a username in which case psutil is supposed to return
         # the stringified uid.
-        p = psutil.Process()
+        p = matrix_psutil.Process()
         with mock.patch("psutil.pwd.getpwuid", side_effect=KeyError) as fun:
             self.assertEqual(p.username(), str(p.uids().real))
             assert fun.called
@@ -181,7 +181,7 @@ class TestProcess(PsutilTestCase):
         # so that the results are the same
         time.sleep(0.1)
         rss_ps = ps_rss(self.pid)
-        rss_psutil = psutil.Process(self.pid).memory_info()[0] / 1024
+        rss_psutil = matrix_psutil.Process(self.pid).memory_info()[0] / 1024
         self.assertEqual(rss_ps, rss_psutil)
 
     @skip_on_access_denied()
@@ -191,14 +191,14 @@ class TestProcess(PsutilTestCase):
         # so that the results are the same
         time.sleep(0.1)
         vsz_ps = ps_vsz(self.pid)
-        vsz_psutil = psutil.Process(self.pid).memory_info()[1] / 1024
+        vsz_psutil = matrix_psutil.Process(self.pid).memory_info()[1] / 1024
         self.assertEqual(vsz_ps, vsz_psutil)
 
     def test_name(self):
         name_ps = ps_name(self.pid)
         # remove path if there is any, from the command
         name_ps = os.path.basename(name_ps).lower()
-        name_psutil = psutil.Process(self.pid).name().lower()
+        name_psutil = matrix_psutil.Process(self.pid).name().lower()
         # ...because of how we calculate PYTHON_EXE; on MACOS this may
         # be "pythonX.Y".
         name_ps = re.sub(r"\d.\d", "", name_ps)
@@ -218,7 +218,7 @@ class TestProcess(PsutilTestCase):
                         return_value=name):
             with mock.patch("psutil._psplatform.Process.cmdline",
                             return_value=cmdline):
-                p = psutil.Process()
+                p = matrix_psutil.Process()
                 self.assertEqual(p.name(), "long-program-name-extended")
 
     def test_name_long_cmdline_ad_exc(self):
@@ -229,8 +229,8 @@ class TestProcess(PsutilTestCase):
         with mock.patch("psutil._psplatform.Process.name",
                         return_value=name):
             with mock.patch("psutil._psplatform.Process.cmdline",
-                            side_effect=psutil.AccessDenied(0, "")):
-                p = psutil.Process()
+                            side_effect=matrix_psutil.AccessDenied(0, "")):
+                p = matrix_psutil.Process()
                 self.assertEqual(p.name(), "long-program-name")
 
     def test_name_long_cmdline_nsp_exc(self):
@@ -240,14 +240,14 @@ class TestProcess(PsutilTestCase):
         with mock.patch("psutil._psplatform.Process.name",
                         return_value=name):
             with mock.patch("psutil._psplatform.Process.cmdline",
-                            side_effect=psutil.NoSuchProcess(0, "")):
-                p = psutil.Process()
-                self.assertRaises(psutil.NoSuchProcess, p.name)
+                            side_effect=matrix_psutil.NoSuchProcess(0, "")):
+                p = matrix_psutil.Process()
+                self.assertRaises(matrix_psutil.NoSuchProcess, p.name)
 
     @unittest.skipIf(MACOS or BSD, 'ps -o start not available')
     def test_create_time(self):
         time_ps = ps('start', self.pid)
-        time_psutil = psutil.Process(self.pid).create_time()
+        time_psutil = matrix_psutil.Process(self.pid).create_time()
         time_psutil_tstamp = datetime.datetime.fromtimestamp(
             time_psutil).strftime("%H:%M:%S")
         # sometimes ps shows the time rounded up instead of down, so we check
@@ -259,7 +259,7 @@ class TestProcess(PsutilTestCase):
 
     def test_exe(self):
         ps_pathname = ps_name(self.pid)
-        psutil_pathname = psutil.Process(self.pid).exe()
+        psutil_pathname = matrix_psutil.Process(self.pid).exe()
         try:
             self.assertEqual(ps_pathname, psutil_pathname)
         except AssertionError:
@@ -280,7 +280,7 @@ class TestProcess(PsutilTestCase):
     @retry_on_failure()
     def test_cmdline(self):
         ps_cmdline = ps_args(self.pid)
-        psutil_cmdline = " ".join(psutil.Process(self.pid).cmdline())
+        psutil_cmdline = " ".join(matrix_psutil.Process(self.pid).cmdline())
         self.assertEqual(ps_cmdline, psutil_cmdline)
 
     # On SUNOS "ps" reads niceness /proc/pid/psinfo which returns an
@@ -292,7 +292,7 @@ class TestProcess(PsutilTestCase):
     @unittest.skipIf(AIX, "not reliable on AIX")
     def test_nice(self):
         ps_nice = ps('nice', self.pid)
-        psutil_nice = psutil.Process().nice()
+        psutil_nice = matrix_psutil.Process().nice()
         self.assertEqual(ps_nice, psutil_nice)
 
 
@@ -305,7 +305,7 @@ class TestSystemAPIs(PsutilTestCase):
         # Note: this test might fail if the OS is starting/killing
         # other processes in the meantime
         pids_ps = sorted(ps("pid"))
-        pids_psutil = psutil.pids()
+        pids_psutil = matrix_psutil.pids()
 
         # on MACOS and OPENBSD ps doesn't show pid 0
         if MACOS or OPENBSD and 0 not in pids_ps:
@@ -324,7 +324,7 @@ class TestSystemAPIs(PsutilTestCase):
     @unittest.skipIf(not HAS_NET_IO_COUNTERS, "not supported")
     def test_nic_names(self):
         output = sh("ifconfig -a")
-        for nic in psutil.net_io_counters(pernic=True).keys():
+        for nic in matrix_psutil.net_io_counters(pernic=True).keys():
             for line in output.split():
                 if line.startswith(nic):
                     break
@@ -342,13 +342,13 @@ class TestSystemAPIs(PsutilTestCase):
         lines = out.split('\n')
         users = [x.split()[0] for x in lines]
         terminals = [x.split()[1] for x in lines]
-        self.assertEqual(len(users), len(psutil.users()))
-        with self.subTest(psutil=psutil.users(), who=out):
-            for idx, u in enumerate(psutil.users()):
+        self.assertEqual(len(users), len(matrix_psutil.users()))
+        with self.subTest(psutil=matrix_psutil.users(), who=out):
+            for idx, u in enumerate(matrix_psutil.users()):
                 self.assertEqual(u.name, users[idx])
                 self.assertEqual(u.terminal, terminals[idx])
                 if u.pid is not None:  # None on OpenBSD
-                    psutil.Process(u.pid)
+                    matrix_psutil.Process(u.pid)
 
     @retry_on_failure()
     def test_users_started(self):
@@ -381,8 +381,8 @@ class TestSystemAPIs(PsutilTestCase):
             raise unittest.SkipTest(
                 "cannot interpret tstamp in who output\n%s" % (out))
 
-        with self.subTest(psutil=psutil.users(), who=out):
-            for idx, u in enumerate(psutil.users()):
+        with self.subTest(psutil=matrix_psutil.users(), who=out):
+            for idx, u in enumerate(matrix_psutil.users()):
                 psutil_value = datetime.datetime.fromtimestamp(
                     u.started).strftime(tstamp)
                 self.assertEqual(psutil_value, started[idx])
@@ -393,7 +393,7 @@ class TestSystemAPIs(PsutilTestCase):
         # results in an exception.
         with mock.patch("psutil._psposix.os.kill",
                         side_effect=OSError(errno.EBADF, "")) as m:
-            self.assertRaises(OSError, psutil._psposix.pid_exists, os.getpid())
+            self.assertRaises(OSError, matrix_psutil._psposix.pid_exists, os.getpid())
             assert m.called
 
     def test_os_waitpid_let_raise(self):
@@ -401,7 +401,7 @@ class TestSystemAPIs(PsutilTestCase):
         # Test that any other errno results in an exception.
         with mock.patch("psutil._psposix.os.waitpid",
                         side_effect=OSError(errno.EBADF, "")) as m:
-            self.assertRaises(OSError, psutil._psposix.wait_pid, os.getpid())
+            self.assertRaises(OSError, matrix_psutil._psposix.wait_pid, os.getpid())
             assert m.called
 
     def test_os_waitpid_eintr(self):
@@ -409,8 +409,8 @@ class TestSystemAPIs(PsutilTestCase):
         with mock.patch("psutil._psposix.os.waitpid",
                         side_effect=OSError(errno.EINTR, "")) as m:
             self.assertRaises(
-                psutil._psposix.TimeoutExpired,
-                psutil._psposix.wait_pid, os.getpid(), timeout=0.01)
+                matrix_psutil._psposix.TimeoutExpired,
+                matrix_psutil._psposix.wait_pid, os.getpid(), timeout=0.01)
             assert m.called
 
     def test_os_waitpid_bad_ret_status(self):
@@ -418,7 +418,7 @@ class TestSystemAPIs(PsutilTestCase):
         with mock.patch("psutil._psposix.os.waitpid",
                         return_value=(1, -1)) as m:
             self.assertRaises(ValueError,
-                              psutil._psposix.wait_pid, os.getpid())
+                              matrix_psutil._psposix.wait_pid, os.getpid())
             assert m.called
 
     # AIX can return '-' in df output instead of numbers, e.g. for /proc
@@ -441,8 +441,8 @@ class TestSystemAPIs(PsutilTestCase):
             return (total, used, free, percent)
 
         tolerance = 4 * 1024 * 1024  # 4MB
-        for part in psutil.disk_partitions(all=False):
-            usage = psutil.disk_usage(part.mountpoint)
+        for part in matrix_psutil.disk_partitions(all=False):
+            usage = matrix_psutil.disk_usage(part.mountpoint)
             try:
                 total, used, free, percent = df(part.device)
             except RuntimeError as err:
@@ -473,5 +473,5 @@ class TestMisc(PsutilTestCase):
 
 
 if __name__ == '__main__':
-    from psutil.tests.runner import run_from_name
+    from matrix_psutil.tests.runner import run_from_name
     run_from_name(__file__)

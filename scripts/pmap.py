@@ -31,9 +31,9 @@ ffffffffff600000         0K  r-xp    [vsyscall]
 
 import sys
 
-import psutil
-from psutil._common import bytes2human
-from psutil._compat import get_terminal_size
+import matrix_psutil
+from matrix_psutil._common import bytes2human
+from matrix_psutil._compat import get_terminal_size
 
 
 def safe_print(s):
@@ -47,7 +47,7 @@ def safe_print(s):
 def main():
     if len(sys.argv) != 2:
         sys.exit('usage: pmap <pid>')
-    p = psutil.Process(int(sys.argv[1]))
+    p = matrix_psutil.Process(int(sys.argv[1]))
     templ = "%-20s %10s  %-7s %s"
     print(templ % ("Address", "RSS", "Mode", "Mapping"))
     total_rss = 0

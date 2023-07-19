@@ -19,40 +19,40 @@ import sys
 import time
 import unittest
 
-import psutil
-from psutil import AIX
-from psutil import BSD
-from psutil import FREEBSD
-from psutil import LINUX
-from psutil import MACOS
-from psutil import NETBSD
-from psutil import OPENBSD
-from psutil import POSIX
-from psutil import SUNOS
-from psutil import WINDOWS
-from psutil._compat import FileNotFoundError
-from psutil._compat import long
-from psutil.tests import ASCII_FS
-from psutil.tests import CI_TESTING
-from psutil.tests import DEVNULL
-from psutil.tests import GITHUB_ACTIONS
-from psutil.tests import GLOBAL_TIMEOUT
-from psutil.tests import HAS_BATTERY
-from psutil.tests import HAS_CPU_FREQ
-from psutil.tests import HAS_GETLOADAVG
-from psutil.tests import HAS_NET_IO_COUNTERS
-from psutil.tests import HAS_SENSORS_BATTERY
-from psutil.tests import HAS_SENSORS_FANS
-from psutil.tests import HAS_SENSORS_TEMPERATURES
-from psutil.tests import IS_64BIT
-from psutil.tests import MACOS_12PLUS
-from psutil.tests import PYPY
-from psutil.tests import UNICODE_SUFFIX
-from psutil.tests import PsutilTestCase
-from psutil.tests import check_net_address
-from psutil.tests import enum
-from psutil.tests import mock
-from psutil.tests import retry_on_failure
+import matrix_psutil
+from matrix_psutil import AIX
+from matrix_psutil import BSD
+from matrix_psutil import FREEBSD
+from matrix_psutil import LINUX
+from matrix_psutil import MACOS
+from matrix_psutil import NETBSD
+from matrix_psutil import OPENBSD
+from matrix_psutil import POSIX
+from matrix_psutil import SUNOS
+from matrix_psutil import WINDOWS
+from matrix_psutil._compat import FileNotFoundError
+from matrix_psutil._compat import long
+from matrix_psutil.tests import ASCII_FS
+from matrix_psutil.tests import CI_TESTING
+from matrix_psutil.tests import DEVNULL
+from matrix_psutil.tests import GITHUB_ACTIONS
+from matrix_psutil.tests import GLOBAL_TIMEOUT
+from matrix_psutil.tests import HAS_BATTERY
+from matrix_psutil.tests import HAS_CPU_FREQ
+from matrix_psutil.tests import HAS_GETLOADAVG
+from matrix_psutil.tests import HAS_NET_IO_COUNTERS
+from matrix_psutil.tests import HAS_SENSORS_BATTERY
+from matrix_psutil.tests import HAS_SENSORS_FANS
+from matrix_psutil.tests import HAS_SENSORS_TEMPERATURES
+from matrix_psutil.tests import IS_64BIT
+from matrix_psutil.tests import MACOS_12PLUS
+from matrix_psutil.tests import PYPY
+from matrix_psutil.tests import UNICODE_SUFFIX
+from matrix_psutil.tests import PsutilTestCase
+from matrix_psutil.tests import check_net_address
+from matrix_psutil.tests import enum
+from matrix_psutil.tests import mock
+from matrix_psutil.tests import retry_on_failure
 
 
 # ===================================================================
@@ -63,37 +63,37 @@ from psutil.tests import retry_on_failure
 class TestProcessAPIs(PsutilTestCase):
 
     def test_process_iter(self):
-        self.assertIn(os.getpid(), [x.pid for x in psutil.process_iter()])
+        self.assertIn(os.getpid(), [x.pid for x in matrix_psutil.process_iter()])
         sproc = self.spawn_testproc()
-        self.assertIn(sproc.pid, [x.pid for x in psutil.process_iter()])
-        p = psutil.Process(sproc.pid)
+        self.assertIn(sproc.pid, [x.pid for x in matrix_psutil.process_iter()])
+        p = matrix_psutil.Process(sproc.pid)
         p.kill()
         p.wait()
-        self.assertNotIn(sproc.pid, [x.pid for x in psutil.process_iter()])
+        self.assertNotIn(sproc.pid, [x.pid for x in matrix_psutil.process_iter()])
 
         with mock.patch('psutil.Process',
-                        side_effect=psutil.NoSuchProcess(os.getpid())):
-            self.assertEqual(list(psutil.process_iter()), [])
+                        side_effect=matrix_psutil.NoSuchProcess(os.getpid())):
+            self.assertEqual(list(matrix_psutil.process_iter()), [])
         with mock.patch('psutil.Process',
-                        side_effect=psutil.AccessDenied(os.getpid())):
-            with self.assertRaises(psutil.AccessDenied):
-                list(psutil.process_iter())
+                        side_effect=matrix_psutil.AccessDenied(os.getpid())):
+            with self.assertRaises(matrix_psutil.AccessDenied):
+                list(matrix_psutil.process_iter())
 
     def test_prcess_iter_w_attrs(self):
-        for p in psutil.process_iter(attrs=['pid']):
+        for p in matrix_psutil.process_iter(attrs=['pid']):
             self.assertEqual(list(p.info.keys()), ['pid'])
         with self.assertRaises(ValueError):
-            list(psutil.process_iter(attrs=['foo']))
+            list(matrix_psutil.process_iter(attrs=['foo']))
         with mock.patch("psutil._psplatform.Process.cpu_times",
-                        side_effect=psutil.AccessDenied(0, "")) as m:
-            for p in psutil.process_iter(attrs=["pid", "cpu_times"]):
+                        side_effect=matrix_psutil.AccessDenied(0, "")) as m:
+            for p in matrix_psutil.process_iter(attrs=["pid", "cpu_times"]):
                 self.assertIsNone(p.info['cpu_times'])
                 self.assertGreaterEqual(p.info['pid'], 0)
             assert m.called
         with mock.patch("psutil._psplatform.Process.cpu_times",
-                        side_effect=psutil.AccessDenied(0, "")) as m:
+                        side_effect=matrix_psutil.AccessDenied(0, "")) as m:
             flag = object()
-            for p in psutil.process_iter(
+            for p in matrix_psutil.process_iter(
                     attrs=["pid", "cpu_times"], ad_value=flag):
                 self.assertIs(p.info['cpu_times'], flag)
                 self.assertGreaterEqual(p.info['pid'], 0)
@@ -109,11 +109,11 @@ class TestProcessAPIs(PsutilTestCase):
         sproc1 = self.spawn_testproc()
         sproc2 = self.spawn_testproc()
         sproc3 = self.spawn_testproc()
-        procs = [psutil.Process(x.pid) for x in (sproc1, sproc2, sproc3)]
-        self.assertRaises(ValueError, psutil.wait_procs, procs, timeout=-1)
-        self.assertRaises(TypeError, psutil.wait_procs, procs, callback=1)
+        procs = [matrix_psutil.Process(x.pid) for x in (sproc1, sproc2, sproc3)]
+        self.assertRaises(ValueError, matrix_psutil.wait_procs, procs, timeout=-1)
+        self.assertRaises(TypeError, matrix_psutil.wait_procs, procs, callback=1)
         t = time.time()
-        gone, alive = psutil.wait_procs(procs, timeout=0.01, callback=callback)
+        gone, alive = matrix_psutil.wait_procs(procs, timeout=0.01, callback=callback)
 
         self.assertLess(time.time() - t, 0.5)
         self.assertEqual(gone, [])
@@ -124,8 +124,8 @@ class TestProcessAPIs(PsutilTestCase):
 
         @retry_on_failure(30)
         def test_1(procs, callback):
-            gone, alive = psutil.wait_procs(procs, timeout=0.03,
-                                            callback=callback)
+            gone, alive = matrix_psutil.wait_procs(procs, timeout=0.03,
+                                                   callback=callback)
             self.assertEqual(len(gone), 1)
             self.assertEqual(len(alive), 2)
             return gone, alive
@@ -143,8 +143,8 @@ class TestProcessAPIs(PsutilTestCase):
 
         @retry_on_failure(30)
         def test_2(procs, callback):
-            gone, alive = psutil.wait_procs(procs, timeout=0.03,
-                                            callback=callback)
+            gone, alive = matrix_psutil.wait_procs(procs, timeout=0.03,
+                                                   callback=callback)
             self.assertEqual(len(gone), 3)
             self.assertEqual(len(alive), 0)
             return gone, alive
@@ -162,47 +162,47 @@ class TestProcessAPIs(PsutilTestCase):
         sproc1 = self.spawn_testproc()
         sproc2 = self.spawn_testproc()
         sproc3 = self.spawn_testproc()
-        procs = [psutil.Process(x.pid) for x in (sproc1, sproc2, sproc3)]
+        procs = [matrix_psutil.Process(x.pid) for x in (sproc1, sproc2, sproc3)]
         for p in procs:
             p.terminate()
-        psutil.wait_procs(procs)
+        matrix_psutil.wait_procs(procs)
 
     def test_pid_exists(self):
         sproc = self.spawn_testproc()
-        self.assertTrue(psutil.pid_exists(sproc.pid))
-        p = psutil.Process(sproc.pid)
+        self.assertTrue(matrix_psutil.pid_exists(sproc.pid))
+        p = matrix_psutil.Process(sproc.pid)
         p.kill()
         p.wait()
-        self.assertFalse(psutil.pid_exists(sproc.pid))
-        self.assertFalse(psutil.pid_exists(-1))
-        self.assertEqual(psutil.pid_exists(0), 0 in psutil.pids())
+        self.assertFalse(matrix_psutil.pid_exists(sproc.pid))
+        self.assertFalse(matrix_psutil.pid_exists(-1))
+        self.assertEqual(matrix_psutil.pid_exists(0), 0 in matrix_psutil.pids())
 
     def test_pid_exists_2(self):
-        pids = psutil.pids()
+        pids = matrix_psutil.pids()
         for pid in pids:
             try:
-                assert psutil.pid_exists(pid)
+                assert matrix_psutil.pid_exists(pid)
             except AssertionError:
                 # in case the process disappeared in meantime fail only
                 # if it is no longer in psutil.pids()
                 time.sleep(.1)
-                self.assertNotIn(pid, psutil.pids())
+                self.assertNotIn(pid, matrix_psutil.pids())
         pids = range(max(pids) + 15000, max(pids) + 16000)
         for pid in pids:
-            self.assertFalse(psutil.pid_exists(pid), msg=pid)
+            self.assertFalse(matrix_psutil.pid_exists(pid), msg=pid)
 
 
 class TestMiscAPIs(PsutilTestCase):
 
     def test_boot_time(self):
-        bt = psutil.boot_time()
+        bt = matrix_psutil.boot_time()
         self.assertIsInstance(bt, float)
         self.assertGreater(bt, 0)
         self.assertLess(bt, time.time())
 
-    @unittest.skipIf(CI_TESTING and not psutil.users(), "unreliable on CI")
+    @unittest.skipIf(CI_TESTING and not matrix_psutil.users(), "unreliable on CI")
     def test_users(self):
-        users = psutil.users()
+        users = matrix_psutil.users()
         self.assertNotEqual(users, [])
         for user in users:
             assert user.name, user
@@ -217,14 +217,14 @@ class TestMiscAPIs(PsutilTestCase):
             if WINDOWS or OPENBSD:
                 self.assertIsNone(user.pid)
             else:
-                psutil.Process(user.pid)
+                matrix_psutil.Process(user.pid)
 
     def test_test(self):
         # test for psutil.test() function
         stdout = sys.stdout
         sys.stdout = DEVNULL
         try:
-            psutil.test()
+            matrix_psutil.test()
         finally:
             sys.stdout = stdout
 
@@ -232,44 +232,44 @@ class TestMiscAPIs(PsutilTestCase):
         names = ["POSIX", "WINDOWS", "LINUX", "MACOS", "FREEBSD", "OPENBSD",
                  "NETBSD", "BSD", "SUNOS"]
         for name in names:
-            self.assertIsInstance(getattr(psutil, name), bool, msg=name)
+            self.assertIsInstance(getattr(matrix_psutil, name), bool, msg=name)
 
         if os.name == 'posix':
-            assert psutil.POSIX
-            assert not psutil.WINDOWS
+            assert matrix_psutil.POSIX
+            assert not matrix_psutil.WINDOWS
             names.remove("POSIX")
             if "linux" in sys.platform.lower():
-                assert psutil.LINUX
+                assert matrix_psutil.LINUX
                 names.remove("LINUX")
             elif "bsd" in sys.platform.lower():
-                assert psutil.BSD
-                self.assertEqual([psutil.FREEBSD, psutil.OPENBSD,
-                                  psutil.NETBSD].count(True), 1)
+                assert matrix_psutil.BSD
+                self.assertEqual([matrix_psutil.FREEBSD, matrix_psutil.OPENBSD,
+                                  matrix_psutil.NETBSD].count(True), 1)
                 names.remove("BSD")
                 names.remove("FREEBSD")
                 names.remove("OPENBSD")
                 names.remove("NETBSD")
             elif "sunos" in sys.platform.lower() or \
                     "solaris" in sys.platform.lower():
-                assert psutil.SUNOS
+                assert matrix_psutil.SUNOS
                 names.remove("SUNOS")
             elif "darwin" in sys.platform.lower():
-                assert psutil.MACOS
+                assert matrix_psutil.MACOS
                 names.remove("MACOS")
         else:
-            assert psutil.WINDOWS
-            assert not psutil.POSIX
+            assert matrix_psutil.WINDOWS
+            assert not matrix_psutil.POSIX
             names.remove("WINDOWS")
 
         # assert all other constants are set to False
         for name in names:
-            self.assertIs(getattr(psutil, name), False, msg=name)
+            self.assertIs(getattr(matrix_psutil, name), False, msg=name)
 
 
 class TestMemoryAPIs(PsutilTestCase):
 
     def test_virtual_memory(self):
-        mem = psutil.virtual_memory()
+        mem = matrix_psutil.virtual_memory()
         assert mem.total > 0, mem
         assert mem.available > 0, mem
         assert 0 <= mem.percent <= 100, mem
@@ -287,7 +287,7 @@ class TestMemoryAPIs(PsutilTestCase):
                                     % (name, mem.total, name, value))
 
     def test_swap_memory(self):
-        mem = psutil.swap_memory()
+        mem = matrix_psutil.swap_memory()
         self.assertEqual(
             mem._fields, ('total', 'used', 'free', 'percent', 'sin', 'sout'))
 
@@ -306,9 +306,9 @@ class TestMemoryAPIs(PsutilTestCase):
 class TestCpuAPIs(PsutilTestCase):
 
     def test_cpu_count_logical(self):
-        logical = psutil.cpu_count()
+        logical = matrix_psutil.cpu_count()
         self.assertIsNotNone(logical)
-        self.assertEqual(logical, len(psutil.cpu_times(percpu=True)))
+        self.assertEqual(logical, len(matrix_psutil.cpu_times(percpu=True)))
         self.assertGreaterEqual(logical, 1)
         #
         if os.path.exists("/proc/cpuinfo"):
@@ -318,8 +318,8 @@ class TestCpuAPIs(PsutilTestCase):
                 raise unittest.SkipTest("cpuinfo doesn't include physical id")
 
     def test_cpu_count_cores(self):
-        logical = psutil.cpu_count()
-        cores = psutil.cpu_count(logical=False)
+        logical = matrix_psutil.cpu_count()
+        cores = matrix_psutil.cpu_count(logical=False)
         if cores is None:
             raise self.skipTest("cpu_count_cores() is None")
         if WINDOWS and sys.getwindowsversion()[:2] <= (6, 1):  # <= Vista
@@ -333,17 +333,17 @@ class TestCpuAPIs(PsutilTestCase):
         for val in (-1, 0, None):
             with mock.patch('psutil._psplatform.cpu_count_logical',
                             return_value=val) as m:
-                self.assertIsNone(psutil.cpu_count())
+                self.assertIsNone(matrix_psutil.cpu_count())
                 assert m.called
             with mock.patch('psutil._psplatform.cpu_count_cores',
                             return_value=val) as m:
-                self.assertIsNone(psutil.cpu_count(logical=False))
+                self.assertIsNone(matrix_psutil.cpu_count(logical=False))
                 assert m.called
 
     def test_cpu_times(self):
         # Check type, value >= 0, str().
         total = 0
-        times = psutil.cpu_times()
+        times = matrix_psutil.cpu_times()
         sum(times)
         for cp_time in times:
             self.assertIsInstance(cp_time, float)
@@ -371,17 +371,17 @@ class TestCpuAPIs(PsutilTestCase):
 
     def test_cpu_times_time_increases(self):
         # Make sure time increases between calls.
-        t1 = sum(psutil.cpu_times())
+        t1 = sum(matrix_psutil.cpu_times())
         stop_at = time.time() + GLOBAL_TIMEOUT
         while time.time() < stop_at:
-            t2 = sum(psutil.cpu_times())
+            t2 = sum(matrix_psutil.cpu_times())
             if t2 > t1:
                 return
         raise self.fail("time remained the same")
 
     def test_per_cpu_times(self):
         # Check type, value >= 0, str().
-        for times in psutil.cpu_times(percpu=True):
+        for times in matrix_psutil.cpu_times(percpu=True):
             total = 0
             sum(times)
             for cp_time in times:
@@ -390,8 +390,8 @@ class TestCpuAPIs(PsutilTestCase):
                 total += cp_time
             self.assertEqual(total, sum(times))
             str(times)
-        self.assertEqual(len(psutil.cpu_times(percpu=True)[0]),
-                         len(psutil.cpu_times(percpu=False)))
+        self.assertEqual(len(matrix_psutil.cpu_times(percpu=True)[0]),
+                         len(matrix_psutil.cpu_times(percpu=False)))
 
         # Note: in theory CPU times are always supposed to increase over
         # time or remain the same but never go backwards. In practice
@@ -415,14 +415,14 @@ class TestCpuAPIs(PsutilTestCase):
     def test_per_cpu_times_2(self):
         # Simulate some work load then make sure time have increased
         # between calls.
-        tot1 = psutil.cpu_times(percpu=True)
+        tot1 = matrix_psutil.cpu_times(percpu=True)
         giveup_at = time.time() + GLOBAL_TIMEOUT
         while True:
             if time.time() >= giveup_at:
                 return self.fail("timeout")
-            tot2 = psutil.cpu_times(percpu=True)
+            tot2 = matrix_psutil.cpu_times(percpu=True)
             for t1, t2 in zip(tot1, tot2):
-                t1, t2 = psutil._cpu_busy_time(t1), psutil._cpu_busy_time(t2)
+                t1, t2 = matrix_psutil._cpu_busy_time(t1), matrix_psutil._cpu_busy_time(t2)
                 difference = t2 - t1
                 if difference >= 0.05:
                     return
@@ -430,8 +430,8 @@ class TestCpuAPIs(PsutilTestCase):
     def test_cpu_times_comparison(self):
         # Make sure the sum of all per cpu times is almost equal to
         # base "one cpu" times.
-        base = psutil.cpu_times()
-        per_cpu = psutil.cpu_times(percpu=True)
+        base = matrix_psutil.cpu_times()
+        per_cpu = matrix_psutil.cpu_times(percpu=True)
         summed_values = base._make([sum(num) for num in zip(*per_cpu)])
         for field in base._fields:
             self.assertAlmostEqual(
@@ -442,47 +442,47 @@ class TestCpuAPIs(PsutilTestCase):
             self.assertIsInstance(percent, float)
             self.assertGreaterEqual(percent, 0.0)
             self.assertIsNot(percent, -0.0)
-            self.assertLessEqual(percent, 100.0 * psutil.cpu_count())
+            self.assertLessEqual(percent, 100.0 * matrix_psutil.cpu_count())
         except AssertionError as err:
             raise AssertionError("\n%s\nlast=%s\nnew=%s" % (
                 err, pprint.pformat(last_ret), pprint.pformat(new_ret)))
 
     def test_cpu_percent(self):
-        last = psutil.cpu_percent(interval=0.001)
+        last = matrix_psutil.cpu_percent(interval=0.001)
         for _ in range(100):
-            new = psutil.cpu_percent(interval=None)
+            new = matrix_psutil.cpu_percent(interval=None)
             self._test_cpu_percent(new, last, new)
             last = new
         with self.assertRaises(ValueError):
-            psutil.cpu_percent(interval=-1)
+            matrix_psutil.cpu_percent(interval=-1)
 
     def test_per_cpu_percent(self):
-        last = psutil.cpu_percent(interval=0.001, percpu=True)
-        self.assertEqual(len(last), psutil.cpu_count())
+        last = matrix_psutil.cpu_percent(interval=0.001, percpu=True)
+        self.assertEqual(len(last), matrix_psutil.cpu_count())
         for _ in range(100):
-            new = psutil.cpu_percent(interval=None, percpu=True)
+            new = matrix_psutil.cpu_percent(interval=None, percpu=True)
             for percent in new:
                 self._test_cpu_percent(percent, last, new)
             last = new
         with self.assertRaises(ValueError):
-            psutil.cpu_percent(interval=-1, percpu=True)
+            matrix_psutil.cpu_percent(interval=-1, percpu=True)
 
     def test_cpu_times_percent(self):
-        last = psutil.cpu_times_percent(interval=0.001)
+        last = matrix_psutil.cpu_times_percent(interval=0.001)
         for _ in range(100):
-            new = psutil.cpu_times_percent(interval=None)
+            new = matrix_psutil.cpu_times_percent(interval=None)
             for percent in new:
                 self._test_cpu_percent(percent, last, new)
             self._test_cpu_percent(sum(new), last, new)
             last = new
         with self.assertRaises(ValueError):
-            psutil.cpu_times_percent(interval=-1)
+            matrix_psutil.cpu_times_percent(interval=-1)
 
     def test_per_cpu_times_percent(self):
-        last = psutil.cpu_times_percent(interval=0.001, percpu=True)
-        self.assertEqual(len(last), psutil.cpu_count())
+        last = matrix_psutil.cpu_times_percent(interval=0.001, percpu=True)
+        self.assertEqual(len(last), matrix_psutil.cpu_count())
         for _ in range(100):
-            new = psutil.cpu_times_percent(interval=None, percpu=True)
+            new = matrix_psutil.cpu_times_percent(interval=None, percpu=True)
             for cpu in new:
                 for percent in cpu:
                     self._test_cpu_percent(percent, last, new)
@@ -491,17 +491,17 @@ class TestCpuAPIs(PsutilTestCase):
 
     def test_per_cpu_times_percent_negative(self):
         # see: https://github.com/giampaolo/psutil/issues/645
-        psutil.cpu_times_percent(percpu=True)
+        matrix_psutil.cpu_times_percent(percpu=True)
         zero_times = [x._make([0 for x in range(len(x._fields))])
-                      for x in psutil.cpu_times(percpu=True)]
+                      for x in matrix_psutil.cpu_times(percpu=True)]
         with mock.patch('psutil.cpu_times', return_value=zero_times):
-            for cpu in psutil.cpu_times_percent(percpu=True):
+            for cpu in matrix_psutil.cpu_times_percent(percpu=True):
                 for percent in cpu:
                     self._test_cpu_percent(percent, None, None)
 
     def test_cpu_stats(self):
         # Tested more extensively in per-platform test modules.
-        infos = psutil.cpu_stats()
+        infos = matrix_psutil.cpu_stats()
         self.assertEqual(
             infos._fields,
             ('ctx_switches', 'interrupts', 'soft_interrupts', 'syscalls'))
@@ -527,19 +527,19 @@ class TestCpuAPIs(PsutilTestCase):
                     self.assertIsInstance(value, (int, long, float))
                     self.assertGreaterEqual(value, 0)
 
-        ls = psutil.cpu_freq(percpu=True)
+        ls = matrix_psutil.cpu_freq(percpu=True)
         if FREEBSD and not ls:
             raise self.skipTest("returns empty list on FreeBSD")
 
         assert ls, ls
-        check_ls([psutil.cpu_freq(percpu=False)])
+        check_ls([matrix_psutil.cpu_freq(percpu=False)])
 
         if LINUX:
-            self.assertEqual(len(ls), psutil.cpu_count())
+            self.assertEqual(len(ls), matrix_psutil.cpu_count())
 
     @unittest.skipIf(not HAS_GETLOADAVG, "not supported")
     def test_getloadavg(self):
-        loadavg = psutil.getloadavg()
+        loadavg = matrix_psutil.getloadavg()
         self.assertEqual(len(loadavg), 3)
         for load in loadavg:
             self.assertIsInstance(load, float)
@@ -550,7 +550,7 @@ class TestDiskAPIs(PsutilTestCase):
 
     @unittest.skipIf(PYPY and not IS_64BIT, "unreliable on PYPY32 + 32BIT")
     def test_disk_usage(self):
-        usage = psutil.disk_usage(os.getcwd())
+        usage = matrix_psutil.disk_usage(os.getcwd())
         self.assertEqual(usage._fields, ('total', 'used', 'free', 'percent'))
 
         assert usage.total > 0, usage
@@ -575,16 +575,16 @@ class TestDiskAPIs(PsutilTestCase):
         # all platforms
         fname = self.get_testfn()
         with self.assertRaises(FileNotFoundError):
-            psutil.disk_usage(fname)
+            matrix_psutil.disk_usage(fname)
 
     @unittest.skipIf(not ASCII_FS, "not an ASCII fs")
     def test_disk_usage_unicode(self):
         # See: https://github.com/giampaolo/psutil/issues/416
         with self.assertRaises(UnicodeEncodeError):
-            psutil.disk_usage(UNICODE_SUFFIX)
+            matrix_psutil.disk_usage(UNICODE_SUFFIX)
 
     def test_disk_usage_bytes(self):
-        psutil.disk_usage(b'.')
+        matrix_psutil.disk_usage(b'.')
 
     def test_disk_partitions(self):
         def check_ntuple(nt):
@@ -600,7 +600,7 @@ class TestDiskAPIs(PsutilTestCase):
                 self.assertGreater(nt.maxpath, 0)
 
         # all = False
-        ls = psutil.disk_partitions(all=False)
+        ls = matrix_psutil.disk_partitions(all=False)
         self.assertTrue(ls, msg=ls)
         for disk in ls:
             check_ntuple(disk)
@@ -617,9 +617,9 @@ class TestDiskAPIs(PsutilTestCase):
             assert disk.fstype, disk
 
         # all = True
-        ls = psutil.disk_partitions(all=True)
+        ls = matrix_psutil.disk_partitions(all=True)
         self.assertTrue(ls, msg=ls)
-        for disk in psutil.disk_partitions(all=True):
+        for disk in matrix_psutil.disk_partitions(all=True):
             check_ntuple(disk)
             if not WINDOWS and disk.mountpoint:
                 try:
@@ -644,12 +644,12 @@ class TestDiskAPIs(PsutilTestCase):
 
         mount = find_mount_point(__file__)
         mounts = [x.mountpoint.lower() for x in
-                  psutil.disk_partitions(all=True) if x.mountpoint]
+                  matrix_psutil.disk_partitions(all=True) if x.mountpoint]
         self.assertIn(mount, mounts)
 
     @unittest.skipIf(LINUX and not os.path.exists('/proc/diskstats'),
                      '/proc/diskstats not available on this linux version')
-    @unittest.skipIf(CI_TESTING and not psutil.disk_io_counters(),
+    @unittest.skipIf(CI_TESTING and not matrix_psutil.disk_io_counters(),
                      "unreliable on CI")  # no visible disks
     def test_disk_io_counters(self):
         def check_ntuple(nt):
@@ -669,10 +669,10 @@ class TestDiskAPIs(PsutilTestCase):
             for name in nt._fields:
                 assert getattr(nt, name) >= 0, nt
 
-        ret = psutil.disk_io_counters(perdisk=False)
+        ret = matrix_psutil.disk_io_counters(perdisk=False)
         assert ret is not None, "no disks on this system?"
         check_ntuple(ret)
-        ret = psutil.disk_io_counters(perdisk=True)
+        ret = matrix_psutil.disk_io_counters(perdisk=True)
         # make sure there are no duplicates
         self.assertEqual(len(ret), len(set(ret)))
         for key in ret:
@@ -684,8 +684,8 @@ class TestDiskAPIs(PsutilTestCase):
         # https://github.com/giampaolo/psutil/issues/1062
         with mock.patch('psutil._psplatform.disk_io_counters',
                         return_value={}) as m:
-            self.assertIsNone(psutil.disk_io_counters(perdisk=False))
-            self.assertEqual(psutil.disk_io_counters(perdisk=True), {})
+            self.assertIsNone(matrix_psutil.disk_io_counters(perdisk=False))
+            self.assertEqual(matrix_psutil.disk_io_counters(perdisk=True), {})
             assert m.called
 
 
@@ -711,9 +711,9 @@ class TestNetAPIs(PsutilTestCase):
             assert nt.dropin >= 0, nt
             assert nt.dropout >= 0, nt
 
-        ret = psutil.net_io_counters(pernic=False)
+        ret = matrix_psutil.net_io_counters(pernic=False)
         check_ntuple(ret)
-        ret = psutil.net_io_counters(pernic=True)
+        ret = matrix_psutil.net_io_counters(pernic=True)
         self.assertNotEqual(ret, [])
         for key in ret:
             self.assertTrue(key)
@@ -726,22 +726,22 @@ class TestNetAPIs(PsutilTestCase):
         # https://github.com/giampaolo/psutil/issues/1062
         with mock.patch('psutil._psplatform.net_io_counters',
                         return_value={}) as m:
-            self.assertIsNone(psutil.net_io_counters(pernic=False))
-            self.assertEqual(psutil.net_io_counters(pernic=True), {})
+            self.assertIsNone(matrix_psutil.net_io_counters(pernic=False))
+            self.assertEqual(matrix_psutil.net_io_counters(pernic=True), {})
             assert m.called
 
     def test_net_if_addrs(self):
-        nics = psutil.net_if_addrs()
+        nics = matrix_psutil.net_if_addrs()
         assert nics, nics
 
-        nic_stats = psutil.net_if_stats()
+        nic_stats = matrix_psutil.net_if_stats()
 
         # Not reliable on all platforms (net_if_addrs() reports more
         # interfaces).
         # self.assertEqual(sorted(nics.keys()),
         #                  sorted(psutil.net_io_counters(pernic=True).keys()))
 
-        families = set([socket.AF_INET, socket.AF_INET6, psutil.AF_LINK])
+        families = set([socket.AF_INET, socket.AF_INET6, matrix_psutil.AF_LINK])
         for nic, addrs in nics.items():
             self.assertIsInstance(nic, str)
             self.assertEqual(len(set(addrs)), len(addrs))
@@ -784,23 +784,23 @@ class TestNetAPIs(PsutilTestCase):
 
         if BSD or MACOS or SUNOS:
             if hasattr(socket, "AF_LINK"):
-                self.assertEqual(psutil.AF_LINK, socket.AF_LINK)
+                self.assertEqual(matrix_psutil.AF_LINK, socket.AF_LINK)
         elif LINUX:
-            self.assertEqual(psutil.AF_LINK, socket.AF_PACKET)
+            self.assertEqual(matrix_psutil.AF_LINK, socket.AF_PACKET)
         elif WINDOWS:
-            self.assertEqual(psutil.AF_LINK, -1)
+            self.assertEqual(matrix_psutil.AF_LINK, -1)
 
     def test_net_if_addrs_mac_null_bytes(self):
         # Simulate that the underlying C function returns an incomplete
         # MAC address. psutil is supposed to fill it with null bytes.
         # https://github.com/giampaolo/psutil/issues/786
         if POSIX:
-            ret = [('em1', psutil.AF_LINK, '06:3d:29', None, None, None)]
+            ret = [('em1', matrix_psutil.AF_LINK, '06:3d:29', None, None, None)]
         else:
             ret = [('em1', -1, '06-3d-29', None, None, None)]
         with mock.patch('psutil._psplatform.net_if_addrs',
                         return_value=ret) as m:
-            addr = psutil.net_if_addrs()['em1'][0]
+            addr = matrix_psutil.net_if_addrs()['em1'][0]
             assert m.called
             if POSIX:
                 self.assertEqual(addr.address, '06:3d:29:00:00:00')
@@ -808,11 +808,11 @@ class TestNetAPIs(PsutilTestCase):
                 self.assertEqual(addr.address, '06-3d-29-00-00-00')
 
     def test_net_if_stats(self):
-        nics = psutil.net_if_stats()
+        nics = matrix_psutil.net_if_stats()
         assert nics, nics
-        all_duplexes = (psutil.NIC_DUPLEX_FULL,
-                        psutil.NIC_DUPLEX_HALF,
-                        psutil.NIC_DUPLEX_UNKNOWN)
+        all_duplexes = (matrix_psutil.NIC_DUPLEX_FULL,
+                        matrix_psutil.NIC_DUPLEX_HALF,
+                        matrix_psutil.NIC_DUPLEX_UNKNOWN)
         for name, stats in nics.items():
             self.assertIsInstance(name, str)
             isup, duplex, speed, mtu, flags = stats
@@ -829,7 +829,7 @@ class TestNetAPIs(PsutilTestCase):
         # See: https://github.com/giampaolo/psutil/issues/1279
         with mock.patch('psutil._psutil_posix.net_if_mtu',
                         side_effect=OSError(errno.ENODEV, "")) as m:
-            ret = psutil.net_if_stats()
+            ret = matrix_psutil.net_if_stats()
             self.assertEqual(ret, {})
             assert m.called
 
@@ -838,7 +838,7 @@ class TestSensorsAPIs(PsutilTestCase):
 
     @unittest.skipIf(not HAS_SENSORS_TEMPERATURES, "not supported")
     def test_sensors_temperatures(self):
-        temps = psutil.sensors_temperatures()
+        temps = matrix_psutil.sensors_temperatures()
         for name, entries in temps.items():
             self.assertIsInstance(name, str)
             for entry in entries:
@@ -855,7 +855,7 @@ class TestSensorsAPIs(PsutilTestCase):
         d = {'coretemp': [('label', 50.0, 60.0, 70.0)]}
         with mock.patch("psutil._psplatform.sensors_temperatures",
                         return_value=d) as m:
-            temps = psutil.sensors_temperatures(
+            temps = matrix_psutil.sensors_temperatures(
                 fahrenheit=True)['coretemp'][0]
             assert m.called
             self.assertEqual(temps.current, 122.0)
@@ -865,20 +865,20 @@ class TestSensorsAPIs(PsutilTestCase):
     @unittest.skipIf(not HAS_SENSORS_BATTERY, "not supported")
     @unittest.skipIf(not HAS_BATTERY, "no battery")
     def test_sensors_battery(self):
-        ret = psutil.sensors_battery()
+        ret = matrix_psutil.sensors_battery()
         self.assertGreaterEqual(ret.percent, 0)
         self.assertLessEqual(ret.percent, 100)
-        if ret.secsleft not in (psutil.POWER_TIME_UNKNOWN,
-                                psutil.POWER_TIME_UNLIMITED):
+        if ret.secsleft not in (matrix_psutil.POWER_TIME_UNKNOWN,
+                                matrix_psutil.POWER_TIME_UNLIMITED):
             self.assertGreaterEqual(ret.secsleft, 0)
         else:
-            if ret.secsleft == psutil.POWER_TIME_UNLIMITED:
+            if ret.secsleft == matrix_psutil.POWER_TIME_UNLIMITED:
                 self.assertTrue(ret.power_plugged)
         self.assertIsInstance(ret.power_plugged, bool)
 
     @unittest.skipIf(not HAS_SENSORS_FANS, "not supported")
     def test_sensors_fans(self):
-        fans = psutil.sensors_fans()
+        fans = matrix_psutil.sensors_fans()
         for name, entries in fans.items():
             self.assertIsInstance(name, str)
             for entry in entries:
@@ -888,5 +888,5 @@ class TestSensorsAPIs(PsutilTestCase):
 
 
 if __name__ == '__main__':
-    from psutil.tests.runner import run_from_name
+    from matrix_psutil.tests.runner import run_from_name
     run_from_name(__file__)

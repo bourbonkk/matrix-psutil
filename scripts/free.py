@@ -13,12 +13,12 @@ Mem:      10125520    8625996    1499524          0     349500    3307836
 Swap:            0          0          0
 """
 
-import psutil
+import matrix_psutil
 
 
 def main():
-    virt = psutil.virtual_memory()
-    swap = psutil.swap_memory()
+    virt = matrix_psutil.virtual_memory()
+    swap = matrix_psutil.swap_memory()
     templ = "%-7s %10s %10s %10s %10s %10s %10s"
     print(templ % ('', 'total', 'used', 'free', 'shared', 'buffers', 'cache'))
     print(templ % (

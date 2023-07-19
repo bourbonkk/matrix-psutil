@@ -39,10 +39,10 @@ from __future__ import print_function
 
 import sys
 
-import psutil
+import matrix_psutil
 
 
-if not (psutil.LINUX or psutil.MACOS or psutil.WINDOWS):
+if not (matrix_psutil.LINUX or matrix_psutil.MACOS or matrix_psutil.WINDOWS):
     sys.exit("platform not supported")
 
 
@@ -61,14 +61,14 @@ def convert_bytes(n):
 def main():
     ad_pids = []
     procs = []
-    for p in psutil.process_iter():
+    for p in matrix_psutil.process_iter():
         with p.oneshot():
             try:
                 mem = p.memory_full_info()
                 info = p.as_dict(["cmdline", "username"])
-            except psutil.AccessDenied:
+            except matrix_psutil.AccessDenied:
                 ad_pids.append(p.pid)
-            except psutil.NoSuchProcess:
+            except matrix_psutil.NoSuchProcess:
                 pass
             else:
                 p._uss = mem.uss

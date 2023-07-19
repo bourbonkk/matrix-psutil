@@ -31,7 +31,7 @@ Battery:
 
 from __future__ import print_function
 
-import psutil
+import matrix_psutil
 
 
 def secs2hours(secs):
@@ -41,16 +41,16 @@ def secs2hours(secs):
 
 
 def main():
-    if hasattr(psutil, "sensors_temperatures"):
-        temps = psutil.sensors_temperatures()
+    if hasattr(matrix_psutil, "sensors_temperatures"):
+        temps = matrix_psutil.sensors_temperatures()
     else:
         temps = {}
-    if hasattr(psutil, "sensors_fans"):
-        fans = psutil.sensors_fans()
+    if hasattr(matrix_psutil, "sensors_fans"):
+        fans = matrix_psutil.sensors_fans()
     else:
         fans = {}
-    if hasattr(psutil, "sensors_battery"):
-        battery = psutil.sensors_battery()
+    if hasattr(matrix_psutil, "sensors_battery"):
+        battery = matrix_psutil.sensors_battery()
     else:
         battery = None
 

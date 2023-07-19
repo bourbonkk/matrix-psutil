@@ -33,13 +33,13 @@ from __future__ import print_function
 import collections
 import sys
 
-import psutil
+import matrix_psutil
 
 
 def print_tree(parent, tree, indent=''):
     try:
-        name = psutil.Process(parent).name()
-    except psutil.Error:
+        name = matrix_psutil.Process(parent).name()
+    except matrix_psutil.Error:
         name = "?"
     print(parent, name)
     if parent not in tree:
@@ -57,10 +57,10 @@ def main():
     # construct a dict where 'values' are all the processes
     # having 'key' as their parent
     tree = collections.defaultdict(list)
-    for p in psutil.process_iter():
+    for p in matrix_psutil.process_iter():
         try:
             tree[p.ppid()].append(p.pid)
-        except (psutil.NoSuchProcess, psutil.ZombieProcess):
+        except (matrix_psutil.NoSuchProcess, matrix_psutil.ZombieProcess):
             pass
     # on systems supporting PID 0, PID 0's parent is usually 0
     if 0 in tree and 0 in tree[0]:

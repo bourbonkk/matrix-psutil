@@ -14,7 +14,7 @@ import re
 import subprocess
 import sys
 
-from psutil import __version__ as PRJ_VERSION
+from matrix_psutil import __version__ as PRJ_VERSION
 
 
 HERE = os.path.abspath(os.path.dirname(__file__))

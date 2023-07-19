@@ -20,40 +20,40 @@ import time
 import traceback
 import unittest
 
-import psutil
-from psutil import AIX
-from psutil import BSD
-from psutil import FREEBSD
-from psutil import LINUX
-from psutil import MACOS
-from psutil import NETBSD
-from psutil import OPENBSD
-from psutil import OSX
-from psutil import POSIX
-from psutil import SUNOS
-from psutil import WINDOWS
-from psutil._compat import FileNotFoundError
-from psutil._compat import long
-from psutil._compat import range
-from psutil._compat import unicode
-from psutil.tests import APPVEYOR
-from psutil.tests import CI_TESTING
-from psutil.tests import GITHUB_ACTIONS
-from psutil.tests import HAS_CPU_FREQ
-from psutil.tests import HAS_NET_IO_COUNTERS
-from psutil.tests import HAS_SENSORS_FANS
-from psutil.tests import HAS_SENSORS_TEMPERATURES
-from psutil.tests import PYPY
-from psutil.tests import SKIP_SYSCONS
-from psutil.tests import VALID_PROC_STATUSES
-from psutil.tests import PsutilTestCase
-from psutil.tests import check_connection_ntuple
-from psutil.tests import create_sockets
-from psutil.tests import enum
-from psutil.tests import is_namedtuple
-from psutil.tests import kernel_version
-from psutil.tests import process_namespace
-from psutil.tests import serialrun
+import matrix_psutil
+from matrix_psutil import AIX
+from matrix_psutil import BSD
+from matrix_psutil import FREEBSD
+from matrix_psutil import LINUX
+from matrix_psutil import MACOS
+from matrix_psutil import NETBSD
+from matrix_psutil import OPENBSD
+from matrix_psutil import OSX
+from matrix_psutil import POSIX
+from matrix_psutil import SUNOS
+from matrix_psutil import WINDOWS
+from matrix_psutil._compat import FileNotFoundError
+from matrix_psutil._compat import long
+from matrix_psutil._compat import range
+from matrix_psutil._compat import unicode
+from matrix_psutil.tests import APPVEYOR
+from matrix_psutil.tests import CI_TESTING
+from matrix_psutil.tests import GITHUB_ACTIONS
+from matrix_psutil.tests import HAS_CPU_FREQ
+from matrix_psutil.tests import HAS_NET_IO_COUNTERS
+from matrix_psutil.tests import HAS_SENSORS_FANS
+from matrix_psutil.tests import HAS_SENSORS_TEMPERATURES
+from matrix_psutil.tests import PYPY
+from matrix_psutil.tests import SKIP_SYSCONS
+from matrix_psutil.tests import VALID_PROC_STATUSES
+from matrix_psutil.tests import PsutilTestCase
+from matrix_psutil.tests import check_connection_ntuple
+from matrix_psutil.tests import create_sockets
+from matrix_psutil.tests import enum
+from matrix_psutil.tests import is_namedtuple
+from matrix_psutil.tests import kernel_version
+from matrix_psutil.tests import process_namespace
+from matrix_psutil.tests import serialrun
 
 
 # ===================================================================
@@ -66,134 +66,134 @@ from psutil.tests import serialrun
 class TestAvailConstantsAPIs(PsutilTestCase):
 
     def test_PROCFS_PATH(self):
-        self.assertEqual(hasattr(psutil, "PROCFS_PATH"),
+        self.assertEqual(hasattr(matrix_psutil, "PROCFS_PATH"),
                          LINUX or SUNOS or AIX)
 
     def test_win_priority(self):
         ae = self.assertEqual
-        ae(hasattr(psutil, "ABOVE_NORMAL_PRIORITY_CLASS"), WINDOWS)
-        ae(hasattr(psutil, "BELOW_NORMAL_PRIORITY_CLASS"), WINDOWS)
-        ae(hasattr(psutil, "HIGH_PRIORITY_CLASS"), WINDOWS)
-        ae(hasattr(psutil, "IDLE_PRIORITY_CLASS"), WINDOWS)
-        ae(hasattr(psutil, "NORMAL_PRIORITY_CLASS"), WINDOWS)
-        ae(hasattr(psutil, "REALTIME_PRIORITY_CLASS"), WINDOWS)
+        ae(hasattr(matrix_psutil, "ABOVE_NORMAL_PRIORITY_CLASS"), WINDOWS)
+        ae(hasattr(matrix_psutil, "BELOW_NORMAL_PRIORITY_CLASS"), WINDOWS)
+        ae(hasattr(matrix_psutil, "HIGH_PRIORITY_CLASS"), WINDOWS)
+        ae(hasattr(matrix_psutil, "IDLE_PRIORITY_CLASS"), WINDOWS)
+        ae(hasattr(matrix_psutil, "NORMAL_PRIORITY_CLASS"), WINDOWS)
+        ae(hasattr(matrix_psutil, "REALTIME_PRIORITY_CLASS"), WINDOWS)
 
     def test_linux_ioprio_linux(self):
         ae = self.assertEqual
-        ae(hasattr(psutil, "IOPRIO_CLASS_NONE"), LINUX)
-        ae(hasattr(psutil, "IOPRIO_CLASS_RT"), LINUX)
-        ae(hasattr(psutil, "IOPRIO_CLASS_BE"), LINUX)
-        ae(hasattr(psutil, "IOPRIO_CLASS_IDLE"), LINUX)
+        ae(hasattr(matrix_psutil, "IOPRIO_CLASS_NONE"), LINUX)
+        ae(hasattr(matrix_psutil, "IOPRIO_CLASS_RT"), LINUX)
+        ae(hasattr(matrix_psutil, "IOPRIO_CLASS_BE"), LINUX)
+        ae(hasattr(matrix_psutil, "IOPRIO_CLASS_IDLE"), LINUX)
 
     def test_linux_ioprio_windows(self):
         ae = self.assertEqual
-        ae(hasattr(psutil, "IOPRIO_HIGH"), WINDOWS)
-        ae(hasattr(psutil, "IOPRIO_NORMAL"), WINDOWS)
-        ae(hasattr(psutil, "IOPRIO_LOW"), WINDOWS)
-        ae(hasattr(psutil, "IOPRIO_VERYLOW"), WINDOWS)
+        ae(hasattr(matrix_psutil, "IOPRIO_HIGH"), WINDOWS)
+        ae(hasattr(matrix_psutil, "IOPRIO_NORMAL"), WINDOWS)
+        ae(hasattr(matrix_psutil, "IOPRIO_LOW"), WINDOWS)
+        ae(hasattr(matrix_psutil, "IOPRIO_VERYLOW"), WINDOWS)
 
     @unittest.skipIf(GITHUB_ACTIONS and LINUX,
                      "unsupported on GITHUB_ACTIONS + LINUX")
     def test_rlimit(self):
         ae = self.assertEqual
-        ae(hasattr(psutil, "RLIM_INFINITY"), LINUX or FREEBSD)
-        ae(hasattr(psutil, "RLIMIT_AS"), LINUX or FREEBSD)
-        ae(hasattr(psutil, "RLIMIT_CORE"), LINUX or FREEBSD)
-        ae(hasattr(psutil, "RLIMIT_CPU"), LINUX or FREEBSD)
-        ae(hasattr(psutil, "RLIMIT_DATA"), LINUX or FREEBSD)
-        ae(hasattr(psutil, "RLIMIT_FSIZE"), LINUX or FREEBSD)
-        ae(hasattr(psutil, "RLIMIT_MEMLOCK"), LINUX or FREEBSD)
-        ae(hasattr(psutil, "RLIMIT_NOFILE"), LINUX or FREEBSD)
-        ae(hasattr(psutil, "RLIMIT_NPROC"), LINUX or FREEBSD)
-        ae(hasattr(psutil, "RLIMIT_RSS"), LINUX or FREEBSD)
-        ae(hasattr(psutil, "RLIMIT_STACK"), LINUX or FREEBSD)
+        ae(hasattr(matrix_psutil, "RLIM_INFINITY"), LINUX or FREEBSD)
+        ae(hasattr(matrix_psutil, "RLIMIT_AS"), LINUX or FREEBSD)
+        ae(hasattr(matrix_psutil, "RLIMIT_CORE"), LINUX or FREEBSD)
+        ae(hasattr(matrix_psutil, "RLIMIT_CPU"), LINUX or FREEBSD)
+        ae(hasattr(matrix_psutil, "RLIMIT_DATA"), LINUX or FREEBSD)
+        ae(hasattr(matrix_psutil, "RLIMIT_FSIZE"), LINUX or FREEBSD)
+        ae(hasattr(matrix_psutil, "RLIMIT_MEMLOCK"), LINUX or FREEBSD)
+        ae(hasattr(matrix_psutil, "RLIMIT_NOFILE"), LINUX or FREEBSD)
+        ae(hasattr(matrix_psutil, "RLIMIT_NPROC"), LINUX or FREEBSD)
+        ae(hasattr(matrix_psutil, "RLIMIT_RSS"), LINUX or FREEBSD)
+        ae(hasattr(matrix_psutil, "RLIMIT_STACK"), LINUX or FREEBSD)
 
-        ae(hasattr(psutil, "RLIMIT_LOCKS"), LINUX)
+        ae(hasattr(matrix_psutil, "RLIMIT_LOCKS"), LINUX)
         if POSIX:
             if kernel_version() >= (2, 6, 8):
-                ae(hasattr(psutil, "RLIMIT_MSGQUEUE"), LINUX)
+                ae(hasattr(matrix_psutil, "RLIMIT_MSGQUEUE"), LINUX)
             if kernel_version() >= (2, 6, 12):
-                ae(hasattr(psutil, "RLIMIT_NICE"), LINUX)
+                ae(hasattr(matrix_psutil, "RLIMIT_NICE"), LINUX)
             if kernel_version() >= (2, 6, 12):
-                ae(hasattr(psutil, "RLIMIT_RTPRIO"), LINUX)
+                ae(hasattr(matrix_psutil, "RLIMIT_RTPRIO"), LINUX)
             if kernel_version() >= (2, 6, 25):
-                ae(hasattr(psutil, "RLIMIT_RTTIME"), LINUX)
+                ae(hasattr(matrix_psutil, "RLIMIT_RTTIME"), LINUX)
             if kernel_version() >= (2, 6, 8):
-                ae(hasattr(psutil, "RLIMIT_SIGPENDING"), LINUX)
+                ae(hasattr(matrix_psutil, "RLIMIT_SIGPENDING"), LINUX)
 
-        ae(hasattr(psutil, "RLIMIT_SWAP"), FREEBSD)
-        ae(hasattr(psutil, "RLIMIT_SBSIZE"), FREEBSD)
-        ae(hasattr(psutil, "RLIMIT_NPTS"), FREEBSD)
+        ae(hasattr(matrix_psutil, "RLIMIT_SWAP"), FREEBSD)
+        ae(hasattr(matrix_psutil, "RLIMIT_SBSIZE"), FREEBSD)
+        ae(hasattr(matrix_psutil, "RLIMIT_NPTS"), FREEBSD)
 
 
 class TestAvailSystemAPIs(PsutilTestCase):
 
     def test_win_service_iter(self):
-        self.assertEqual(hasattr(psutil, "win_service_iter"), WINDOWS)
+        self.assertEqual(hasattr(matrix_psutil, "win_service_iter"), WINDOWS)
 
     def test_win_service_get(self):
-        self.assertEqual(hasattr(psutil, "win_service_get"), WINDOWS)
+        self.assertEqual(hasattr(matrix_psutil, "win_service_get"), WINDOWS)
 
     def test_cpu_freq(self):
-        self.assertEqual(hasattr(psutil, "cpu_freq"),
+        self.assertEqual(hasattr(matrix_psutil, "cpu_freq"),
                          LINUX or MACOS or WINDOWS or FREEBSD or OPENBSD)
 
     def test_sensors_temperatures(self):
         self.assertEqual(
-            hasattr(psutil, "sensors_temperatures"), LINUX or FREEBSD)
+            hasattr(matrix_psutil, "sensors_temperatures"), LINUX or FREEBSD)
 
     def test_sensors_fans(self):
-        self.assertEqual(hasattr(psutil, "sensors_fans"), LINUX)
+        self.assertEqual(hasattr(matrix_psutil, "sensors_fans"), LINUX)
 
     def test_battery(self):
-        self.assertEqual(hasattr(psutil, "sensors_battery"),
+        self.assertEqual(hasattr(matrix_psutil, "sensors_battery"),
                          LINUX or WINDOWS or FREEBSD or MACOS)
 
 
 class TestAvailProcessAPIs(PsutilTestCase):
 
     def test_environ(self):
-        self.assertEqual(hasattr(psutil.Process, "environ"),
+        self.assertEqual(hasattr(matrix_psutil.Process, "environ"),
                          LINUX or MACOS or WINDOWS or AIX or SUNOS or
                          FREEBSD or OPENBSD or NETBSD)
 
     def test_uids(self):
-        self.assertEqual(hasattr(psutil.Process, "uids"), POSIX)
+        self.assertEqual(hasattr(matrix_psutil.Process, "uids"), POSIX)
 
     def test_gids(self):
-        self.assertEqual(hasattr(psutil.Process, "uids"), POSIX)
+        self.assertEqual(hasattr(matrix_psutil.Process, "uids"), POSIX)
 
     def test_terminal(self):
-        self.assertEqual(hasattr(psutil.Process, "terminal"), POSIX)
+        self.assertEqual(hasattr(matrix_psutil.Process, "terminal"), POSIX)
 
     def test_ionice(self):
-        self.assertEqual(hasattr(psutil.Process, "ionice"), LINUX or WINDOWS)
+        self.assertEqual(hasattr(matrix_psutil.Process, "ionice"), LINUX or WINDOWS)
 
     @unittest.skipIf(GITHUB_ACTIONS and LINUX,
                      "unsupported on GITHUB_ACTIONS + LINUX")
     def test_rlimit(self):
-        self.assertEqual(hasattr(psutil.Process, "rlimit"), LINUX or FREEBSD)
+        self.assertEqual(hasattr(matrix_psutil.Process, "rlimit"), LINUX or FREEBSD)
 
     def test_io_counters(self):
-        hasit = hasattr(psutil.Process, "io_counters")
+        hasit = hasattr(matrix_psutil.Process, "io_counters")
         self.assertEqual(hasit, not (MACOS or SUNOS))
 
     def test_num_fds(self):
-        self.assertEqual(hasattr(psutil.Process, "num_fds"), POSIX)
+        self.assertEqual(hasattr(matrix_psutil.Process, "num_fds"), POSIX)
 
     def test_num_handles(self):
-        self.assertEqual(hasattr(psutil.Process, "num_handles"), WINDOWS)
+        self.assertEqual(hasattr(matrix_psutil.Process, "num_handles"), WINDOWS)
 
     def test_cpu_affinity(self):
-        self.assertEqual(hasattr(psutil.Process, "cpu_affinity"),
+        self.assertEqual(hasattr(matrix_psutil.Process, "cpu_affinity"),
                          LINUX or WINDOWS or FREEBSD)
 
     def test_cpu_num(self):
-        self.assertEqual(hasattr(psutil.Process, "cpu_num"),
+        self.assertEqual(hasattr(matrix_psutil.Process, "cpu_num"),
                          LINUX or FREEBSD or SUNOS)
 
     def test_memory_maps(self):
-        hasit = hasattr(psutil.Process, "memory_maps")
+        hasit = hasattr(matrix_psutil.Process, "memory_maps")
         self.assertEqual(
             hasit, False if OPENBSD or NETBSD or AIX or MACOS else True)
 
@@ -211,7 +211,7 @@ class TestSystemAPITypes(PsutilTestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.proc = psutil.Process()
+        cls.proc = matrix_psutil.Process()
 
     def assert_ntuple_of_nums(self, nt, type_=float, gezero=True):
         assert is_namedtuple(nt)
@@ -221,39 +221,39 @@ class TestSystemAPITypes(PsutilTestCase):
                 self.assertGreaterEqual(n, 0)
 
     def test_cpu_times(self):
-        self.assert_ntuple_of_nums(psutil.cpu_times())
-        for nt in psutil.cpu_times(percpu=True):
+        self.assert_ntuple_of_nums(matrix_psutil.cpu_times())
+        for nt in matrix_psutil.cpu_times(percpu=True):
             self.assert_ntuple_of_nums(nt)
 
     def test_cpu_percent(self):
-        self.assertIsInstance(psutil.cpu_percent(interval=None), float)
-        self.assertIsInstance(psutil.cpu_percent(interval=0.00001), float)
+        self.assertIsInstance(matrix_psutil.cpu_percent(interval=None), float)
+        self.assertIsInstance(matrix_psutil.cpu_percent(interval=0.00001), float)
 
     def test_cpu_times_percent(self):
-        self.assert_ntuple_of_nums(psutil.cpu_times_percent(interval=None))
-        self.assert_ntuple_of_nums(psutil.cpu_times_percent(interval=0.0001))
+        self.assert_ntuple_of_nums(matrix_psutil.cpu_times_percent(interval=None))
+        self.assert_ntuple_of_nums(matrix_psutil.cpu_times_percent(interval=0.0001))
 
     def test_cpu_count(self):
-        self.assertIsInstance(psutil.cpu_count(), int)
+        self.assertIsInstance(matrix_psutil.cpu_count(), int)
 
     # TODO: remove this once 1892 is fixed
     @unittest.skipIf(MACOS and platform.machine() == 'arm64',
                      "skipped due to #1892")
     @unittest.skipIf(not HAS_CPU_FREQ, "not supported")
     def test_cpu_freq(self):
-        if psutil.cpu_freq() is None:
+        if matrix_psutil.cpu_freq() is None:
             raise self.skipTest("cpu_freq() returns None")
-        self.assert_ntuple_of_nums(psutil.cpu_freq(), type_=(float, int, long))
+        self.assert_ntuple_of_nums(matrix_psutil.cpu_freq(), type_=(float, int, long))
 
     def test_disk_io_counters(self):
         # Duplicate of test_system.py. Keep it anyway.
-        for k, v in psutil.disk_io_counters(perdisk=True).items():
+        for k, v in matrix_psutil.disk_io_counters(perdisk=True).items():
             self.assertIsInstance(k, str)
             self.assert_ntuple_of_nums(v, type_=(int, long))
 
     def test_disk_partitions(self):
         # Duplicate of test_system.py. Keep it anyway.
-        for disk in psutil.disk_partitions():
+        for disk in matrix_psutil.disk_partitions():
             self.assertIsInstance(disk.device, str)
             self.assertIsInstance(disk.mountpoint, str)
             self.assertIsInstance(disk.fstype, str)
@@ -264,14 +264,14 @@ class TestSystemAPITypes(PsutilTestCase):
     @unittest.skipIf(SKIP_SYSCONS, "requires root")
     def test_net_connections(self):
         with create_sockets():
-            ret = psutil.net_connections('all')
+            ret = matrix_psutil.net_connections('all')
             self.assertEqual(len(ret), len(set(ret)))
             for conn in ret:
                 assert is_namedtuple(conn)
 
     def test_net_if_addrs(self):
         # Duplicate of test_system.py. Keep it anyway.
-        for ifname, addrs in psutil.net_if_addrs().items():
+        for ifname, addrs in matrix_psutil.net_if_addrs().items():
             self.assertIsInstance(ifname, str)
             for addr in addrs:
                 if enum is not None and not PYPY:
@@ -284,7 +284,7 @@ class TestSystemAPITypes(PsutilTestCase):
 
     def test_net_if_stats(self):
         # Duplicate of test_system.py. Keep it anyway.
-        for ifname, info in psutil.net_if_stats().items():
+        for ifname, info in matrix_psutil.net_if_stats().items():
             self.assertIsInstance(ifname, str)
             self.assertIsInstance(info.isup, bool)
             if enum is not None:
@@ -297,13 +297,13 @@ class TestSystemAPITypes(PsutilTestCase):
     @unittest.skipIf(not HAS_NET_IO_COUNTERS, 'not supported')
     def test_net_io_counters(self):
         # Duplicate of test_system.py. Keep it anyway.
-        for ifname, _ in psutil.net_io_counters(pernic=True).items():
+        for ifname, _ in matrix_psutil.net_io_counters(pernic=True).items():
             self.assertIsInstance(ifname, str)
 
     @unittest.skipIf(not HAS_SENSORS_FANS, "not supported")
     def test_sensors_fans(self):
         # Duplicate of test_system.py. Keep it anyway.
-        for name, units in psutil.sensors_fans().items():
+        for name, units in matrix_psutil.sensors_fans().items():
             self.assertIsInstance(name, str)
             for unit in units:
                 self.assertIsInstance(unit.label, str)
@@ -312,7 +312,7 @@ class TestSystemAPITypes(PsutilTestCase):
     @unittest.skipIf(not HAS_SENSORS_TEMPERATURES, "not supported")
     def test_sensors_temperatures(self):
         # Duplicate of test_system.py. Keep it anyway.
-        for name, units in psutil.sensors_temperatures().items():
+        for name, units in matrix_psutil.sensors_temperatures().items():
             self.assertIsInstance(name, str)
             for unit in units:
                 self.assertIsInstance(unit.label, str)
@@ -322,11 +322,11 @@ class TestSystemAPITypes(PsutilTestCase):
 
     def test_boot_time(self):
         # Duplicate of test_system.py. Keep it anyway.
-        self.assertIsInstance(psutil.boot_time(), float)
+        self.assertIsInstance(matrix_psutil.boot_time(), float)
 
     def test_users(self):
         # Duplicate of test_system.py. Keep it anyway.
-        for user in psutil.users():
+        for user in matrix_psutil.users():
             self.assertIsInstance(user.name, str)
             self.assertIsInstance(user.terminal, (str, type(None)))
             self.assertIsInstance(user.host, (str, type(None)))
@@ -337,7 +337,7 @@ class TestProcessWaitType(PsutilTestCase):
 
     @unittest.skipIf(not POSIX, "not POSIX")
     def test_negative_signal(self):
-        p = psutil.Process(self.spawn_testproc().pid)
+        p = matrix_psutil.Process(self.spawn_testproc().pid)
         p.terminate()
         code = p.wait()
         self.assertEqual(code, -signal.SIGTERM)
@@ -358,11 +358,11 @@ def proc_info(pid):
     def check_exception(exc, proc, name, ppid):
         tcase.assertEqual(exc.pid, pid)
         tcase.assertEqual(exc.name, name)
-        if isinstance(exc, psutil.ZombieProcess):
+        if isinstance(exc, matrix_psutil.ZombieProcess):
             if exc.ppid is not None:
                 tcase.assertGreaterEqual(exc.ppid, 0)
                 tcase.assertEqual(exc.ppid, ppid)
-        elif isinstance(exc, psutil.NoSuchProcess):
+        elif isinstance(exc, matrix_psutil.NoSuchProcess):
             tcase.assertProcessGone(proc)
         str(exc)
 
@@ -370,13 +370,13 @@ def proc_info(pid):
         if pid != 0:
             try:
                 proc.wait(0)
-            except psutil.Error as exc:
+            except matrix_psutil.Error as exc:
                 check_exception(exc, proc, name, ppid)
 
     try:
-        proc = psutil.Process(pid)
+        proc = matrix_psutil.Process(pid)
         d = proc.as_dict(['ppid', 'name'])
-    except psutil.NoSuchProcess:
+    except matrix_psutil.NoSuchProcess:
         return {}
 
     name, ppid = d['name'], d['ppid']
@@ -387,7 +387,7 @@ def proc_info(pid):
     for fun, fun_name in ns.iter(ns.getters, clear_cache=False):
         try:
             info[fun_name] = fun()
-        except psutil.Error as exc:
+        except matrix_psutil.Error as exc:
             check_exception(exc, proc, name, ppid)
             continue
     do_wait()
@@ -415,13 +415,13 @@ class TestFetchAllProcesses(PsutilTestCase):
     def iter_proc_info(self):
         # Fixes "can't pickle <function proc_info>: it's not the
         # same object as test_contracts.proc_info".
-        from psutil.tests.test_contracts import proc_info
+        from matrix_psutil.tests.test_contracts import proc_info
 
         if not CI_TESTING:
-            return self.pool.imap_unordered(proc_info, psutil.pids())
+            return self.pool.imap_unordered(proc_info, matrix_psutil.pids())
         else:
             ls = []
-            for pid in psutil.pids():
+            for pid in matrix_psutil.pids():
                 ls.append(proc_info(pid))
             return ls
 
@@ -492,7 +492,7 @@ class TestFetchAllProcesses(PsutilTestCase):
             self.assertGreaterEqual(ret, 0)
         except AssertionError:
             # XXX
-            if OPENBSD and info['status'] == psutil.STATUS_ZOMBIE:
+            if OPENBSD and info['status'] == matrix_psutil.STATUS_ZOMBIE:
                 pass
             else:
                 raise
@@ -543,10 +543,10 @@ class TestFetchAllProcesses(PsutilTestCase):
             self.assertGreaterEqual(ret.value, 0)
         else:  # Windows, Cygwin
             choices = [
-                psutil.IOPRIO_VERYLOW,
-                psutil.IOPRIO_LOW,
-                psutil.IOPRIO_NORMAL,
-                psutil.IOPRIO_HIGH]
+                matrix_psutil.IOPRIO_VERYLOW,
+                matrix_psutil.IOPRIO_LOW,
+                matrix_psutil.IOPRIO_NORMAL,
+                matrix_psutil.IOPRIO_HIGH]
             self.assertIsInstance(ret, int)
             self.assertGreaterEqual(ret, 0)
             self.assertIn(ret, choices)
@@ -583,9 +583,9 @@ class TestFetchAllProcesses(PsutilTestCase):
         if FREEBSD and ret == -1:
             return
         self.assertGreaterEqual(ret, 0)
-        if psutil.cpu_count() == 1:
+        if matrix_psutil.cpu_count() == 1:
             self.assertEqual(ret, 0)
-        self.assertIn(ret, list(range(psutil.cpu_count())))
+        self.assertIn(ret, list(range(matrix_psutil.cpu_count())))
 
     def memory_info(self, ret, info):
         assert is_namedtuple(ret)
@@ -600,7 +600,7 @@ class TestFetchAllProcesses(PsutilTestCase):
 
     def memory_full_info(self, ret, info):
         assert is_namedtuple(ret)
-        total = psutil.virtual_memory().total
+        total = matrix_psutil.virtual_memory().total
         for name in ret._fields:
             value = getattr(ret, name)
             self.assertIsInstance(value, (int, long))
@@ -660,7 +660,7 @@ class TestFetchAllProcesses(PsutilTestCase):
                 st = os.stat(ret)
             except OSError as err:
                 if WINDOWS and err.errno in \
-                        psutil._psplatform.ACCESS_DENIED_SET:
+                        matrix_psutil._psplatform.ACCESS_DENIED_SET:
                     pass
                 # directory has been removed in mean time
                 elif err.errno != errno.ENOENT:
@@ -678,7 +678,7 @@ class TestFetchAllProcesses(PsutilTestCase):
     def cpu_affinity(self, ret, info):
         self.assertIsInstance(ret, list)
         assert ret != [], ret
-        cpus = list(range(psutil.cpu_count()))
+        cpus = list(range(matrix_psutil.cpu_count()))
         for n in ret:
             self.assertIsInstance(n, int)
             self.assertIn(n, cpus)
@@ -720,7 +720,7 @@ class TestFetchAllProcesses(PsutilTestCase):
         if POSIX:
             assert -20 <= ret <= 20, ret
         else:
-            priorities = [getattr(psutil, x) for x in dir(psutil)
+            priorities = [getattr(matrix_psutil, x) for x in dir(matrix_psutil)
                           if x.endswith('_PRIORITY_CLASS')]
             self.assertIn(ret, priorities)
             if sys.version_info > (3, 4):
@@ -748,5 +748,5 @@ class TestFetchAllProcesses(PsutilTestCase):
 
 
 if __name__ == '__main__':
-    from psutil.tests.runner import run_from_name
+    from matrix_psutil.tests.runner import run_from_name
     run_from_name(__file__)

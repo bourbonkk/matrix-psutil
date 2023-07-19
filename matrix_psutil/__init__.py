@@ -452,8 +452,8 @@ class Process(object):
         one information about the process. If you're lucky, you'll
         get a hell of a speedup.
 
-        >>> import psutil
-        >>> p = psutil.Process()
+        >>> import matrix_psutil
+        >>> p = matrix_psutil.Process()
         >>> with p.oneshot():
         ...     p.name()  # collect multiple info
         ...     p.cpu_times()  # return cached value
@@ -902,8 +902,8 @@ class Process(object):
             ├─ C (child)
             └─ D (child)
 
-        >>> import psutil
-        >>> p = psutil.Process()
+        >>> import matrix_psutil
+        >>> p = matrix_psutil.Process()
         >>> p.children()
         B, C, D
         >>> p.children(recursive=True)
@@ -981,8 +981,8 @@ class Process(object):
 
         Examples:
 
-          >>> import psutil
-          >>> p = psutil.Process(os.getpid())
+          >>> import matrix_psutil
+          >>> p = matrix_psutil.Process(os.getpid())
           >>> # blocking
           >>> p.cpu_percent(interval=1)
           2.0
@@ -1305,9 +1305,9 @@ class Popen(Process):
     This is done in order to avoid killing another process in case its
     PID has been reused, fixing BPO-6973.
 
-      >>> import psutil
+      >>> import matrix_psutil
       >>> from subprocess import PIPE
-      >>> p = psutil.Popen(["python", "-c", "print 'hi'"], stdout=PIPE)
+      >>> p = matrix_psutil.Popen(["python", "-c", "print 'hi'"], stdout=PIPE)
       >>> p.name()
       'python'
       >>> p.uids()
@@ -2360,8 +2360,8 @@ def _set_debug(value):
     """Enable or disable PSUTIL_DEBUG option, which prints debugging
     messages to stderr.
     """
-    import psutil._common
-    psutil._common.PSUTIL_DEBUG = bool(value)
+    import matrix_psutil._common
+    matrix_psutil._common.PSUTIL_DEBUG = bool(value)
     _psplatform.cext.set_debug(bool(value))
 
 

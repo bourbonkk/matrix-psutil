@@ -27,13 +27,13 @@ from __future__ import print_function
 
 import sys
 
-import psutil
+import matrix_psutil
 
 
 def main():
-    if not hasattr(psutil, "sensors_temperatures"):
+    if not hasattr(matrix_psutil, "sensors_temperatures"):
         sys.exit("platform not supported")
-    temps = psutil.sensors_temperatures()
+    temps = matrix_psutil.sensors_temperatures()
     if not temps:
         sys.exit("can't read any temperature")
     for name, entries in temps.items():

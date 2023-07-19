@@ -34,7 +34,7 @@ binpath: C:\Windows\system32\svchost.exe -k netsvcs
 import os
 import sys
 
-import psutil
+import matrix_psutil
 
 
 if os.name != 'nt':
@@ -42,7 +42,7 @@ if os.name != 'nt':
 
 
 def main():
-    for service in psutil.win_service_iter():
+    for service in matrix_psutil.win_service_iter():
         info = service.as_dict()
         print("%r (%r)" % (info['name'], info['display_name']))
         print("status: %s, start: %s, username: %s, pid: %s" % (

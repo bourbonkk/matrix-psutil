@@ -17,7 +17,7 @@ import sys
 import textwrap
 import timeit
 
-import psutil
+import matrix_psutil
 
 
 ITERATIONS = 1000
@@ -33,11 +33,11 @@ names = [
     'parent',
 ]
 
-if psutil.POSIX:
+if matrix_psutil.POSIX:
     names.append('uids')
     names.append('username')
 
-if psutil.LINUX:
+if matrix_psutil.LINUX:
     names += [
         # 'memory_full_info',
         # 'memory_maps',
@@ -52,7 +52,7 @@ if psutil.LINUX:
         'terminal',
         'uids',
     ]
-elif psutil.BSD:
+elif matrix_psutil.BSD:
     names = [
         'cpu_times',
         'gids',
@@ -66,9 +66,9 @@ elif psutil.BSD:
         'terminal',
         'uids',
     ]
-    if psutil.FREEBSD:
+    if matrix_psutil.FREEBSD:
         names.append('cpu_num')
-elif psutil.SUNOS:
+elif matrix_psutil.SUNOS:
     names += [
         'cmdline',
         'gids',
@@ -81,7 +81,7 @@ elif psutil.SUNOS:
         'terminal',
         'uids',
     ]
-elif psutil.MACOS:
+elif matrix_psutil.MACOS:
     names += [
         'cpu_times',
         'create_time',
@@ -94,7 +94,7 @@ elif psutil.MACOS:
         'terminal',
         'uids',
     ]
-elif psutil.WINDOWS:
+elif matrix_psutil.WINDOWS:
     names += [
         'num_ctx_switches',
         'num_threads',
@@ -129,7 +129,7 @@ setup = textwrap.dedent("""
 
 def main():
     print("%s methods involved on platform %r (%s iterations, psutil %s):" % (
-        len(names), sys.platform, ITERATIONS, psutil.__version__))
+        len(names), sys.platform, ITERATIONS, matrix_psutil.__version__))
     for name in sorted(names):
         print("    " + name)
 

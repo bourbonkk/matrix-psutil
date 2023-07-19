@@ -318,7 +318,7 @@ def uninstall():
         os.chdir('C:\\')
         while True:
             try:
-                import psutil  # NOQA
+                import matrix_psutil  # NOQA
             except ImportError:
                 break
             else:

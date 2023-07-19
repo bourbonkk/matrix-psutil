@@ -41,21 +41,21 @@ try:
 except ImportError:
     concurrencytest = None
 
-import psutil
-from psutil._common import hilite
-from psutil._common import print_color
-from psutil._common import term_supports_colors
-from psutil._compat import super
-from psutil.tests import CI_TESTING
-from psutil.tests import import_module_by_path
-from psutil.tests import print_sysinfo
-from psutil.tests import reap_children
-from psutil.tests import safe_rmpath
+import matrix_psutil
+from matrix_psutil._common import hilite
+from matrix_psutil._common import print_color
+from matrix_psutil._common import term_supports_colors
+from matrix_psutil._compat import super
+from matrix_psutil.tests import CI_TESTING
+from matrix_psutil.tests import import_module_by_path
+from matrix_psutil.tests import print_sysinfo
+from matrix_psutil.tests import reap_children
+from matrix_psutil.tests import safe_rmpath
 
 
 VERBOSITY = 2
 FAILED_TESTS_FNAME = '.failed-tests.txt'
-NWORKERS = psutil.cpu_count() or 1
+NWORKERS = matrix_psutil.cpu_count() or 1
 USE_COLORS = not CI_TESTING and term_supports_colors()
 
 HERE = os.path.abspath(os.path.dirname(__file__))
@@ -248,8 +248,8 @@ class ParallelRunner(ColouredTextRunner):
 
         # At this point we should have N zombies (the workers), which
         # will disappear with wait().
-        orphans = psutil.Process().children()
-        gone, alive = psutil.wait_procs(orphans, timeout=1)
+        orphans = matrix_psutil.Process().children()
+        gone, alive = matrix_psutil.wait_procs(orphans, timeout=1)
         if alive:
             cprint("alive processes %s" % alive, "red")
             reap_children()
@@ -288,7 +288,7 @@ def get_runner(parallel=False):
     def warn(msg):
         cprint(msg + " Running serial tests instead.", "red")
     if parallel:
-        if psutil.WINDOWS:
+        if matrix_psutil.WINDOWS:
             warn("Can't run parallel tests on Windows.")
         elif concurrencytest is None:
             warn("concurrencytest module is not installed.")
@@ -309,7 +309,7 @@ def run_from_name(name):
 
 
 def setup():
-    psutil._set_debug(True)
+    matrix_psutil._set_debug(True)
 
 
 def main():

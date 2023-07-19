@@ -51,8 +51,8 @@ from __future__ import print_function
 import time
 from collections import defaultdict
 
-import psutil
-from psutil._common import print_color
+import matrix_psutil
+from matrix_psutil._common import print_color
 
 
 def main():
@@ -63,7 +63,7 @@ def main():
     signaler = object()
     d = defaultdict(int)
     start = time.time()
-    for p in psutil.process_iter(attrs=[], ad_value=signaler):
+    for p in matrix_psutil.process_iter(attrs=[], ad_value=signaler):
         tot_procs += 1
         for methname, value in p.info.items():
             tot_calls += 1

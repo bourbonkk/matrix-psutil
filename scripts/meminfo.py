@@ -30,8 +30,8 @@ Sin        :      0B
 Sout       :      0B
 """
 
-import psutil
-from psutil._common import bytes2human
+import matrix_psutil
+from matrix_psutil._common import bytes2human
 
 
 def pprint_ntuple(nt):
@@ -44,9 +44,9 @@ def pprint_ntuple(nt):
 
 def main():
     print('MEMORY\n------')
-    pprint_ntuple(psutil.virtual_memory())
+    pprint_ntuple(matrix_psutil.virtual_memory())
     print('\nSWAP\n----')
-    pprint_ntuple(psutil.swap_memory())
+    pprint_ntuple(matrix_psutil.swap_memory())
 
 
 if __name__ == '__main__':

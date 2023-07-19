@@ -21,51 +21,51 @@ import time
 import types
 import unittest
 
-import psutil
-from psutil import AIX
-from psutil import BSD
-from psutil import LINUX
-from psutil import MACOS
-from psutil import NETBSD
-from psutil import OPENBSD
-from psutil import OSX
-from psutil import POSIX
-from psutil import SUNOS
-from psutil import WINDOWS
-from psutil._common import open_text
-from psutil._compat import PY3
-from psutil._compat import FileNotFoundError
-from psutil._compat import long
-from psutil._compat import super
-from psutil.tests import APPVEYOR
-from psutil.tests import CI_TESTING
-from psutil.tests import GITHUB_ACTIONS
-from psutil.tests import GLOBAL_TIMEOUT
-from psutil.tests import HAS_CPU_AFFINITY
-from psutil.tests import HAS_ENVIRON
-from psutil.tests import HAS_IONICE
-from psutil.tests import HAS_MEMORY_MAPS
-from psutil.tests import HAS_PROC_CPU_NUM
-from psutil.tests import HAS_PROC_IO_COUNTERS
-from psutil.tests import HAS_RLIMIT
-from psutil.tests import HAS_THREADS
-from psutil.tests import MACOS_11PLUS
-from psutil.tests import PYPY
-from psutil.tests import PYTHON_EXE
-from psutil.tests import PYTHON_EXE_ENV
-from psutil.tests import PsutilTestCase
-from psutil.tests import ThreadTask
-from psutil.tests import call_until
-from psutil.tests import copyload_shared_lib
-from psutil.tests import create_exe
-from psutil.tests import mock
-from psutil.tests import process_namespace
-from psutil.tests import reap_children
-from psutil.tests import retry_on_failure
-from psutil.tests import sh
-from psutil.tests import skip_on_access_denied
-from psutil.tests import skip_on_not_implemented
-from psutil.tests import wait_for_pid
+import matrix_psutil
+from matrix_psutil import AIX
+from matrix_psutil import BSD
+from matrix_psutil import LINUX
+from matrix_psutil import MACOS
+from matrix_psutil import NETBSD
+from matrix_psutil import OPENBSD
+from matrix_psutil import OSX
+from matrix_psutil import POSIX
+from matrix_psutil import SUNOS
+from matrix_psutil import WINDOWS
+from matrix_psutil._common import open_text
+from matrix_psutil._compat import PY3
+from matrix_psutil._compat import FileNotFoundError
+from matrix_psutil._compat import long
+from matrix_psutil._compat import super
+from matrix_psutil.tests import APPVEYOR
+from matrix_psutil.tests import CI_TESTING
+from matrix_psutil.tests import GITHUB_ACTIONS
+from matrix_psutil.tests import GLOBAL_TIMEOUT
+from matrix_psutil.tests import HAS_CPU_AFFINITY
+from matrix_psutil.tests import HAS_ENVIRON
+from matrix_psutil.tests import HAS_IONICE
+from matrix_psutil.tests import HAS_MEMORY_MAPS
+from matrix_psutil.tests import HAS_PROC_CPU_NUM
+from matrix_psutil.tests import HAS_PROC_IO_COUNTERS
+from matrix_psutil.tests import HAS_RLIMIT
+from matrix_psutil.tests import HAS_THREADS
+from matrix_psutil.tests import MACOS_11PLUS
+from matrix_psutil.tests import PYPY
+from matrix_psutil.tests import PYTHON_EXE
+from matrix_psutil.tests import PYTHON_EXE_ENV
+from matrix_psutil.tests import PsutilTestCase
+from matrix_psutil.tests import ThreadTask
+from matrix_psutil.tests import call_until
+from matrix_psutil.tests import copyload_shared_lib
+from matrix_psutil.tests import create_exe
+from matrix_psutil.tests import mock
+from matrix_psutil.tests import process_namespace
+from matrix_psutil.tests import reap_children
+from matrix_psutil.tests import retry_on_failure
+from matrix_psutil.tests import sh
+from matrix_psutil.tests import skip_on_access_denied
+from matrix_psutil.tests import skip_on_not_implemented
+from matrix_psutil.tests import wait_for_pid
 
 
 # ===================================================================
@@ -78,12 +78,12 @@ class TestProcess(PsutilTestCase):
 
     def spawn_psproc(self, *args, **kwargs):
         sproc = self.spawn_testproc(*args, **kwargs)
-        return psutil.Process(sproc.pid)
+        return matrix_psutil.Process(sproc.pid)
 
     # ---
 
     def test_pid(self):
-        p = psutil.Process()
+        p = matrix_psutil.Process()
         self.assertEqual(p.pid, os.getpid())
         with self.assertRaises(AttributeError):
             p.pid = 33
@@ -125,12 +125,12 @@ class TestProcess(PsutilTestCase):
         p = self.spawn_psproc()
         with mock.patch('psutil.os.kill',
                         side_effect=OSError(errno.ESRCH, "")):
-            self.assertRaises(psutil.NoSuchProcess, p.send_signal, sig)
+            self.assertRaises(matrix_psutil.NoSuchProcess, p.send_signal, sig)
 
         p = self.spawn_psproc()
         with mock.patch('psutil.os.kill',
                         side_effect=OSError(errno.EPERM, "")):
-            self.assertRaises(psutil.AccessDenied, p.send_signal, sig)
+            self.assertRaises(matrix_psutil.AccessDenied, p.send_signal, sig)
 
     def test_wait_exited(self):
         # Test waitpid() + WIFEXITED -> WEXITSTATUS.
@@ -166,17 +166,17 @@ class TestProcess(PsutilTestCase):
             # Test waitpid() + WIFSTOPPED and WIFCONTINUED.
             # Note: if a process is stopped it ignores SIGTERM.
             p.send_signal(signal.SIGSTOP)
-            self.assertRaises(psutil.TimeoutExpired, p.wait, timeout=0.001)
+            self.assertRaises(matrix_psutil.TimeoutExpired, p.wait, timeout=0.001)
             p.send_signal(signal.SIGCONT)
-            self.assertRaises(psutil.TimeoutExpired, p.wait, timeout=0.001)
+            self.assertRaises(matrix_psutil.TimeoutExpired, p.wait, timeout=0.001)
             p.send_signal(signal.SIGTERM)
             self.assertEqual(p.wait(), -signal.SIGTERM)
             self.assertEqual(p.wait(), -signal.SIGTERM)
         else:
             p.suspend()
-            self.assertRaises(psutil.TimeoutExpired, p.wait, timeout=0.001)
+            self.assertRaises(matrix_psutil.TimeoutExpired, p.wait, timeout=0.001)
             p.resume()
-            self.assertRaises(psutil.TimeoutExpired, p.wait, timeout=0.001)
+            self.assertRaises(matrix_psutil.TimeoutExpired, p.wait, timeout=0.001)
             p.terminate()
             self.assertEqual(p.wait(), signal.SIGTERM)
             self.assertEqual(p.wait(), signal.SIGTERM)
@@ -185,8 +185,8 @@ class TestProcess(PsutilTestCase):
         # Test wait() against a process which is not our direct
         # child.
         child, grandchild = self.spawn_children_pair()
-        self.assertRaises(psutil.TimeoutExpired, child.wait, 0.01)
-        self.assertRaises(psutil.TimeoutExpired, grandchild.wait, 0.01)
+        self.assertRaises(matrix_psutil.TimeoutExpired, child.wait, 0.01)
+        self.assertRaises(matrix_psutil.TimeoutExpired, grandchild.wait, 0.01)
         # We also terminate the direct child otherwise the
         # grandchild will hang until the parent is gone.
         child.terminate()
@@ -205,20 +205,20 @@ class TestProcess(PsutilTestCase):
     def test_wait_timeout(self):
         p = self.spawn_psproc()
         p.name()
-        self.assertRaises(psutil.TimeoutExpired, p.wait, 0.01)
-        self.assertRaises(psutil.TimeoutExpired, p.wait, 0)
+        self.assertRaises(matrix_psutil.TimeoutExpired, p.wait, 0.01)
+        self.assertRaises(matrix_psutil.TimeoutExpired, p.wait, 0)
         self.assertRaises(ValueError, p.wait, -1)
 
     def test_wait_timeout_nonblocking(self):
         p = self.spawn_psproc()
-        self.assertRaises(psutil.TimeoutExpired, p.wait, 0)
+        self.assertRaises(matrix_psutil.TimeoutExpired, p.wait, 0)
         p.kill()
         stop_at = time.time() + GLOBAL_TIMEOUT
         while time.time() < stop_at:
             try:
                 code = p.wait(0)
                 break
-            except psutil.TimeoutExpired:
+            except matrix_psutil.TimeoutExpired:
                 pass
         else:
             raise self.fail('timeout')
@@ -229,7 +229,7 @@ class TestProcess(PsutilTestCase):
         self.assertProcessGone(p)
 
     def test_cpu_percent(self):
-        p = psutil.Process()
+        p = matrix_psutil.Process()
         p.cpu_percent(interval=0.001)
         p.cpu_percent(interval=0.001)
         for _ in range(100):
@@ -242,11 +242,11 @@ class TestProcess(PsutilTestCase):
     def test_cpu_percent_numcpus_none(self):
         # See: https://github.com/giampaolo/psutil/issues/1087
         with mock.patch('psutil.cpu_count', return_value=None) as m:
-            psutil.Process().cpu_percent()
+            matrix_psutil.Process().cpu_percent()
             assert m.called
 
     def test_cpu_times(self):
-        times = psutil.Process().cpu_times()
+        times = matrix_psutil.Process().cpu_times()
         assert (times.user > 0.0) or (times.system > 0.0), times
         assert (times.children_user >= 0.0), times
         assert (times.children_system >= 0.0), times
@@ -257,7 +257,7 @@ class TestProcess(PsutilTestCase):
             time.strftime("%H:%M:%S", time.localtime(getattr(times, name)))
 
     def test_cpu_times_2(self):
-        user_time, kernel_time = psutil.Process().cpu_times()[:2]
+        user_time, kernel_time = matrix_psutil.Process().cpu_times()[:2]
         utime, ktime = os.times()[:2]
 
         # Use os.times()[:2] as base values to compare our results
@@ -271,12 +271,12 @@ class TestProcess(PsutilTestCase):
 
     @unittest.skipIf(not HAS_PROC_CPU_NUM, "not supported")
     def test_cpu_num(self):
-        p = psutil.Process()
+        p = matrix_psutil.Process()
         num = p.cpu_num()
         self.assertGreaterEqual(num, 0)
-        if psutil.cpu_count() == 1:
+        if matrix_psutil.cpu_count() == 1:
             self.assertEqual(num, 0)
-        self.assertIn(p.cpu_num(), range(psutil.cpu_count()))
+        self.assertIn(p.cpu_num(), range(matrix_psutil.cpu_count()))
 
     def test_create_time(self):
         p = self.spawn_psproc()
@@ -296,7 +296,7 @@ class TestProcess(PsutilTestCase):
 
     @unittest.skipIf(not POSIX, 'POSIX only')
     def test_terminal(self):
-        terminal = psutil.Process().terminal()
+        terminal = matrix_psutil.Process().terminal()
         if terminal is not None:
             tty = os.path.realpath(sh('tty'))
             self.assertEqual(terminal, tty)
@@ -304,7 +304,7 @@ class TestProcess(PsutilTestCase):
     @unittest.skipIf(not HAS_PROC_IO_COUNTERS, 'not supported')
     @skip_on_not_implemented(only_if=LINUX)
     def test_io_counters(self):
-        p = psutil.Process()
+        p = matrix_psutil.Process()
         # test reads
         io1 = p.io_counters()
         with open(PYTHON_EXE, 'rb') as f:
@@ -347,84 +347,84 @@ class TestProcess(PsutilTestCase):
     @unittest.skipIf(not HAS_IONICE, "not supported")
     @unittest.skipIf(not LINUX, "linux only")
     def test_ionice_linux(self):
-        p = psutil.Process()
+        p = matrix_psutil.Process()
         if not CI_TESTING:
-            self.assertEqual(p.ionice()[0], psutil.IOPRIO_CLASS_NONE)
-        self.assertEqual(psutil.IOPRIO_CLASS_NONE, 0)
-        self.assertEqual(psutil.IOPRIO_CLASS_RT, 1)  # high
-        self.assertEqual(psutil.IOPRIO_CLASS_BE, 2)  # normal
-        self.assertEqual(psutil.IOPRIO_CLASS_IDLE, 3)  # low
+            self.assertEqual(p.ionice()[0], matrix_psutil.IOPRIO_CLASS_NONE)
+        self.assertEqual(matrix_psutil.IOPRIO_CLASS_NONE, 0)
+        self.assertEqual(matrix_psutil.IOPRIO_CLASS_RT, 1)  # high
+        self.assertEqual(matrix_psutil.IOPRIO_CLASS_BE, 2)  # normal
+        self.assertEqual(matrix_psutil.IOPRIO_CLASS_IDLE, 3)  # low
         init = p.ionice()
         try:
             # low
-            p.ionice(psutil.IOPRIO_CLASS_IDLE)
-            self.assertEqual(tuple(p.ionice()), (psutil.IOPRIO_CLASS_IDLE, 0))
+            p.ionice(matrix_psutil.IOPRIO_CLASS_IDLE)
+            self.assertEqual(tuple(p.ionice()), (matrix_psutil.IOPRIO_CLASS_IDLE, 0))
             with self.assertRaises(ValueError):  # accepts no value
-                p.ionice(psutil.IOPRIO_CLASS_IDLE, value=7)
+                p.ionice(matrix_psutil.IOPRIO_CLASS_IDLE, value=7)
             # normal
-            p.ionice(psutil.IOPRIO_CLASS_BE)
-            self.assertEqual(tuple(p.ionice()), (psutil.IOPRIO_CLASS_BE, 0))
-            p.ionice(psutil.IOPRIO_CLASS_BE, value=7)
-            self.assertEqual(tuple(p.ionice()), (psutil.IOPRIO_CLASS_BE, 7))
+            p.ionice(matrix_psutil.IOPRIO_CLASS_BE)
+            self.assertEqual(tuple(p.ionice()), (matrix_psutil.IOPRIO_CLASS_BE, 0))
+            p.ionice(matrix_psutil.IOPRIO_CLASS_BE, value=7)
+            self.assertEqual(tuple(p.ionice()), (matrix_psutil.IOPRIO_CLASS_BE, 7))
             with self.assertRaises(ValueError):
-                p.ionice(psutil.IOPRIO_CLASS_BE, value=8)
+                p.ionice(matrix_psutil.IOPRIO_CLASS_BE, value=8)
             try:
-                p.ionice(psutil.IOPRIO_CLASS_RT, value=7)
-            except psutil.AccessDenied:
+                p.ionice(matrix_psutil.IOPRIO_CLASS_RT, value=7)
+            except matrix_psutil.AccessDenied:
                 pass
             # errs
             self.assertRaisesRegex(
                 ValueError, "ioclass accepts no value",
-                p.ionice, psutil.IOPRIO_CLASS_NONE, 1)
+                p.ionice, matrix_psutil.IOPRIO_CLASS_NONE, 1)
             self.assertRaisesRegex(
                 ValueError, "ioclass accepts no value",
-                p.ionice, psutil.IOPRIO_CLASS_IDLE, 1)
+                p.ionice, matrix_psutil.IOPRIO_CLASS_IDLE, 1)
             self.assertRaisesRegex(
                 ValueError, "'ioclass' argument must be specified",
                 p.ionice, value=1)
         finally:
             ioclass, value = init
-            if ioclass == psutil.IOPRIO_CLASS_NONE:
+            if ioclass == matrix_psutil.IOPRIO_CLASS_NONE:
                 value = 0
             p.ionice(ioclass, value)
 
     @unittest.skipIf(not HAS_IONICE, "not supported")
     @unittest.skipIf(not WINDOWS, 'not supported on this win version')
     def test_ionice_win(self):
-        p = psutil.Process()
+        p = matrix_psutil.Process()
         if not CI_TESTING:
-            self.assertEqual(p.ionice(), psutil.IOPRIO_NORMAL)
+            self.assertEqual(p.ionice(), matrix_psutil.IOPRIO_NORMAL)
         init = p.ionice()
         try:
             # base
-            p.ionice(psutil.IOPRIO_VERYLOW)
-            self.assertEqual(p.ionice(), psutil.IOPRIO_VERYLOW)
-            p.ionice(psutil.IOPRIO_LOW)
-            self.assertEqual(p.ionice(), psutil.IOPRIO_LOW)
+            p.ionice(matrix_psutil.IOPRIO_VERYLOW)
+            self.assertEqual(p.ionice(), matrix_psutil.IOPRIO_VERYLOW)
+            p.ionice(matrix_psutil.IOPRIO_LOW)
+            self.assertEqual(p.ionice(), matrix_psutil.IOPRIO_LOW)
             try:
-                p.ionice(psutil.IOPRIO_HIGH)
-            except psutil.AccessDenied:
+                p.ionice(matrix_psutil.IOPRIO_HIGH)
+            except matrix_psutil.AccessDenied:
                 pass
             else:
-                self.assertEqual(p.ionice(), psutil.IOPRIO_HIGH)
+                self.assertEqual(p.ionice(), matrix_psutil.IOPRIO_HIGH)
             # errs
             self.assertRaisesRegex(
                 TypeError, "value argument not accepted on Windows",
-                p.ionice, psutil.IOPRIO_NORMAL, value=1)
+                p.ionice, matrix_psutil.IOPRIO_NORMAL, value=1)
             self.assertRaisesRegex(
                 ValueError, "is not a valid priority",
-                p.ionice, psutil.IOPRIO_HIGH + 1)
+                p.ionice, matrix_psutil.IOPRIO_HIGH + 1)
         finally:
             p.ionice(init)
 
     @unittest.skipIf(not HAS_RLIMIT, "not supported")
     def test_rlimit_get(self):
         import resource
-        p = psutil.Process(os.getpid())
-        names = [x for x in dir(psutil) if x.startswith('RLIMIT')]
+        p = matrix_psutil.Process(os.getpid())
+        names = [x for x in dir(matrix_psutil) if x.startswith('RLIMIT')]
         assert names, names
         for name in names:
-            value = getattr(psutil, name)
+            value = getattr(matrix_psutil, name)
             self.assertGreaterEqual(value, 0)
             if name in dir(resource):
                 self.assertEqual(value, getattr(resource, name))
@@ -443,23 +443,23 @@ class TestProcess(PsutilTestCase):
     @unittest.skipIf(not HAS_RLIMIT, "not supported")
     def test_rlimit_set(self):
         p = self.spawn_psproc()
-        p.rlimit(psutil.RLIMIT_NOFILE, (5, 5))
-        self.assertEqual(p.rlimit(psutil.RLIMIT_NOFILE), (5, 5))
+        p.rlimit(matrix_psutil.RLIMIT_NOFILE, (5, 5))
+        self.assertEqual(p.rlimit(matrix_psutil.RLIMIT_NOFILE), (5, 5))
         # If pid is 0 prlimit() applies to the calling process and
         # we don't want that.
         if LINUX:
             with self.assertRaisesRegex(ValueError, "can't use prlimit"):
-                psutil._psplatform.Process(0).rlimit(0)
+                matrix_psutil._psplatform.Process(0).rlimit(0)
         with self.assertRaises(ValueError):
-            p.rlimit(psutil.RLIMIT_NOFILE, (5, 5, 5))
+            p.rlimit(matrix_psutil.RLIMIT_NOFILE, (5, 5, 5))
 
     @unittest.skipIf(not HAS_RLIMIT, "not supported")
     def test_rlimit(self):
-        p = psutil.Process()
+        p = matrix_psutil.Process()
         testfn = self.get_testfn()
-        soft, hard = p.rlimit(psutil.RLIMIT_FSIZE)
+        soft, hard = p.rlimit(matrix_psutil.RLIMIT_FSIZE)
         try:
-            p.rlimit(psutil.RLIMIT_FSIZE, (1024, hard))
+            p.rlimit(matrix_psutil.RLIMIT_FSIZE, (1024, hard))
             with open(testfn, "wb") as f:
                 f.write(b"X" * 1024)
             # write() or flush() doesn't always cause the exception
@@ -470,23 +470,23 @@ class TestProcess(PsutilTestCase):
             self.assertEqual(exc.exception.errno if PY3 else exc.exception[0],
                              errno.EFBIG)
         finally:
-            p.rlimit(psutil.RLIMIT_FSIZE, (soft, hard))
-            self.assertEqual(p.rlimit(psutil.RLIMIT_FSIZE), (soft, hard))
+            p.rlimit(matrix_psutil.RLIMIT_FSIZE, (soft, hard))
+            self.assertEqual(p.rlimit(matrix_psutil.RLIMIT_FSIZE), (soft, hard))
 
     @unittest.skipIf(not HAS_RLIMIT, "not supported")
     def test_rlimit_infinity(self):
         # First set a limit, then re-set it by specifying INFINITY
         # and assume we overridden the previous limit.
-        p = psutil.Process()
-        soft, hard = p.rlimit(psutil.RLIMIT_FSIZE)
+        p = matrix_psutil.Process()
+        soft, hard = p.rlimit(matrix_psutil.RLIMIT_FSIZE)
         try:
-            p.rlimit(psutil.RLIMIT_FSIZE, (1024, hard))
-            p.rlimit(psutil.RLIMIT_FSIZE, (psutil.RLIM_INFINITY, hard))
+            p.rlimit(matrix_psutil.RLIMIT_FSIZE, (1024, hard))
+            p.rlimit(matrix_psutil.RLIMIT_FSIZE, (matrix_psutil.RLIM_INFINITY, hard))
             with open(self.get_testfn(), "wb") as f:
                 f.write(b"X" * 2048)
         finally:
-            p.rlimit(psutil.RLIMIT_FSIZE, (soft, hard))
-            self.assertEqual(p.rlimit(psutil.RLIMIT_FSIZE), (soft, hard))
+            p.rlimit(matrix_psutil.RLIMIT_FSIZE, (soft, hard))
+            self.assertEqual(p.rlimit(matrix_psutil.RLIMIT_FSIZE), (soft, hard))
 
     @unittest.skipIf(not HAS_RLIMIT, "not supported")
     def test_rlimit_infinity_value(self):
@@ -495,20 +495,20 @@ class TestProcess(PsutilTestCase):
         # platforms we need to test that the get/setrlimit functions
         # properly convert the number to a C long long and that the
         # conversion doesn't raise an error.
-        p = psutil.Process()
-        soft, hard = p.rlimit(psutil.RLIMIT_FSIZE)
-        self.assertEqual(psutil.RLIM_INFINITY, hard)
-        p.rlimit(psutil.RLIMIT_FSIZE, (soft, hard))
+        p = matrix_psutil.Process()
+        soft, hard = p.rlimit(matrix_psutil.RLIMIT_FSIZE)
+        self.assertEqual(matrix_psutil.RLIM_INFINITY, hard)
+        p.rlimit(matrix_psutil.RLIMIT_FSIZE, (soft, hard))
 
     def test_num_threads(self):
         # on certain platforms such as Linux we might test for exact
         # thread number, since we always have with 1 thread per process,
         # but this does not apply across all platforms (MACOS, Windows)
-        p = psutil.Process()
+        p = matrix_psutil.Process()
         if OPENBSD:
             try:
                 step1 = p.num_threads()
-            except psutil.AccessDenied:
+            except matrix_psutil.AccessDenied:
                 raise unittest.SkipTest("on OpenBSD this requires root access")
         else:
             step1 = p.num_threads()
@@ -520,16 +520,16 @@ class TestProcess(PsutilTestCase):
     @unittest.skipIf(not WINDOWS, 'WINDOWS only')
     def test_num_handles(self):
         # a better test is done later into test/_windows.py
-        p = psutil.Process()
+        p = matrix_psutil.Process()
         self.assertGreater(p.num_handles(), 0)
 
     @unittest.skipIf(not HAS_THREADS, 'not supported')
     def test_threads(self):
-        p = psutil.Process()
+        p = matrix_psutil.Process()
         if OPENBSD:
             try:
                 step1 = p.threads()
-            except psutil.AccessDenied:
+            except matrix_psutil.AccessDenied:
                 raise unittest.SkipTest("on OpenBSD this requires root access")
         else:
             step1 = p.threads()
@@ -551,7 +551,7 @@ class TestProcess(PsutilTestCase):
         if OPENBSD:
             try:
                 p.threads()
-            except psutil.AccessDenied:
+            except matrix_psutil.AccessDenied:
                 raise unittest.SkipTest(
                     "on OpenBSD this requires root access")
         self.assertAlmostEqual(
@@ -563,7 +563,7 @@ class TestProcess(PsutilTestCase):
 
     @retry_on_failure()
     def test_memory_info(self):
-        p = psutil.Process()
+        p = matrix_psutil.Process()
 
         # step 1 - get a base value to compare our results
         rss1, vms1 = p.memory_info()[:2]
@@ -593,8 +593,8 @@ class TestProcess(PsutilTestCase):
             self.assertGreaterEqual(getattr(mem, name), 0)
 
     def test_memory_full_info(self):
-        p = psutil.Process()
-        total = psutil.virtual_memory().total
+        p = matrix_psutil.Process()
+        total = matrix_psutil.virtual_memory().total
         mem = p.memory_full_info()
         for name in mem._fields:
             value = getattr(mem, name)
@@ -610,7 +610,7 @@ class TestProcess(PsutilTestCase):
 
     @unittest.skipIf(not HAS_MEMORY_MAPS, "not supported")
     def test_memory_maps(self):
-        p = psutil.Process()
+        p = matrix_psutil.Process()
         maps = p.memory_maps()
         self.assertEqual(len(maps), len(set(maps)))
         ext_maps = p.memory_maps(grouped=False)
@@ -656,7 +656,7 @@ class TestProcess(PsutilTestCase):
     @unittest.skipIf(not HAS_MEMORY_MAPS, "not supported")
     def test_memory_maps_lists_lib(self):
         # Make sure a newly loaded shared lib is listed.
-        p = psutil.Process()
+        p = matrix_psutil.Process()
         with copyload_shared_lib() as path:
             def normpath(p):
                 return os.path.realpath(os.path.normcase(p))
@@ -665,7 +665,7 @@ class TestProcess(PsutilTestCase):
             self.assertIn(normpath(path), libpaths)
 
     def test_memory_percent(self):
-        p = psutil.Process()
+        p = matrix_psutil.Process()
         p.memory_percent()
         self.assertRaises(ValueError, p.memory_percent, memtype="?!?")
         if LINUX or MACOS or WINDOWS:
@@ -738,7 +738,7 @@ class TestProcess(PsutilTestCase):
             # zombie (don't know why).
             try:
                 self.assertEqual(p.cmdline(), cmdline)
-            except psutil.ZombieProcess:
+            except matrix_psutil.ZombieProcess:
                 raise self.skipTest("OPENBSD: process turned into zombie")
         else:
             self.assertEqual(p.cmdline(), cmdline)
@@ -765,7 +765,7 @@ class TestProcess(PsutilTestCase):
             try:
                 self.assertEqual(p.name(), os.path.basename(testfn))
             except AssertionError:
-                if p.status() == psutil.STATUS_ZOMBIE:
+                if p.status() == matrix_psutil.STATUS_ZOMBIE:
                     assert os.path.basename(testfn).startswith(p.name())
                 else:
                     raise
@@ -793,7 +793,7 @@ class TestProcess(PsutilTestCase):
 
     @unittest.skipIf(not POSIX, 'POSIX only')
     def test_uids(self):
-        p = psutil.Process()
+        p = matrix_psutil.Process()
         real, effective, saved = p.uids()
         # os.getuid() refers to "real" uid
         self.assertEqual(real, os.getuid())
@@ -807,7 +807,7 @@ class TestProcess(PsutilTestCase):
 
     @unittest.skipIf(not POSIX, 'POSIX only')
     def test_gids(self):
-        p = psutil.Process()
+        p = matrix_psutil.Process()
         real, effective, saved = p.gids()
         # os.getuid() refers to "real" uid
         self.assertEqual(real, os.getgid())
@@ -820,7 +820,7 @@ class TestProcess(PsutilTestCase):
             self.assertEqual(os.getresgid(), p.gids())
 
     def test_nice(self):
-        p = psutil.Process()
+        p = matrix_psutil.Process()
         self.assertRaises(TypeError, p.nice, "str")
         init = p.nice()
         try:
@@ -829,16 +829,16 @@ class TestProcess(PsutilTestCase):
                 # this test. Instead, we test in order of increasing priority,
                 # and match either the expected value or the highest so far.
                 highest_prio = None
-                for prio in [psutil.IDLE_PRIORITY_CLASS,
-                             psutil.BELOW_NORMAL_PRIORITY_CLASS,
-                             psutil.NORMAL_PRIORITY_CLASS,
-                             psutil.ABOVE_NORMAL_PRIORITY_CLASS,
-                             psutil.HIGH_PRIORITY_CLASS,
-                             psutil.REALTIME_PRIORITY_CLASS]:
+                for prio in [matrix_psutil.IDLE_PRIORITY_CLASS,
+                             matrix_psutil.BELOW_NORMAL_PRIORITY_CLASS,
+                             matrix_psutil.NORMAL_PRIORITY_CLASS,
+                             matrix_psutil.ABOVE_NORMAL_PRIORITY_CLASS,
+                             matrix_psutil.HIGH_PRIORITY_CLASS,
+                             matrix_psutil.REALTIME_PRIORITY_CLASS]:
                     with self.subTest(prio=prio):
                         try:
                             p.nice(prio)
-                        except psutil.AccessDenied:
+                        except matrix_psutil.AccessDenied:
                             pass
                         else:
                             new_prio = p.nice()
@@ -865,17 +865,17 @@ class TestProcess(PsutilTestCase):
                     if not MACOS:
                         p.nice(0)
                         self.assertEqual(p.nice(), 0)
-                except psutil.AccessDenied:
+                except matrix_psutil.AccessDenied:
                     pass
         finally:
             try:
                 p.nice(init)
-            except psutil.AccessDenied:
+            except matrix_psutil.AccessDenied:
                 pass
 
     def test_status(self):
-        p = psutil.Process()
-        self.assertEqual(p.status(), psutil.STATUS_RUNNING)
+        p = matrix_psutil.Process()
+        self.assertEqual(p.status(), matrix_psutil.STATUS_RUNNING)
 
     def test_username(self):
         p = self.spawn_psproc()
@@ -906,7 +906,7 @@ class TestProcess(PsutilTestCase):
 
     @unittest.skipIf(not HAS_CPU_AFFINITY, 'not supported')
     def test_cpu_affinity(self):
-        p = psutil.Process()
+        p = matrix_psutil.Process()
         initial = p.cpu_affinity()
         assert initial, initial
         self.addCleanup(p.cpu_affinity, initial)
@@ -915,7 +915,7 @@ class TestProcess(PsutilTestCase):
             self.assertEqual(initial, list(os.sched_getaffinity(p.pid)))
         self.assertEqual(len(initial), len(set(initial)))
 
-        all_cpus = list(range(len(psutil.cpu_percent(percpu=True))))
+        all_cpus = list(range(len(matrix_psutil.cpu_percent(percpu=True))))
         for n in all_cpus:
             p.cpu_affinity([n])
             self.assertEqual(p.cpu_affinity(), [n])
@@ -947,7 +947,7 @@ class TestProcess(PsutilTestCase):
     @unittest.skipIf(not HAS_CPU_AFFINITY, 'not supported')
     def test_cpu_affinity_errs(self):
         p = self.spawn_psproc()
-        invalid_cpu = [len(psutil.cpu_times(percpu=True)) + 10]
+        invalid_cpu = [len(matrix_psutil.cpu_times(percpu=True)) + 10]
         self.assertRaises(ValueError, p.cpu_affinity, invalid_cpu)
         self.assertRaises(ValueError, p.cpu_affinity, range(10000, 11000))
         self.assertRaises(TypeError, p.cpu_affinity, [0, "1"])
@@ -955,7 +955,7 @@ class TestProcess(PsutilTestCase):
 
     @unittest.skipIf(not HAS_CPU_AFFINITY, 'not supported')
     def test_cpu_affinity_all_combinations(self):
-        p = psutil.Process()
+        p = matrix_psutil.Process()
         initial = p.cpu_affinity()
         assert initial, initial
         self.addCleanup(p.cpu_affinity, initial)
@@ -978,7 +978,7 @@ class TestProcess(PsutilTestCase):
     # can't find any process file on Appveyor
     @unittest.skipIf(APPVEYOR, "unreliable on APPVEYOR")
     def test_open_files(self):
-        p = psutil.Process()
+        p = matrix_psutil.Process()
         testfn = self.get_testfn()
         files = p.open_files()
         self.assertNotIn(testfn, files)
@@ -1016,7 +1016,7 @@ class TestProcess(PsutilTestCase):
     @unittest.skipIf(APPVEYOR, "unreliable on APPVEYOR")
     def test_open_files_2(self):
         # test fd and path fields
-        p = psutil.Process()
+        p = matrix_psutil.Process()
         normcase = os.path.normcase
         testfn = self.get_testfn()
         with open(testfn, 'w') as fileobj:
@@ -1041,7 +1041,7 @@ class TestProcess(PsutilTestCase):
 
     @unittest.skipIf(not POSIX, 'POSIX only')
     def test_num_fds(self):
-        p = psutil.Process()
+        p = matrix_psutil.Process()
         testfn = self.get_testfn()
         start = p.num_fds()
         file = open(testfn, 'w')
@@ -1057,7 +1057,7 @@ class TestProcess(PsutilTestCase):
     @skip_on_not_implemented(only_if=LINUX)
     @unittest.skipIf(OPENBSD or NETBSD, "not reliable on OPENBSD & NETBSD")
     def test_num_ctx_switches(self):
-        p = psutil.Process()
+        p = matrix_psutil.Process()
         before = sum(p.num_ctx_switches())
         for _ in range(500000):
             after = sum(p.num_ctx_switches())
@@ -1067,7 +1067,7 @@ class TestProcess(PsutilTestCase):
             "num ctx switches still the same after 50.000 iterations")
 
     def test_ppid(self):
-        p = psutil.Process()
+        p = matrix_psutil.Process()
         if hasattr(os, 'getppid'):
             self.assertEqual(p.ppid(), os.getppid())
         p = self.spawn_psproc()
@@ -1082,11 +1082,11 @@ class TestProcess(PsutilTestCase):
         p = self.spawn_psproc()
         self.assertEqual(p.parent().pid, os.getpid())
 
-        lowest_pid = psutil.pids()[0]
-        self.assertIsNone(psutil.Process(lowest_pid).parent())
+        lowest_pid = matrix_psutil.pids()[0]
+        self.assertIsNone(matrix_psutil.Process(lowest_pid).parent())
 
     def test_parent_multi(self):
-        parent = psutil.Process()
+        parent = matrix_psutil.Process()
         child, grandchild = self.spawn_children_pair()
         self.assertEqual(grandchild.parent(), child)
         self.assertEqual(child.parent(), parent)
@@ -1095,12 +1095,12 @@ class TestProcess(PsutilTestCase):
         # Emulate a case where the parent process disappeared.
         p = self.spawn_psproc()
         with mock.patch("psutil.Process",
-                        side_effect=psutil.NoSuchProcess(0, 'foo')):
+                        side_effect=matrix_psutil.NoSuchProcess(0, 'foo')):
             self.assertIsNone(p.parent())
 
     @retry_on_failure()
     def test_parents(self):
-        parent = psutil.Process()
+        parent = matrix_psutil.Process()
         assert parent.parents()
         child, grandchild = self.spawn_children_pair()
         self.assertEqual(child.parents()[0], parent)
@@ -1108,7 +1108,7 @@ class TestProcess(PsutilTestCase):
         self.assertEqual(grandchild.parents()[1], parent)
 
     def test_children(self):
-        parent = psutil.Process()
+        parent = matrix_psutil.Process()
         self.assertEqual(parent.children(), [])
         self.assertEqual(parent.children(recursive=True), [])
         # On Windows we set the flag to 0 in order to cancel out the
@@ -1125,7 +1125,7 @@ class TestProcess(PsutilTestCase):
     def test_children_recursive(self):
         # Test children() against two sub processes, p1 and p2, where
         # p1 (our child) spawned p2 (our grandchild).
-        parent = psutil.Process()
+        parent = matrix_psutil.Process()
         child, grandchild = self.spawn_children_pair()
         self.assertEqual(parent.children(), [child])
         self.assertEqual(parent.children(recursive=True), [child, grandchild])
@@ -1138,25 +1138,25 @@ class TestProcess(PsutilTestCase):
     def test_children_duplicates(self):
         # find the process which has the highest number of children
         table = collections.defaultdict(int)
-        for p in psutil.process_iter():
+        for p in matrix_psutil.process_iter():
             try:
                 table[p.ppid()] += 1
-            except psutil.Error:
+            except matrix_psutil.Error:
                 pass
         # this is the one, now let's make sure there are no duplicates
         pid = sorted(table.items(), key=lambda x: x[1])[-1][0]
         if LINUX and pid == 0:
             raise self.skipTest("PID 0")
-        p = psutil.Process(pid)
+        p = matrix_psutil.Process(pid)
         try:
             c = p.children(recursive=True)
-        except psutil.AccessDenied:  # windows
+        except matrix_psutil.AccessDenied:  # windows
             pass
         else:
             self.assertEqual(len(c), len(set(c)))
 
     def test_parents_and_children(self):
-        parent = psutil.Process()
+        parent = matrix_psutil.Process()
         child, grandchild = self.spawn_children_pair()
         # forward
         children = parent.children(recursive=True)
@@ -1172,41 +1172,41 @@ class TestProcess(PsutilTestCase):
         p = self.spawn_psproc()
         p.suspend()
         for _ in range(100):
-            if p.status() == psutil.STATUS_STOPPED:
+            if p.status() == matrix_psutil.STATUS_STOPPED:
                 break
             time.sleep(0.01)
         p.resume()
-        self.assertNotEqual(p.status(), psutil.STATUS_STOPPED)
+        self.assertNotEqual(p.status(), matrix_psutil.STATUS_STOPPED)
 
     def test_invalid_pid(self):
-        self.assertRaises(TypeError, psutil.Process, "1")
-        self.assertRaises(ValueError, psutil.Process, -1)
+        self.assertRaises(TypeError, matrix_psutil.Process, "1")
+        self.assertRaises(ValueError, matrix_psutil.Process, -1)
 
     def test_as_dict(self):
-        p = psutil.Process()
+        p = matrix_psutil.Process()
         d = p.as_dict(attrs=['exe', 'name'])
         self.assertEqual(sorted(d.keys()), ['exe', 'name'])
 
-        p = psutil.Process(min(psutil.pids()))
+        p = matrix_psutil.Process(min(matrix_psutil.pids()))
         d = p.as_dict(attrs=['connections'], ad_value='foo')
         if not isinstance(d['connections'], list):
             self.assertEqual(d['connections'], 'foo')
 
         # Test ad_value is set on AccessDenied.
         with mock.patch('psutil.Process.nice', create=True,
-                        side_effect=psutil.AccessDenied):
+                        side_effect=matrix_psutil.AccessDenied):
             self.assertEqual(
                 p.as_dict(attrs=["nice"], ad_value=1), {"nice": 1})
 
         # Test that NoSuchProcess bubbles up.
         with mock.patch('psutil.Process.nice', create=True,
-                        side_effect=psutil.NoSuchProcess(p.pid, "name")):
+                        side_effect=matrix_psutil.NoSuchProcess(p.pid, "name")):
             self.assertRaises(
-                psutil.NoSuchProcess, p.as_dict, attrs=["nice"])
+                matrix_psutil.NoSuchProcess, p.as_dict, attrs=["nice"])
 
         # Test that ZombieProcess is swallowed.
         with mock.patch('psutil.Process.nice', create=True,
-                        side_effect=psutil.ZombieProcess(p.pid, "name")):
+                        side_effect=matrix_psutil.ZombieProcess(p.pid, "name")):
             self.assertEqual(
                 p.as_dict(attrs=["nice"], ad_value="foo"), {"nice": "foo"})
 
@@ -1229,7 +1229,7 @@ class TestProcess(PsutilTestCase):
             p.as_dict(['foo', 'bar'])
 
     def test_oneshot(self):
-        p = psutil.Process()
+        p = matrix_psutil.Process()
         with mock.patch("psutil._psplatform.Process.cpu_times") as m:
             with p.oneshot():
                 p.cpu_times()
@@ -1244,7 +1244,7 @@ class TestProcess(PsutilTestCase):
     def test_oneshot_twice(self):
         # Test the case where the ctx manager is __enter__ed twice.
         # The second __enter__ is supposed to resut in a NOOP.
-        p = psutil.Process()
+        p = matrix_psutil.Process()
         with mock.patch("psutil._psplatform.Process.cpu_times") as m1:
             with mock.patch("psutil._psplatform.Process.oneshot_enter") as m2:
                 with p.oneshot():
@@ -1287,11 +1287,11 @@ class TestProcess(PsutilTestCase):
         def assert_raises_nsp(fun, fun_name):
             try:
                 ret = fun()
-            except psutil.ZombieProcess:  # differentiate from NSP
+            except matrix_psutil.ZombieProcess:  # differentiate from NSP
                 raise
-            except psutil.NoSuchProcess:
+            except matrix_psutil.NoSuchProcess:
                 pass
-            except psutil.AccessDenied:
+            except matrix_psutil.AccessDenied:
                 if OPENBSD and fun_name in ('threads', 'num_threads'):
                     return
                 raise
@@ -1306,7 +1306,7 @@ class TestProcess(PsutilTestCase):
         p.terminate()
         p.wait()
         if WINDOWS:  # XXX
-            call_until(psutil.pids, "%s not in ret" % p.pid)
+            call_until(matrix_psutil.pids, "%s not in ret" % p.pid)
         self.assertProcessGone(p)
 
         ns = process_namespace(p)
@@ -1323,14 +1323,14 @@ class TestProcess(PsutilTestCase):
         def succeed_or_zombie_p_exc(fun):
             try:
                 return fun()
-            except (psutil.ZombieProcess, psutil.AccessDenied):
+            except (matrix_psutil.ZombieProcess, matrix_psutil.AccessDenied):
                 pass
 
         parent, zombie = self.spawn_zombie()
         # A zombie process should always be instantiable
-        zproc = psutil.Process(zombie.pid)
+        zproc = matrix_psutil.Process(zombie.pid)
         # ...and at least its status always be querable
-        self.assertEqual(zproc.status(), psutil.STATUS_ZOMBIE)
+        self.assertEqual(zproc.status(), matrix_psutil.STATUS_ZOMBIE)
         # ...and it should be considered 'running'
         assert zproc.is_running()
         # ...and as_dict() shouldn't crash
@@ -1349,19 +1349,19 @@ class TestProcess(PsutilTestCase):
         for fun, name in ns.iter(ns.all):
             succeed_or_zombie_p_exc(fun)
 
-        assert psutil.pid_exists(zproc.pid)
-        self.assertIn(zproc.pid, psutil.pids())
-        self.assertIn(zproc.pid, [x.pid for x in psutil.process_iter()])
-        psutil._pmap = {}
-        self.assertIn(zproc.pid, [x.pid for x in psutil.process_iter()])
+        assert matrix_psutil.pid_exists(zproc.pid)
+        self.assertIn(zproc.pid, matrix_psutil.pids())
+        self.assertIn(zproc.pid, [x.pid for x in matrix_psutil.process_iter()])
+        matrix_psutil._pmap = {}
+        self.assertIn(zproc.pid, [x.pid for x in matrix_psutil.process_iter()])
 
     @unittest.skipIf(not POSIX, 'POSIX only')
     def test_zombie_process_is_running_w_exc(self):
         # Emulate a case where internally is_running() raises
         # ZombieProcess.
-        p = psutil.Process()
+        p = matrix_psutil.Process()
         with mock.patch("psutil.Process",
-                        side_effect=psutil.ZombieProcess(0)) as m:
+                        side_effect=matrix_psutil.ZombieProcess(0)) as m:
             assert p.is_running()
             assert m.called
 
@@ -1369,38 +1369,38 @@ class TestProcess(PsutilTestCase):
     def test_zombie_process_status_w_exc(self):
         # Emulate a case where internally status() raises
         # ZombieProcess.
-        p = psutil.Process()
+        p = matrix_psutil.Process()
         with mock.patch("psutil._psplatform.Process.status",
-                        side_effect=psutil.ZombieProcess(0)) as m:
-            self.assertEqual(p.status(), psutil.STATUS_ZOMBIE)
+                        side_effect=matrix_psutil.ZombieProcess(0)) as m:
+            self.assertEqual(p.status(), matrix_psutil.STATUS_ZOMBIE)
             assert m.called
 
     def test_reused_pid(self):
         # Emulate a case where PID has been reused by another process.
         subp = self.spawn_testproc()
-        p = psutil.Process(subp.pid)
+        p = matrix_psutil.Process(subp.pid)
         p._ident = (p.pid, p.create_time() + 100)
         assert not p.is_running()
-        assert p != psutil.Process(subp.pid)
+        assert p != matrix_psutil.Process(subp.pid)
         msg = "process no longer exists and its PID has been reused"
-        self.assertRaisesRegex(psutil.NoSuchProcess, msg, p.suspend)
-        self.assertRaisesRegex(psutil.NoSuchProcess, msg, p.resume)
-        self.assertRaisesRegex(psutil.NoSuchProcess, msg, p.terminate)
-        self.assertRaisesRegex(psutil.NoSuchProcess, msg, p.kill)
-        self.assertRaisesRegex(psutil.NoSuchProcess, msg, p.children)
+        self.assertRaisesRegex(matrix_psutil.NoSuchProcess, msg, p.suspend)
+        self.assertRaisesRegex(matrix_psutil.NoSuchProcess, msg, p.resume)
+        self.assertRaisesRegex(matrix_psutil.NoSuchProcess, msg, p.terminate)
+        self.assertRaisesRegex(matrix_psutil.NoSuchProcess, msg, p.kill)
+        self.assertRaisesRegex(matrix_psutil.NoSuchProcess, msg, p.children)
 
     def test_pid_0(self):
         # Process(0) is supposed to work on all platforms except Linux
-        if 0 not in psutil.pids():
-            self.assertRaises(psutil.NoSuchProcess, psutil.Process, 0)
+        if 0 not in matrix_psutil.pids():
+            self.assertRaises(matrix_psutil.NoSuchProcess, matrix_psutil.Process, 0)
             # These 2 are a contradiction, but "ps" says PID 1's parent
             # is PID 0.
-            assert not psutil.pid_exists(0)
-            self.assertEqual(psutil.Process(1).ppid(), 0)
+            assert not matrix_psutil.pid_exists(0)
+            self.assertEqual(matrix_psutil.Process(1).ppid(), 0)
             return
 
-        p = psutil.Process(0)
-        exc = psutil.AccessDenied if WINDOWS else ValueError
+        p = matrix_psutil.Process(0)
+        exc = matrix_psutil.AccessDenied if WINDOWS else ValueError
         self.assertRaises(exc, p.wait)
         self.assertRaises(exc, p.terminate)
         self.assertRaises(exc, p.suspend)
@@ -1413,7 +1413,7 @@ class TestProcess(PsutilTestCase):
         for fun, name in ns.iter(ns.getters + ns.setters):
             try:
                 ret = fun()
-            except psutil.AccessDenied:
+            except matrix_psutil.AccessDenied:
                 pass
             else:
                 if name in ("uids", "gids"):
@@ -1425,8 +1425,8 @@ class TestProcess(PsutilTestCase):
                     assert name, name
 
         if not OPENBSD:
-            self.assertIn(0, psutil.pids())
-            assert psutil.pid_exists(0)
+            self.assertIn(0, matrix_psutil.pids())
+            assert matrix_psutil.pid_exists(0)
 
     @unittest.skipIf(not HAS_ENVIRON, "not supported")
     def test_environ(self):
@@ -1444,7 +1444,7 @@ class TestProcess(PsutilTestCase):
                  for k, v in d.items()])
 
         self.maxDiff = None
-        p = psutil.Process()
+        p = matrix_psutil.Process()
         d1 = clean_dict(p.environ())
         d2 = clean_dict(os.environ.copy())
         if not OSX and GITHUB_ACTIONS:
@@ -1477,7 +1477,7 @@ class TestProcess(PsutilTestCase):
         create_exe(path, c_code=code)
         sproc = self.spawn_testproc(
             [path], stdin=subprocess.PIPE, stderr=subprocess.PIPE)
-        p = psutil.Process(sproc.pid)
+        p = matrix_psutil.Process(sproc.pid)
         wait_for_pid(p.pid)
         assert p.is_running()
         # Wait for process to exec or exit.
@@ -1485,7 +1485,7 @@ class TestProcess(PsutilTestCase):
         if MACOS and CI_TESTING:
             try:
                 env = p.environ()
-            except psutil.AccessDenied:
+            except matrix_psutil.AccessDenied:
                 # XXX: fails sometimes with:
                 # PermissionError from 'sysctl(KERN_PROCARGS2) -> EIO'
                 return
@@ -1523,7 +1523,7 @@ if POSIX and os.getuid() == 0:
                 def test_(self):
                     try:
                         meth()  # noqa
-                    except psutil.AccessDenied:
+                    except matrix_psutil.AccessDenied:
                         pass
                 setattr(self, attr, types.MethodType(test_, self))
 
@@ -1539,8 +1539,8 @@ if POSIX and os.getuid() == 0:
 
         def test_nice(self):
             try:
-                psutil.Process().nice(-1)
-            except psutil.AccessDenied:
+                matrix_psutil.Process().nice(-1)
+            except matrix_psutil.AccessDenied:
                 pass
             else:
                 raise self.fail("exception not raised")
@@ -1567,8 +1567,8 @@ class TestPopen(PsutilTestCase):
         # psutil.__subproc instance doesn't get properly freed.
         # Not sure what to do though.
         cmd = [PYTHON_EXE, "-c", "import time; time.sleep(60);"]
-        with psutil.Popen(cmd, stdout=subprocess.PIPE,
-                          stderr=subprocess.PIPE, env=PYTHON_EXE_ENV) as proc:
+        with matrix_psutil.Popen(cmd, stdout=subprocess.PIPE,
+                                 stderr=subprocess.PIPE, env=PYTHON_EXE_ENV) as proc:
             proc.name()
             proc.cpu_times()
             proc.stdin
@@ -1581,10 +1581,10 @@ class TestPopen(PsutilTestCase):
             self.assertEqual(proc.wait(5), signal.SIGTERM)
 
     def test_ctx_manager(self):
-        with psutil.Popen([PYTHON_EXE, "-V"],
-                          stdout=subprocess.PIPE,
-                          stderr=subprocess.PIPE,
-                          stdin=subprocess.PIPE, env=PYTHON_EXE_ENV) as proc:
+        with matrix_psutil.Popen([PYTHON_EXE, "-V"],
+                                 stdout=subprocess.PIPE,
+                                 stderr=subprocess.PIPE,
+                                 stdin=subprocess.PIPE, env=PYTHON_EXE_ENV) as proc:
             proc.communicate()
         assert proc.stdout.closed
         assert proc.stderr.closed
@@ -1596,21 +1596,21 @@ class TestPopen(PsutilTestCase):
         # not raise exception after the process is gone. psutil.Popen
         # diverges from that.
         cmd = [PYTHON_EXE, "-c", "import time; time.sleep(60);"]
-        with psutil.Popen(cmd, stdout=subprocess.PIPE,
-                          stderr=subprocess.PIPE, env=PYTHON_EXE_ENV) as proc:
+        with matrix_psutil.Popen(cmd, stdout=subprocess.PIPE,
+                                 stderr=subprocess.PIPE, env=PYTHON_EXE_ENV) as proc:
             proc.terminate()
             proc.wait()
-            self.assertRaises(psutil.NoSuchProcess, proc.terminate)
-            self.assertRaises(psutil.NoSuchProcess, proc.kill)
-            self.assertRaises(psutil.NoSuchProcess, proc.send_signal,
+            self.assertRaises(matrix_psutil.NoSuchProcess, proc.terminate)
+            self.assertRaises(matrix_psutil.NoSuchProcess, proc.kill)
+            self.assertRaises(matrix_psutil.NoSuchProcess, proc.send_signal,
                               signal.SIGTERM)
             if WINDOWS:
-                self.assertRaises(psutil.NoSuchProcess, proc.send_signal,
+                self.assertRaises(matrix_psutil.NoSuchProcess, proc.send_signal,
                                   signal.CTRL_C_EVENT)
-                self.assertRaises(psutil.NoSuchProcess, proc.send_signal,
+                self.assertRaises(matrix_psutil.NoSuchProcess, proc.send_signal,
                                   signal.CTRL_BREAK_EVENT)
 
 
 if __name__ == '__main__':
-    from psutil.tests.runner import run_from_name
+    from matrix_psutil.tests.runner import run_from_name
     run_from_name(__file__)

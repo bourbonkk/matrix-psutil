@@ -39,25 +39,25 @@ from socket import AF_INET
 from socket import AF_INET6
 from socket import SOCK_STREAM
 
-import psutil
-from psutil import AIX
-from psutil import LINUX
-from psutil import MACOS
-from psutil import POSIX
-from psutil import SUNOS
-from psutil import WINDOWS
-from psutil._common import bytes2human
-from psutil._common import memoize
-from psutil._common import print_color
-from psutil._common import supports_ipv6
-from psutil._compat import PY3
-from psutil._compat import FileExistsError
-from psutil._compat import FileNotFoundError
-from psutil._compat import range
-from psutil._compat import super
-from psutil._compat import u
-from psutil._compat import unicode
-from psutil._compat import which
+import matrix_psutil
+from matrix_psutil import AIX
+from matrix_psutil import LINUX
+from matrix_psutil import MACOS
+from matrix_psutil import POSIX
+from matrix_psutil import SUNOS
+from matrix_psutil import WINDOWS
+from matrix_psutil._common import bytes2human
+from matrix_psutil._common import memoize
+from matrix_psutil._common import print_color
+from matrix_psutil._common import supports_ipv6
+from matrix_psutil._compat import PY3
+from matrix_psutil._compat import FileExistsError
+from matrix_psutil._compat import FileNotFoundError
+from matrix_psutil._compat import range
+from matrix_psutil._compat import super
+from matrix_psutil._compat import u
+from matrix_psutil._compat import unicode
+from matrix_psutil._compat import which
 
 
 try:
@@ -73,7 +73,7 @@ else:
     enum = None
 
 if POSIX:
-    from psutil._psposix import wait_pid
+    from matrix_psutil._psposix import wait_pid
 
 
 __all__ = [
@@ -203,24 +203,24 @@ HERE = os.path.realpath(os.path.dirname(__file__))
 # --- support
 
 HAS_CONNECTIONS_UNIX = POSIX and not SUNOS
-HAS_CPU_AFFINITY = hasattr(psutil.Process, "cpu_affinity")
-HAS_CPU_FREQ = hasattr(psutil, "cpu_freq")
-HAS_GETLOADAVG = hasattr(psutil, "getloadavg")
-HAS_ENVIRON = hasattr(psutil.Process, "environ")
-HAS_IONICE = hasattr(psutil.Process, "ionice")
-HAS_MEMORY_MAPS = hasattr(psutil.Process, "memory_maps")
-HAS_NET_IO_COUNTERS = hasattr(psutil, "net_io_counters")
-HAS_PROC_CPU_NUM = hasattr(psutil.Process, "cpu_num")
-HAS_PROC_IO_COUNTERS = hasattr(psutil.Process, "io_counters")
-HAS_RLIMIT = hasattr(psutil.Process, "rlimit")
-HAS_SENSORS_BATTERY = hasattr(psutil, "sensors_battery")
+HAS_CPU_AFFINITY = hasattr(matrix_psutil.Process, "cpu_affinity")
+HAS_CPU_FREQ = hasattr(matrix_psutil, "cpu_freq")
+HAS_GETLOADAVG = hasattr(matrix_psutil, "getloadavg")
+HAS_ENVIRON = hasattr(matrix_psutil.Process, "environ")
+HAS_IONICE = hasattr(matrix_psutil.Process, "ionice")
+HAS_MEMORY_MAPS = hasattr(matrix_psutil.Process, "memory_maps")
+HAS_NET_IO_COUNTERS = hasattr(matrix_psutil, "net_io_counters")
+HAS_PROC_CPU_NUM = hasattr(matrix_psutil.Process, "cpu_num")
+HAS_PROC_IO_COUNTERS = hasattr(matrix_psutil.Process, "io_counters")
+HAS_RLIMIT = hasattr(matrix_psutil.Process, "rlimit")
+HAS_SENSORS_BATTERY = hasattr(matrix_psutil, "sensors_battery")
 try:
-    HAS_BATTERY = HAS_SENSORS_BATTERY and bool(psutil.sensors_battery())
+    HAS_BATTERY = HAS_SENSORS_BATTERY and bool(matrix_psutil.sensors_battery())
 except Exception:
     HAS_BATTERY = False
-HAS_SENSORS_FANS = hasattr(psutil, "sensors_fans")
-HAS_SENSORS_TEMPERATURES = hasattr(psutil, "sensors_temperatures")
-HAS_THREADS = hasattr(psutil.Process, "threads")
+HAS_SENSORS_FANS = hasattr(matrix_psutil, "sensors_fans")
+HAS_SENSORS_TEMPERATURES = hasattr(matrix_psutil, "sensors_temperatures")
+HAS_THREADS = hasattr(matrix_psutil.Process, "threads")
 SKIP_SYSCONS = (MACOS or AIX) and os.getuid() != 0
 
 # --- misc
@@ -256,7 +256,7 @@ def _get_py_exe():
             attempt(sys.executable) or \
             attempt(os.path.realpath(sys.executable)) or \
             attempt(which("python%s.%s" % sys.version_info[:2])) or \
-            attempt(psutil.Process().exe())
+            attempt(matrix_psutil.Process().exe())
         if not exe:
             raise ValueError("can't find python exe real abspath")
         return exe, env
@@ -270,7 +270,7 @@ PYTHON_EXE, PYTHON_EXE_ENV = _get_py_exe()
 DEVNULL = open(os.devnull, 'r+')
 atexit.register(DEVNULL.close)
 
-VALID_PROC_STATUSES = [getattr(psutil, x) for x in dir(psutil)
+VALID_PROC_STATUSES = [getattr(matrix_psutil, x) for x in dir(matrix_psutil)
                        if x.startswith('STATUS_')]
 AF_UNIX = getattr(socket, "AF_UNIX", object())
 
@@ -410,10 +410,10 @@ def spawn_children_pair():
             subp, tfile = pyrun(s, creationflags=0)
         else:
             subp, tfile = pyrun(s)
-        child = psutil.Process(subp.pid)
+        child = matrix_psutil.Process(subp.pid)
         grandchild_pid = int(wait_for_file(testfn, delete=True, empty=False))
         _pids_started.add(grandchild_pid)
-        grandchild = psutil.Process(grandchild_pid)
+        grandchild = matrix_psutil.Process(grandchild_pid)
         return (child, grandchild)
     finally:
         safe_rmpath(testfn)
@@ -426,7 +426,7 @@ def spawn_zombie():
     In order to kill the zombie parent must be terminate()d first, then
     zombie must be wait()ed on.
     """
-    assert psutil.POSIX
+    assert matrix_psutil.POSIX
     unix_file = get_testfn()
     src = textwrap.dedent("""\
         import os, sys, time, socket, contextlib
@@ -454,7 +454,7 @@ def spawn_zombie():
             select.select([conn.fileno()], [], [], GLOBAL_TIMEOUT)
             zpid = int(conn.recv(1024))
             _pids_started.add(zpid)
-            zombie = psutil.Process(zpid)
+            zombie = matrix_psutil.Process(zpid)
             call_until(zombie.status, "ret == psutil.STATUS_ZOMBIE")
             return (parent, zombie)
         finally:
@@ -532,8 +532,8 @@ def terminate(proc_or_pid, sig=signal.SIGTERM, wait_timeout=GLOBAL_TIMEOUT):
         if WINDOWS and isinstance(proc, subprocess.Popen):
             # Otherwise PID may still hang around.
             try:
-                return psutil.Process(proc.pid).wait(timeout)
-            except psutil.NoSuchProcess:
+                return matrix_psutil.Process(proc.pid).wait(timeout)
+            except matrix_psutil.NoSuchProcess:
                 pass
 
     def sendsig(proc, sig):
@@ -559,14 +559,14 @@ def terminate(proc_or_pid, sig=signal.SIGTERM, wait_timeout=GLOBAL_TIMEOUT):
     def term_psutil_proc(proc, timeout):
         try:
             sendsig(proc, sig)
-        except psutil.NoSuchProcess:
+        except matrix_psutil.NoSuchProcess:
             pass
         return wait(proc, timeout)
 
     def term_pid(pid, timeout):
         try:
-            proc = psutil.Process(pid)
-        except psutil.NoSuchProcess:
+            proc = matrix_psutil.Process(pid)
+        except matrix_psutil.NoSuchProcess:
             # Needed to kill zombies.
             if POSIX:
                 return wait_pid(pid, timeout)
@@ -586,17 +586,17 @@ def terminate(proc_or_pid, sig=signal.SIGTERM, wait_timeout=GLOBAL_TIMEOUT):
     try:
         if isinstance(p, int):
             return term_pid(p, wait_timeout)
-        elif isinstance(p, (psutil.Process, psutil.Popen)):
+        elif isinstance(p, (matrix_psutil.Process, matrix_psutil.Popen)):
             return term_psutil_proc(p, wait_timeout)
         elif isinstance(p, subprocess.Popen):
             return term_subprocess_proc(p, wait_timeout)
         else:
             raise TypeError("wrong type %r" % p)
     finally:
-        if isinstance(p, (subprocess.Popen, psutil.Popen)):
+        if isinstance(p, (subprocess.Popen, matrix_psutil.Popen)):
             flush_popen(p)
         pid = p if isinstance(p, int) else p.pid
-        assert not psutil.pid_exists(pid), pid
+        assert not matrix_psutil.pid_exists(pid), pid
 
 
 def reap_children(recursive=False):
@@ -609,7 +609,7 @@ def reap_children(recursive=False):
     # Get the children here before terminating them, as in case of
     # recursive=True we don't want to lose the intermediate reference
     # pointing to the grandchildren.
-    children = psutil.Process().children(recursive=recursive)
+    children = matrix_psutil.Process().children(recursive=recursive)
 
     # Terminate subprocess.Popen.
     while _subprocesses_started:
@@ -625,7 +625,7 @@ def reap_children(recursive=False):
     if children:
         for p in children:
             terminate(p, wait_timeout=None)
-        _, alive = psutil.wait_procs(children, timeout=GLOBAL_TIMEOUT)
+        _, alive = matrix_psutil.wait_procs(children, timeout=GLOBAL_TIMEOUT)
         for p in alive:
             warn("couldn't terminate process %r; attempting kill()" % p)
             terminate(p, sig=signal.SIGKILL)
@@ -738,13 +738,13 @@ class retry(object):
         return wrapper
 
 
-@retry(exception=psutil.NoSuchProcess, logfun=None, timeout=GLOBAL_TIMEOUT,
+@retry(exception=matrix_psutil.NoSuchProcess, logfun=None, timeout=GLOBAL_TIMEOUT,
        interval=0.001)
 def wait_for_pid(pid):
     """Wait for pid to show up in the process list then return.
     Used in the test suite to give time the sub process to initialize.
     """
-    psutil.Process(pid)
+    matrix_psutil.Process(pid)
     if WINDOWS:
         # give it some more time to allow better initialization
         time.sleep(0.01)
@@ -943,19 +943,19 @@ class PsutilTestCase(TestCase):
         return sproc
 
     def assertProcessGone(self, proc):
-        self.assertRaises(psutil.NoSuchProcess, psutil.Process, proc.pid)
-        if isinstance(proc, (psutil.Process, psutil.Popen)):
+        self.assertRaises(matrix_psutil.NoSuchProcess, matrix_psutil.Process, proc.pid)
+        if isinstance(proc, (matrix_psutil.Process, matrix_psutil.Popen)):
             assert not proc.is_running()
             try:
                 status = proc.status()
-            except psutil.NoSuchProcess:
+            except matrix_psutil.NoSuchProcess:
                 pass
             else:
                 raise AssertionError("Process.status() didn't raise exception "
                                      "(status=%s)" % status)
             proc.wait(timeout=0)  # assert not raise TimeoutExpired
-        assert not psutil.pid_exists(proc.pid), proc.pid
-        self.assertNotIn(proc.pid, psutil.pids())
+        assert not matrix_psutil.pid_exists(proc.pid), proc.pid
+        self.assertNotIn(proc.pid, matrix_psutil.pids())
 
 
 @unittest.skipIf(PYPY, "unreliable on PYPY")
@@ -995,16 +995,16 @@ class TestMemoryLeak(PsutilTestCase):
     tolerance = 0  # memory
     retries = 10 if CI_TESTING else 5
     verbose = True
-    _thisproc = psutil.Process()
+    _thisproc = matrix_psutil.Process()
     _psutil_debug_orig = bool(os.getenv('PSUTIL_DEBUG'))
 
     @classmethod
     def setUpClass(cls):
-        psutil._set_debug(False)  # avoid spamming to stderr
+        matrix_psutil._set_debug(False)  # avoid spamming to stderr
 
     @classmethod
     def tearDownClass(cls):
-        psutil._set_debug(cls._psutil_debug_orig)
+        matrix_psutil._set_debug(cls._psutil_debug_orig)
 
     def _get_mem(self):
         # USS is the closest thing we have to "real" memory usage and it
@@ -1131,11 +1131,11 @@ def print_sysinfo():
     info = collections.OrderedDict()
 
     # OS
-    if psutil.LINUX and which('lsb_release'):
+    if matrix_psutil.LINUX and which('lsb_release'):
         info['OS'] = sh('lsb_release -d -s')
-    elif psutil.OSX:
+    elif matrix_psutil.OSX:
         info['OS'] = 'Darwin %s' % platform.mac_ver()[0]
-    elif psutil.WINDOWS:
+    elif matrix_psutil.WINDOWS:
         info['OS'] = "Windows " + ' '.join(
             map(str, platform.win32_ver()))
         if hasattr(platform, 'win32_edition'):
@@ -1144,7 +1144,7 @@ def print_sysinfo():
         info['OS'] = "%s %s" % (platform.system(), platform.version())
     info['arch'] = ', '.join(
         list(platform.architecture()) + [platform.machine()])
-    if psutil.POSIX:
+    if matrix_psutil.POSIX:
         info['kernel'] = platform.uname()[2]
 
     # python
@@ -1157,7 +1157,7 @@ def print_sysinfo():
         info['pip'] += " (wheel=%s)" % wheel.__version__
 
     # UNIX
-    if psutil.POSIX:
+    if matrix_psutil.POSIX:
         if which('gcc'):
             out = sh(['gcc', '--version'])
             info['gcc'] = str(out).split('\n')[0]
@@ -1172,7 +1172,7 @@ def print_sysinfo():
     lang = locale.getlocale()
     info['lang'] = '%s, %s' % (lang[0], lang[1])
     info['boot-time'] = datetime.datetime.fromtimestamp(
-        psutil.boot_time()).strftime("%Y-%m-%d %H:%M:%S")
+        matrix_psutil.boot_time()).strftime("%Y-%m-%d %H:%M:%S")
     info['time'] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     info['user'] = getpass.getuser()
     info['home'] = os.path.expanduser("~")
@@ -1182,17 +1182,17 @@ def print_sysinfo():
     info['PID'] = os.getpid()
 
     # metrics
-    info['cpus'] = psutil.cpu_count()
+    info['cpus'] = matrix_psutil.cpu_count()
     info['loadavg'] = "%.1f%%, %.1f%%, %.1f%%" % (
-        tuple([x / psutil.cpu_count() * 100 for x in psutil.getloadavg()]))
-    mem = psutil.virtual_memory()
+        tuple([x / matrix_psutil.cpu_count() * 100 for x in matrix_psutil.getloadavg()]))
+    mem = matrix_psutil.virtual_memory()
     info['memory'] = "%s%%, used=%s, total=%s" % (
         int(mem.percent), bytes2human(mem.used), bytes2human(mem.total))
-    swap = psutil.swap_memory()
+    swap = matrix_psutil.swap_memory()
     info['swap'] = "%s%%, used=%s, total=%s" % (
         int(swap.percent), bytes2human(swap.used), bytes2human(swap.total))
-    info['pids'] = len(psutil.pids())
-    pinfo = psutil.Process().as_dict()
+    info['pids'] = len(matrix_psutil.pids())
+    pinfo = matrix_psutil.Process().as_dict()
     pinfo.pop('memory_maps', None)
     info['proc'] = pprint.pformat(pinfo)
 
@@ -1204,7 +1204,7 @@ def print_sysinfo():
 
 
 def _get_eligible_cpu():
-    p = psutil.Process()
+    p = matrix_psutil.Process()
     if hasattr(p, "cpu_num"):
         return p.cpu_num()
     elif hasattr(p, "cpu_affinity"):
@@ -1217,7 +1217,7 @@ class process_namespace:
     reasonable parameters to be called with. Utility methods (parent(),
     children(), ...) are excluded.
 
-    >>> ns = process_namespace(psutil.Process())
+    >>> ns = process_namespace(matrix_psutil.Process())
     >>> for fun, name in ns.iter(ns.getters):
     ...    fun()
     """
@@ -1267,7 +1267,7 @@ class process_namespace:
     if HAS_IONICE:
         getters += [('ionice', (), {})]
     if HAS_RLIMIT:
-        getters += [('rlimit', (psutil.RLIMIT_NOFILE, ), {})]
+        getters += [('rlimit', (matrix_psutil.RLIMIT_NOFILE,), {})]
     if HAS_CPU_AFFINITY:
         getters += [('cpu_affinity', (), {})]
     if HAS_PROC_CPU_NUM:
@@ -1283,14 +1283,14 @@ class process_namespace:
     if POSIX:
         setters += [('nice', (0, ), {})]
     else:
-        setters += [('nice', (psutil.NORMAL_PRIORITY_CLASS, ), {})]
+        setters += [('nice', (matrix_psutil.NORMAL_PRIORITY_CLASS,), {})]
     if HAS_RLIMIT:
-        setters += [('rlimit', (psutil.RLIMIT_NOFILE, (1024, 4096)), {})]
+        setters += [('rlimit', (matrix_psutil.RLIMIT_NOFILE, (1024, 4096)), {})]
     if HAS_IONICE:
         if LINUX:
-            setters += [('ionice', (psutil.IOPRIO_CLASS_NONE, 0), {})]
+            setters += [('ionice', (matrix_psutil.IOPRIO_CLASS_NONE, 0), {})]
         else:
-            setters += [('ionice', (psutil.IOPRIO_NORMAL, ), {})]
+            setters += [('ionice', (matrix_psutil.IOPRIO_NORMAL,), {})]
     if HAS_CPU_AFFINITY:
         setters += [('cpu_affinity', ([_get_eligible_cpu()], ), {})]
 
@@ -1343,7 +1343,7 @@ class process_namespace:
     def test(cls):
         this = set([x[0] for x in cls.all])
         ignored = set([x[0] for x in cls.ignored])
-        klass = set([x for x in dir(psutil.Process) if x[0] != '_'])
+        klass = set([x for x in dir(matrix_psutil.Process) if x[0] != '_'])
         leftout = (this | ignored) ^ klass
         if leftout:
             raise ValueError("uncovered Process class names: %r" % leftout)
@@ -1393,7 +1393,7 @@ class system_namespace:
 
     ignored = [
         ('process_iter', (), {}),
-        ('wait_procs', ([psutil.Process()], ), {}),
+        ('wait_procs', ([matrix_psutil.Process()],), {}),
         ('cpu_percent', (), {}),
         ('cpu_times_percent', (), {}),
     ]
@@ -1408,7 +1408,7 @@ class system_namespace:
         ls = list(ls)
         random.shuffle(ls)
         for fun_name, args, kwds in ls:
-            fun = getattr(psutil, fun_name)
+            fun = getattr(matrix_psutil, fun_name)
             fun = functools.partial(fun, *args, **kwds)
             yield (fun, fun_name)
 
@@ -1443,7 +1443,7 @@ def skip_on_access_denied(only_if=None):
         def wrapper(*args, **kwargs):
             try:
                 return fun(*args, **kwargs)
-            except psutil.AccessDenied:
+            except matrix_psutil.AccessDenied:
                 if only_if is not None:
                     if not only_if:
                         raise
@@ -1502,7 +1502,7 @@ def bind_socket(family=AF_INET, type=SOCK_STREAM, addr=None):
 
 def bind_unix_socket(name, type=socket.SOCK_STREAM):
     """Bind a UNIX socket."""
-    assert psutil.POSIX
+    assert matrix_psutil.POSIX
     assert not os.path.exists(name), name
     sock = socket.socket(socket.AF_UNIX, type)
     try:
@@ -1543,7 +1543,7 @@ def unix_socketpair(name):
     the same UNIX file name.
     Return a (server, client) tuple.
     """
-    assert psutil.POSIX
+    assert matrix_psutil.POSIX
     server = client = None
     try:
         server = bind_unix_socket(name, type=socket.SOCK_STREAM)
@@ -1608,7 +1608,7 @@ def check_net_address(addr, family):
         if not PY3:
             addr = unicode(addr)
         ipaddress.IPv6Address(addr)
-    elif family == psutil.AF_LINK:
+    elif family == matrix_psutil.AF_LINK:
         assert re.match(r'([a-fA-F0-9]{2}[:|\-]?){6}', addr) is not None, addr
     else:
         raise ValueError("unknown family %r" % family)
@@ -1647,7 +1647,7 @@ def check_connection_ntuple(conn):
                     if err.errno != errno.EADDRNOTAVAIL:
                         raise
         elif conn.family == AF_UNIX:
-            assert conn.status == psutil.CONN_NONE, conn.status
+            assert conn.status == matrix_psutil.CONN_NONE, conn.status
 
     def check_type(conn):
         # SOCK_SEQPACKET may happen in case of AF_UNIX socks
@@ -1659,7 +1659,7 @@ def check_connection_ntuple(conn):
         else:
             assert isinstance(conn.type, int), conn
         if conn.type == socket.SOCK_DGRAM:
-            assert conn.status == psutil.CONN_NONE, conn.status
+            assert conn.status == matrix_psutil.CONN_NONE, conn.status
 
     def check_addrs(conn):
         # check IP address and port sanity
@@ -1676,13 +1676,13 @@ def check_connection_ntuple(conn):
 
     def check_status(conn):
         assert isinstance(conn.status, str), conn.status
-        valids = [getattr(psutil, x) for x in dir(psutil)
+        valids = [getattr(matrix_psutil, x) for x in dir(matrix_psutil)
                   if x.startswith('CONN_')]
         assert conn.status in valids, conn.status
         if conn.family in (AF_INET, AF_INET6) and conn.type == SOCK_STREAM:
-            assert conn.status != psutil.CONN_NONE, conn.status
+            assert conn.status != matrix_psutil.CONN_NONE, conn.status
         else:
-            assert conn.status == psutil.CONN_NONE, conn.status
+            assert conn.status == matrix_psutil.CONN_NONE, conn.status
 
     check_ntuple(conn)
     check_family(conn)
@@ -1757,7 +1757,7 @@ if POSIX:
         exe = 'pypy' if PYPY else 'python'
         ext = ".so"
         dst = get_testfn(suffix=suffix + ext)
-        libs = [x.path for x in psutil.Process().memory_maps() if
+        libs = [x.path for x in matrix_psutil.Process().memory_maps() if
                 os.path.splitext(x.path)[1] == ext and
                 exe in x.path.lower()]
         src = random.choice(libs)
@@ -1779,12 +1779,12 @@ else:
         from ctypes import wintypes
         ext = ".dll"
         dst = get_testfn(suffix=suffix + ext)
-        libs = [x.path for x in psutil.Process().memory_maps() if
+        libs = [x.path for x in matrix_psutil.Process().memory_maps() if
                 x.path.lower().endswith(ext) and
                 'python' in os.path.basename(x.path).lower() and
                 'wow64' not in x.path.lower()]
         if PYPY and not libs:
-            libs = [x.path for x in psutil.Process().memory_maps() if
+            libs = [x.path for x in matrix_psutil.Process().memory_maps() if
                     'pypy' in os.path.basename(x.path).lower()]
         src = random.choice(libs)
         shutil.copyfile(src, dst)

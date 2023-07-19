@@ -15,12 +15,12 @@ from __future__ import print_function
 
 import sys
 
-import psutil
+import matrix_psutil
 
 
 def pidof(pgname):
     pids = []
-    for proc in psutil.process_iter(['name', 'cmdline']):
+    for proc in matrix_psutil.process_iter(['name', 'cmdline']):
         # search for matches in the process name and cmdline
         if proc.info['name'] == pgname or \
                 proc.info['cmdline'] and proc.info['cmdline'][0] == pgname:

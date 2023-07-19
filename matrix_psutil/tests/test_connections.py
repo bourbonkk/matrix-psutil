@@ -16,35 +16,35 @@ from socket import AF_INET6
 from socket import SOCK_DGRAM
 from socket import SOCK_STREAM
 
-import psutil
-from psutil import FREEBSD
-from psutil import LINUX
-from psutil import MACOS
-from psutil import NETBSD
-from psutil import OPENBSD
-from psutil import POSIX
-from psutil import SUNOS
-from psutil import WINDOWS
-from psutil._common import supports_ipv6
-from psutil._compat import PY3
-from psutil.tests import AF_UNIX
-from psutil.tests import HAS_CONNECTIONS_UNIX
-from psutil.tests import SKIP_SYSCONS
-from psutil.tests import PsutilTestCase
-from psutil.tests import bind_socket
-from psutil.tests import bind_unix_socket
-from psutil.tests import check_connection_ntuple
-from psutil.tests import create_sockets
-from psutil.tests import reap_children
-from psutil.tests import retry_on_failure
-from psutil.tests import serialrun
-from psutil.tests import skip_on_access_denied
-from psutil.tests import tcp_socketpair
-from psutil.tests import unix_socketpair
-from psutil.tests import wait_for_file
+import matrix_psutil
+from matrix_psutil import FREEBSD
+from matrix_psutil import LINUX
+from matrix_psutil import MACOS
+from matrix_psutil import NETBSD
+from matrix_psutil import OPENBSD
+from matrix_psutil import POSIX
+from matrix_psutil import SUNOS
+from matrix_psutil import WINDOWS
+from matrix_psutil._common import supports_ipv6
+from matrix_psutil._compat import PY3
+from matrix_psutil.tests import AF_UNIX
+from matrix_psutil.tests import HAS_CONNECTIONS_UNIX
+from matrix_psutil.tests import SKIP_SYSCONS
+from matrix_psutil.tests import PsutilTestCase
+from matrix_psutil.tests import bind_socket
+from matrix_psutil.tests import bind_unix_socket
+from matrix_psutil.tests import check_connection_ntuple
+from matrix_psutil.tests import create_sockets
+from matrix_psutil.tests import reap_children
+from matrix_psutil.tests import retry_on_failure
+from matrix_psutil.tests import serialrun
+from matrix_psutil.tests import skip_on_access_denied
+from matrix_psutil.tests import tcp_socketpair
+from matrix_psutil.tests import unix_socketpair
+from matrix_psutil.tests import wait_for_file
 
 
-thisproc = psutil.Process()
+thisproc = matrix_psutil.Process()
 SOCK_SEQPACKET = getattr(socket, "SOCK_SEQPACKET", object())
 
 
@@ -70,8 +70,8 @@ class ConnectionTestCase(PsutilTestCase):
         psutil.net_connections.
         """
         try:
-            sys_cons = psutil.net_connections(kind=kind)
-        except psutil.AccessDenied:
+            sys_cons = matrix_psutil.net_connections(kind=kind)
+        except matrix_psutil.AccessDenied:
             # On MACOS, system-wide connections are retrieved by iterating
             # over all processes
             if MACOS:
@@ -90,17 +90,17 @@ class TestBasicOperations(ConnectionTestCase):
     @unittest.skipIf(SKIP_SYSCONS, "requires root")
     def test_system(self):
         with create_sockets():
-            for conn in psutil.net_connections(kind='all'):
+            for conn in matrix_psutil.net_connections(kind='all'):
                 check_connection_ntuple(conn)
 
     def test_process(self):
         with create_sockets():
-            for conn in psutil.Process().connections(kind='all'):
+            for conn in matrix_psutil.Process().connections(kind='all'):
                 check_connection_ntuple(conn)
 
     def test_invalid_kind(self):
         self.assertRaises(ValueError, thisproc.connections, kind='???')
-        self.assertRaises(ValueError, psutil.net_connections, kind='???')
+        self.assertRaises(ValueError, matrix_psutil.net_connections, kind='???')
 
 
 @serialrun
@@ -156,7 +156,7 @@ class TestUnconnectedSockets(ConnectionTestCase):
         with closing(bind_socket(AF_INET, SOCK_STREAM, addr=addr)) as sock:
             conn = self.check_socket(sock)
             assert not conn.raddr
-            self.assertEqual(conn.status, psutil.CONN_LISTEN)
+            self.assertEqual(conn.status, matrix_psutil.CONN_LISTEN)
 
     @unittest.skipIf(not supports_ipv6(), "IPv6 not supported")
     def test_tcp_v6(self):
@@ -164,14 +164,14 @@ class TestUnconnectedSockets(ConnectionTestCase):
         with closing(bind_socket(AF_INET6, SOCK_STREAM, addr=addr)) as sock:
             conn = self.check_socket(sock)
             assert not conn.raddr
-            self.assertEqual(conn.status, psutil.CONN_LISTEN)
+            self.assertEqual(conn.status, matrix_psutil.CONN_LISTEN)
 
     def test_udp_v4(self):
         addr = ("127.0.0.1", 0)
         with closing(bind_socket(AF_INET, SOCK_DGRAM, addr=addr)) as sock:
             conn = self.check_socket(sock)
             assert not conn.raddr
-            self.assertEqual(conn.status, psutil.CONN_NONE)
+            self.assertEqual(conn.status, matrix_psutil.CONN_NONE)
 
     @unittest.skipIf(not supports_ipv6(), "IPv6 not supported")
     def test_udp_v6(self):
@@ -179,7 +179,7 @@ class TestUnconnectedSockets(ConnectionTestCase):
         with closing(bind_socket(AF_INET6, SOCK_DGRAM, addr=addr)) as sock:
             conn = self.check_socket(sock)
             assert not conn.raddr
-            self.assertEqual(conn.status, psutil.CONN_NONE)
+            self.assertEqual(conn.status, matrix_psutil.CONN_NONE)
 
     @unittest.skipIf(not POSIX, 'POSIX only')
     def test_unix_tcp(self):
@@ -187,7 +187,7 @@ class TestUnconnectedSockets(ConnectionTestCase):
         with closing(bind_unix_socket(testfn, type=SOCK_STREAM)) as sock:
             conn = self.check_socket(sock)
             assert not conn.raddr
-            self.assertEqual(conn.status, psutil.CONN_NONE)
+            self.assertEqual(conn.status, matrix_psutil.CONN_NONE)
 
     @unittest.skipIf(not POSIX, 'POSIX only')
     def test_unix_udp(self):
@@ -195,7 +195,7 @@ class TestUnconnectedSockets(ConnectionTestCase):
         with closing(bind_unix_socket(testfn, type=SOCK_STREAM)) as sock:
             conn = self.check_socket(sock)
             assert not conn.raddr
-            self.assertEqual(conn.status, psutil.CONN_NONE)
+            self.assertEqual(conn.status, matrix_psutil.CONN_NONE)
 
 
 @serialrun
@@ -214,8 +214,8 @@ class TestConnectedSocket(ConnectionTestCase):
         try:
             cons = thisproc.connections(kind='tcp4')
             self.assertEqual(len(cons), 2)
-            self.assertEqual(cons[0].status, psutil.CONN_ESTABLISHED)
-            self.assertEqual(cons[1].status, psutil.CONN_ESTABLISHED)
+            self.assertEqual(cons[0].status, matrix_psutil.CONN_ESTABLISHED)
+            self.assertEqual(cons[1].status, matrix_psutil.CONN_ESTABLISHED)
             # May not be fast enough to change state so it stays
             # commenteed.
             # client.close()
@@ -262,7 +262,7 @@ class TestFilters(ConnectionTestCase):
                 self.assertIn(conn.family, families)
                 self.assertIn(conn.type, types)
             if not SKIP_SYSCONS:
-                for conn in psutil.net_connections(kind=kind):
+                for conn in matrix_psutil.net_connections(kind=kind):
                     self.assertIn(conn.family, families)
                     self.assertIn(conn.type, types)
 
@@ -378,22 +378,22 @@ class TestFilters(ConnectionTestCase):
                 # TCP v4
                 if p.pid == tcp4_proc.pid:
                     check_conn(p, conn, AF_INET, SOCK_STREAM, tcp4_addr, (),
-                               psutil.CONN_LISTEN,
+                               matrix_psutil.CONN_LISTEN,
                                ("all", "inet", "inet4", "tcp", "tcp4"))
                 # UDP v4
                 elif p.pid == udp4_proc.pid:
                     check_conn(p, conn, AF_INET, SOCK_DGRAM, udp4_addr, (),
-                               psutil.CONN_NONE,
+                               matrix_psutil.CONN_NONE,
                                ("all", "inet", "inet4", "udp", "udp4"))
                 # TCP v6
                 elif p.pid == getattr(tcp6_proc, "pid", None):
                     check_conn(p, conn, AF_INET6, SOCK_STREAM, tcp6_addr, (),
-                               psutil.CONN_LISTEN,
+                               matrix_psutil.CONN_LISTEN,
                                ("all", "inet", "inet6", "tcp", "tcp6"))
                 # UDP v6
                 elif p.pid == getattr(udp6_proc, "pid", None):
                     check_conn(p, conn, AF_INET6, SOCK_DGRAM, udp6_addr, (),
-                               psutil.CONN_NONE,
+                               matrix_psutil.CONN_NONE,
                                ("all", "inet", "inet6", "udp", "udp6"))
 
     def test_count(self):
@@ -468,13 +468,13 @@ class TestSystemWideConnections(ConnectionTestCase):
                 check_connection_ntuple(conn)
 
         with create_sockets():
-            from psutil._common import conn_tmap
+            from matrix_psutil._common import conn_tmap
             for kind, groups in conn_tmap.items():
                 # XXX: SunOS does not retrieve UNIX sockets.
                 if kind == 'unix' and not HAS_CONNECTIONS_UNIX:
                     continue
                 families, types_ = groups
-                cons = psutil.net_connections(kind)
+                cons = matrix_psutil.net_connections(kind)
                 self.assertEqual(len(cons), len(set(cons)))
                 check(cons, families, types_)
 
@@ -509,12 +509,12 @@ class TestSystemWideConnections(ConnectionTestCase):
         for fname in fnames:
             wait_for_file(fname)
 
-        syscons = [x for x in psutil.net_connections(kind='all') if x.pid
+        syscons = [x for x in matrix_psutil.net_connections(kind='all') if x.pid
                    in pids]
         for pid in pids:
             self.assertEqual(len([x for x in syscons if x.pid == pid]),
                              expected)
-            p = psutil.Process(pid)
+            p = matrix_psutil.Process(pid)
             self.assertEqual(len(p.connections('all')), expected)
 
 
@@ -523,9 +523,9 @@ class TestMisc(PsutilTestCase):
     def test_connection_constants(self):
         ints = []
         strs = []
-        for name in dir(psutil):
+        for name in dir(matrix_psutil):
             if name.startswith('CONN_'):
-                num = getattr(psutil, name)
+                num = getattr(matrix_psutil, name)
                 str_ = str(num)
                 assert str_.isupper(), str_
                 self.assertNotIn(str, strs)
@@ -533,12 +533,12 @@ class TestMisc(PsutilTestCase):
                 ints.append(num)
                 strs.append(str_)
         if SUNOS:
-            psutil.CONN_IDLE
-            psutil.CONN_BOUND
+            matrix_psutil.CONN_IDLE
+            matrix_psutil.CONN_BOUND
         if WINDOWS:
-            psutil.CONN_DELETE_TCB
+            matrix_psutil.CONN_DELETE_TCB
 
 
 if __name__ == '__main__':
-    from psutil.tests.runner import run_from_name
+    from matrix_psutil.tests.runner import run_from_name
     run_from_name(__file__)

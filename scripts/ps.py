@@ -35,9 +35,9 @@ giampaolo  24123   0.0   35.0M    7.0M        sleep  02:12  00:02  bash
 import datetime
 import time
 
-import psutil
-from psutil._common import bytes2human
-from psutil._compat import get_terminal_size
+import matrix_psutil
+from matrix_psutil._common import bytes2human
+from matrix_psutil._compat import get_terminal_size
 
 
 def main():
@@ -47,7 +47,7 @@ def main():
              'create_time', 'memory_info', 'status', 'nice', 'username']
     print(templ % ("USER", "PID", "%MEM", "VSZ", "RSS", "NICE",
                    "STATUS", "START", "TIME", "CMDLINE"))
-    for p in psutil.process_iter(attrs, ad_value=None):
+    for p in matrix_psutil.process_iter(attrs, ad_value=None):
         if p.info['create_time']:
             ctime = datetime.datetime.fromtimestamp(p.info['create_time'])
             if ctime.date() == today_day:
@@ -63,12 +63,12 @@ def main():
             cputime = ''
 
         user = p.info['username']
-        if not user and psutil.POSIX:
+        if not user and matrix_psutil.POSIX:
             try:
                 user = p.uids()[0]
-            except psutil.Error:
+            except matrix_psutil.Error:
                 pass
-        if user and psutil.WINDOWS and '\\' in user:
+        if user and matrix_psutil.WINDOWS and '\\' in user:
             user = user.split('\\')[1]
         if not user:
             user = ''

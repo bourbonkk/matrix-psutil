@@ -24,7 +24,7 @@ from socket import AF_INET
 from socket import SOCK_DGRAM
 from socket import SOCK_STREAM
 
-import psutil
+import matrix_psutil
 
 
 AD = "-"
@@ -43,9 +43,9 @@ def main():
         "Proto", "Local address", "Remote address", "Status", "PID",
         "Program name"))
     proc_names = {}
-    for p in psutil.process_iter(['pid', 'name']):
+    for p in matrix_psutil.process_iter(['pid', 'name']):
         proc_names[p.info['pid']] = p.info['name']
-    for c in psutil.net_connections(kind='inet'):
+    for c in matrix_psutil.net_connections(kind='inet'):
         laddr = "%s:%s" % (c.laddr)
         raddr = ""
         if c.raddr:

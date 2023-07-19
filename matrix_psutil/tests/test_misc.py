@@ -19,38 +19,38 @@ import socket
 import stat
 import unittest
 
-import psutil
-import psutil.tests
-from psutil import LINUX
-from psutil import POSIX
-from psutil import WINDOWS
-from psutil._common import bcat
-from psutil._common import cat
-from psutil._common import debug
-from psutil._common import isfile_strict
-from psutil._common import memoize
-from psutil._common import memoize_when_activated
-from psutil._common import parse_environ_block
-from psutil._common import supports_ipv6
-from psutil._common import wrap_numbers
-from psutil._compat import PY3
-from psutil._compat import FileNotFoundError
-from psutil._compat import redirect_stderr
-from psutil.tests import APPVEYOR
-from psutil.tests import CI_TESTING
-from psutil.tests import HAS_BATTERY
-from psutil.tests import HAS_MEMORY_MAPS
-from psutil.tests import HAS_NET_IO_COUNTERS
-from psutil.tests import HAS_SENSORS_BATTERY
-from psutil.tests import HAS_SENSORS_FANS
-from psutil.tests import HAS_SENSORS_TEMPERATURES
-from psutil.tests import PYTHON_EXE
-from psutil.tests import PYTHON_EXE_ENV
-from psutil.tests import SCRIPTS_DIR
-from psutil.tests import PsutilTestCase
-from psutil.tests import mock
-from psutil.tests import reload_module
-from psutil.tests import sh
+import matrix_psutil
+import matrix_psutil.tests
+from matrix_psutil import LINUX
+from matrix_psutil import POSIX
+from matrix_psutil import WINDOWS
+from matrix_psutil._common import bcat
+from matrix_psutil._common import cat
+from matrix_psutil._common import debug
+from matrix_psutil._common import isfile_strict
+from matrix_psutil._common import memoize
+from matrix_psutil._common import memoize_when_activated
+from matrix_psutil._common import parse_environ_block
+from matrix_psutil._common import supports_ipv6
+from matrix_psutil._common import wrap_numbers
+from matrix_psutil._compat import PY3
+from matrix_psutil._compat import FileNotFoundError
+from matrix_psutil._compat import redirect_stderr
+from matrix_psutil.tests import APPVEYOR
+from matrix_psutil.tests import CI_TESTING
+from matrix_psutil.tests import HAS_BATTERY
+from matrix_psutil.tests import HAS_MEMORY_MAPS
+from matrix_psutil.tests import HAS_NET_IO_COUNTERS
+from matrix_psutil.tests import HAS_SENSORS_BATTERY
+from matrix_psutil.tests import HAS_SENSORS_FANS
+from matrix_psutil.tests import HAS_SENSORS_TEMPERATURES
+from matrix_psutil.tests import PYTHON_EXE
+from matrix_psutil.tests import PYTHON_EXE_ENV
+from matrix_psutil.tests import SCRIPTS_DIR
+from matrix_psutil.tests import PsutilTestCase
+from matrix_psutil.tests import mock
+from matrix_psutil.tests import reload_module
+from matrix_psutil.tests import sh
 
 
 # ===================================================================
@@ -62,12 +62,12 @@ class TestSpecialMethods(PsutilTestCase):
 
     def test_check_pid_range(self):
         with self.assertRaises(OverflowError):
-            psutil._psplatform.cext.check_pid_range(2 ** 128)
-        with self.assertRaises(psutil.NoSuchProcess):
-            psutil.Process(2 ** 128)
+            matrix_psutil._psplatform.cext.check_pid_range(2 ** 128)
+        with self.assertRaises(matrix_psutil.NoSuchProcess):
+            matrix_psutil.Process(2 ** 128)
 
     def test_process__repr__(self, func=repr):
-        p = psutil.Process(self.spawn_testproc().pid)
+        p = matrix_psutil.Process(self.spawn_testproc().pid)
         r = func(p)
         self.assertIn("psutil.Process", r)
         self.assertIn("pid=%s" % p.pid, r)
@@ -81,23 +81,23 @@ class TestSpecialMethods(PsutilTestCase):
         self.assertIn("status='terminated'", r)
         self.assertIn("exitcode=", r)
 
-        with mock.patch.object(psutil.Process, "name",
-                               side_effect=psutil.ZombieProcess(os.getpid())):
-            p = psutil.Process()
+        with mock.patch.object(matrix_psutil.Process, "name",
+                               side_effect=matrix_psutil.ZombieProcess(os.getpid())):
+            p = matrix_psutil.Process()
             r = func(p)
             self.assertIn("pid=%s" % p.pid, r)
             self.assertIn("status='zombie'", r)
             self.assertNotIn("name=", r)
-        with mock.patch.object(psutil.Process, "name",
-                               side_effect=psutil.NoSuchProcess(os.getpid())):
-            p = psutil.Process()
+        with mock.patch.object(matrix_psutil.Process, "name",
+                               side_effect=matrix_psutil.NoSuchProcess(os.getpid())):
+            p = matrix_psutil.Process()
             r = func(p)
             self.assertIn("pid=%s" % p.pid, r)
             self.assertIn("terminated", r)
             self.assertNotIn("name=", r)
-        with mock.patch.object(psutil.Process, "name",
-                               side_effect=psutil.AccessDenied(os.getpid())):
-            p = psutil.Process()
+        with mock.patch.object(matrix_psutil.Process, "name",
+                               side_effect=matrix_psutil.AccessDenied(os.getpid())):
+            p = matrix_psutil.Process()
             r = func(p)
             self.assertIn("pid=%s" % p.pid, r)
             self.assertNotIn("name=", r)
@@ -106,87 +106,87 @@ class TestSpecialMethods(PsutilTestCase):
         self.test_process__repr__(func=str)
 
     def test_error__repr__(self):
-        self.assertEqual(repr(psutil.Error()), "psutil.Error()")
+        self.assertEqual(repr(matrix_psutil.Error()), "psutil.Error()")
 
     def test_error__str__(self):
-        self.assertEqual(str(psutil.Error()), "")
+        self.assertEqual(str(matrix_psutil.Error()), "")
 
     def test_no_such_process__repr__(self):
         self.assertEqual(
-            repr(psutil.NoSuchProcess(321)),
+            repr(matrix_psutil.NoSuchProcess(321)),
             "psutil.NoSuchProcess(pid=321, msg='process no longer exists')")
         self.assertEqual(
-            repr(psutil.NoSuchProcess(321, name="name", msg="msg")),
+            repr(matrix_psutil.NoSuchProcess(321, name="name", msg="msg")),
             "psutil.NoSuchProcess(pid=321, name='name', msg='msg')")
 
     def test_no_such_process__str__(self):
         self.assertEqual(
-            str(psutil.NoSuchProcess(321)),
+            str(matrix_psutil.NoSuchProcess(321)),
             "process no longer exists (pid=321)")
         self.assertEqual(
-            str(psutil.NoSuchProcess(321, name="name", msg="msg")),
+            str(matrix_psutil.NoSuchProcess(321, name="name", msg="msg")),
             "msg (pid=321, name='name')")
 
     def test_zombie_process__repr__(self):
         self.assertEqual(
-            repr(psutil.ZombieProcess(321)),
+            repr(matrix_psutil.ZombieProcess(321)),
             'psutil.ZombieProcess(pid=321, msg="PID still '
             'exists but it\'s a zombie")')
         self.assertEqual(
-            repr(psutil.ZombieProcess(321, name="name", ppid=320, msg="foo")),
+            repr(matrix_psutil.ZombieProcess(321, name="name", ppid=320, msg="foo")),
             "psutil.ZombieProcess(pid=321, ppid=320, name='name', msg='foo')")
 
     def test_zombie_process__str__(self):
         self.assertEqual(
-            str(psutil.ZombieProcess(321)),
+            str(matrix_psutil.ZombieProcess(321)),
             "PID still exists but it's a zombie (pid=321)")
         self.assertEqual(
-            str(psutil.ZombieProcess(321, name="name", ppid=320, msg="foo")),
+            str(matrix_psutil.ZombieProcess(321, name="name", ppid=320, msg="foo")),
             "foo (pid=321, ppid=320, name='name')")
 
     def test_access_denied__repr__(self):
         self.assertEqual(
-            repr(psutil.AccessDenied(321)),
+            repr(matrix_psutil.AccessDenied(321)),
             "psutil.AccessDenied(pid=321)")
         self.assertEqual(
-            repr(psutil.AccessDenied(321, name="name", msg="msg")),
+            repr(matrix_psutil.AccessDenied(321, name="name", msg="msg")),
             "psutil.AccessDenied(pid=321, name='name', msg='msg')")
 
     def test_access_denied__str__(self):
         self.assertEqual(
-            str(psutil.AccessDenied(321)),
+            str(matrix_psutil.AccessDenied(321)),
             "(pid=321)")
         self.assertEqual(
-            str(psutil.AccessDenied(321, name="name", msg="msg")),
+            str(matrix_psutil.AccessDenied(321, name="name", msg="msg")),
             "msg (pid=321, name='name')")
 
     def test_timeout_expired__repr__(self):
         self.assertEqual(
-            repr(psutil.TimeoutExpired(5)),
+            repr(matrix_psutil.TimeoutExpired(5)),
             "psutil.TimeoutExpired(seconds=5, msg='timeout after 5 seconds')")
         self.assertEqual(
-            repr(psutil.TimeoutExpired(5, pid=321, name="name")),
+            repr(matrix_psutil.TimeoutExpired(5, pid=321, name="name")),
             "psutil.TimeoutExpired(pid=321, name='name', seconds=5, "
             "msg='timeout after 5 seconds')")
 
     def test_timeout_expired__str__(self):
         self.assertEqual(
-            str(psutil.TimeoutExpired(5)),
+            str(matrix_psutil.TimeoutExpired(5)),
             "timeout after 5 seconds")
         self.assertEqual(
-            str(psutil.TimeoutExpired(5, pid=321, name="name")),
+            str(matrix_psutil.TimeoutExpired(5, pid=321, name="name")),
             "timeout after 5 seconds (pid=321, name='name')")
 
     def test_process__eq__(self):
-        p1 = psutil.Process()
-        p2 = psutil.Process()
+        p1 = matrix_psutil.Process()
+        p2 = matrix_psutil.Process()
         self.assertEqual(p1, p2)
         p2._ident = (0, 0)
         self.assertNotEqual(p1, p2)
         self.assertNotEqual(p1, 'foo')
 
     def test_process__hash__(self):
-        s = set([psutil.Process(), psutil.Process()])
+        s = set([matrix_psutil.Process(), matrix_psutil.Process()])
         self.assertEqual(len(s), 1)
 
 
@@ -198,7 +198,7 @@ class TestSpecialMethods(PsutilTestCase):
 class TestMisc(PsutilTestCase):
 
     def test__all__(self):
-        dir_psutil = dir(psutil)
+        dir_psutil = dir(matrix_psutil)
         for name in dir_psutil:
             if name in ('long', 'tests', 'test', 'PermissionError',
                         'ProcessLookupError'):
@@ -207,8 +207,8 @@ class TestMisc(PsutilTestCase):
                 try:
                     __import__(name)
                 except ImportError:
-                    if name not in psutil.__all__:
-                        fun = getattr(psutil, name)
+                    if name not in matrix_psutil.__all__:
+                        fun = getattr(matrix_psutil, name)
                         if fun is None:
                             continue
                         if (fun.__doc__ is not None and
@@ -219,16 +219,16 @@ class TestMisc(PsutilTestCase):
         # https://github.com/giampaolo/psutil/issues/656
         # Can't do `from psutil import *` as it won't work on python 3
         # so we simply iterate over __all__.
-        for name in psutil.__all__:
+        for name in matrix_psutil.__all__:
             self.assertIn(name, dir_psutil)
 
     def test_version(self):
-        self.assertEqual('.'.join([str(x) for x in psutil.version_info]),
-                         psutil.__version__)
+        self.assertEqual('.'.join([str(x) for x in matrix_psutil.version_info]),
+                         matrix_psutil.__version__)
 
     def test_process_as_dict_no_new_names(self):
         # See https://github.com/giampaolo/psutil/issues/813
-        p = psutil.Process()
+        p = matrix_psutil.Process()
         p.foo = '1'
         self.assertNotIn('foo', p.as_dict())
 
@@ -240,20 +240,20 @@ class TestMisc(PsutilTestCase):
             b = pickle.loads(a)
             self.assertEqual(ret, b)
 
-        check(psutil.Process().as_dict())
-        check(psutil.virtual_memory())
-        check(psutil.swap_memory())
-        check(psutil.cpu_times())
-        check(psutil.cpu_times_percent(interval=0))
-        check(psutil.net_io_counters())
+        check(matrix_psutil.Process().as_dict())
+        check(matrix_psutil.virtual_memory())
+        check(matrix_psutil.swap_memory())
+        check(matrix_psutil.cpu_times())
+        check(matrix_psutil.cpu_times_percent(interval=0))
+        check(matrix_psutil.net_io_counters())
         if LINUX and not os.path.exists('/proc/diskstats'):
             pass
         else:
             if not APPVEYOR:
-                check(psutil.disk_io_counters())
-        check(psutil.disk_partitions())
-        check(psutil.disk_usage(os.getcwd()))
-        check(psutil.users())
+                check(matrix_psutil.disk_io_counters())
+        check(matrix_psutil.disk_partitions())
+        check(matrix_psutil.disk_usage(os.getcwd()))
+        check(matrix_psutil.users())
 
     # # XXX: https://github.com/pypa/setuptools/pull/2896
     # @unittest.skipIf(APPVEYOR, "temporarily disabled due to setuptools bug")
@@ -268,18 +268,18 @@ class TestMisc(PsutilTestCase):
     def test_ad_on_process_creation(self):
         # We are supposed to be able to instantiate Process also in case
         # of zombie processes or access denied.
-        with mock.patch.object(psutil.Process, 'create_time',
-                               side_effect=psutil.AccessDenied) as meth:
-            psutil.Process()
+        with mock.patch.object(matrix_psutil.Process, 'create_time',
+                               side_effect=matrix_psutil.AccessDenied) as meth:
+            matrix_psutil.Process()
             assert meth.called
-        with mock.patch.object(psutil.Process, 'create_time',
-                               side_effect=psutil.ZombieProcess(1)) as meth:
-            psutil.Process()
+        with mock.patch.object(matrix_psutil.Process, 'create_time',
+                               side_effect=matrix_psutil.ZombieProcess(1)) as meth:
+            matrix_psutil.Process()
             assert meth.called
-        with mock.patch.object(psutil.Process, 'create_time',
+        with mock.patch.object(matrix_psutil.Process, 'create_time',
                                side_effect=ValueError) as meth:
             with self.assertRaises(ValueError):
-                psutil.Process()
+                matrix_psutil.Process()
             assert meth.called
 
     def test_sanity_version_check(self):
@@ -287,7 +287,7 @@ class TestMisc(PsutilTestCase):
         with mock.patch(
                 "psutil._psplatform.cext.version", return_value="0.0.0"):
             with self.assertRaises(ImportError) as cm:
-                reload_module(psutil)
+                reload_module(matrix_psutil)
             self.assertIn("version conflict", str(cm.exception).lower())
 
 
@@ -795,22 +795,22 @@ class TestWrapNumbers(PsutilTestCase):
 
     @unittest.skipIf(not HAS_NET_IO_COUNTERS, 'not supported')
     def test_cache_clear_public_apis(self):
-        if not psutil.disk_io_counters() or not psutil.net_io_counters():
+        if not matrix_psutil.disk_io_counters() or not matrix_psutil.net_io_counters():
             return self.skipTest("no disks or NICs available")
-        psutil.disk_io_counters()
-        psutil.net_io_counters()
+        matrix_psutil.disk_io_counters()
+        matrix_psutil.net_io_counters()
         caches = wrap_numbers.cache_info()
         for cache in caches:
             self.assertIn('psutil.disk_io_counters', cache)
             self.assertIn('psutil.net_io_counters', cache)
 
-        psutil.disk_io_counters.cache_clear()
+        matrix_psutil.disk_io_counters.cache_clear()
         caches = wrap_numbers.cache_info()
         for cache in caches:
             self.assertIn('psutil.net_io_counters', cache)
             self.assertNotIn('psutil.disk_io_counters', cache)
 
-        psutil.net_io_counters.cache_clear()
+        matrix_psutil.net_io_counters.cache_clear()
         caches = wrap_numbers.cache_info()
         self.assertEqual(caches, ({}, {}, {}))
 
@@ -884,7 +884,7 @@ class TestScripts(PsutilTestCase):
     def test_procinfo(self):
         self.assert_stdout('procinfo.py', str(os.getpid()))
 
-    @unittest.skipIf(CI_TESTING and not psutil.users(), "no users")
+    @unittest.skipIf(CI_TESTING and not matrix_psutil.users(), "no users")
     def test_who(self):
         self.assert_stdout('who.py')
 
@@ -905,7 +905,7 @@ class TestScripts(PsutilTestCase):
         self.assert_stdout('pmap.py', str(os.getpid()))
 
     def test_procsmem(self):
-        if 'uss' not in psutil.Process().memory_full_info()._fields:
+        if 'uss' not in matrix_psutil.Process().memory_full_info()._fields:
             raise self.skipTest("not supported")
         self.assert_stdout('procsmem.py')
 
@@ -922,7 +922,7 @@ class TestScripts(PsutilTestCase):
         self.assert_syntax('iotop.py')
 
     def test_pidof(self):
-        output = self.assert_stdout('pidof.py', psutil.Process().name())
+        output = self.assert_stdout('pidof.py', matrix_psutil.Process().name())
         self.assertIn(str(os.getpid()), output)
 
     @unittest.skipIf(not WINDOWS, "WINDOWS only")
@@ -934,13 +934,13 @@ class TestScripts(PsutilTestCase):
 
     @unittest.skipIf(not HAS_SENSORS_TEMPERATURES, "not supported")
     def test_temperatures(self):
-        if not psutil.sensors_temperatures():
+        if not matrix_psutil.sensors_temperatures():
             self.skipTest("no temperatures")
         self.assert_stdout('temperatures.py')
 
     @unittest.skipIf(not HAS_SENSORS_FANS, "not supported")
     def test_fans(self):
-        if not psutil.sensors_fans():
+        if not matrix_psutil.sensors_fans():
             self.skipTest("no fans")
         self.assert_stdout('fans.py')
 
@@ -956,5 +956,5 @@ class TestScripts(PsutilTestCase):
 
 
 if __name__ == '__main__':
-    from psutil.tests.runner import run_from_name
+    from matrix_psutil.tests.runner import run_from_name
     run_from_name(__file__)

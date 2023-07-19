@@ -18,7 +18,7 @@ from __future__ import print_function
 
 import sys
 
-import psutil
+import matrix_psutil
 
 
 def secs2hours(secs):
@@ -28,9 +28,9 @@ def secs2hours(secs):
 
 
 def main():
-    if not hasattr(psutil, "sensors_battery"):
+    if not hasattr(matrix_psutil, "sensors_battery"):
         return sys.exit("platform not supported")
-    batt = psutil.sensors_battery()
+    batt = matrix_psutil.sensors_battery()
     if batt is None:
         return sys.exit("no battery is installed")
 

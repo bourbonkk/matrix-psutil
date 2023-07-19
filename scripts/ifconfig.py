@@ -47,27 +47,27 @@ from __future__ import print_function
 
 import socket
 
-import psutil
-from psutil._common import bytes2human
+import matrix_psutil
+from matrix_psutil._common import bytes2human
 
 
 af_map = {
     socket.AF_INET: 'IPv4',
     socket.AF_INET6: 'IPv6',
-    psutil.AF_LINK: 'MAC',
+    matrix_psutil.AF_LINK: 'MAC',
 }
 
 duplex_map = {
-    psutil.NIC_DUPLEX_FULL: "full",
-    psutil.NIC_DUPLEX_HALF: "half",
-    psutil.NIC_DUPLEX_UNKNOWN: "?",
+    matrix_psutil.NIC_DUPLEX_FULL: "full",
+    matrix_psutil.NIC_DUPLEX_HALF: "half",
+    matrix_psutil.NIC_DUPLEX_UNKNOWN: "?",
 }
 
 
 def main():
-    stats = psutil.net_if_stats()
-    io_counters = psutil.net_io_counters(pernic=True)
-    for nic, addrs in psutil.net_if_addrs().items():
+    stats = matrix_psutil.net_if_stats()
+    io_counters = matrix_psutil.net_io_counters(pernic=True)
+    for nic, addrs in matrix_psutil.net_if_addrs().items():
         print("%s:" % (nic))
         if nic in stats:
             st = stats[nic]

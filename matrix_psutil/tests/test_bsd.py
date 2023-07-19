@@ -16,23 +16,23 @@ import re
 import time
 import unittest
 
-import psutil
-from psutil import BSD
-from psutil import FREEBSD
-from psutil import NETBSD
-from psutil import OPENBSD
-from psutil.tests import HAS_BATTERY
-from psutil.tests import TOLERANCE_SYS_MEM
-from psutil.tests import PsutilTestCase
-from psutil.tests import retry_on_failure
-from psutil.tests import sh
-from psutil.tests import spawn_testproc
-from psutil.tests import terminate
-from psutil.tests import which
+import matrix_psutil
+from matrix_psutil import BSD
+from matrix_psutil import FREEBSD
+from matrix_psutil import NETBSD
+from matrix_psutil import OPENBSD
+from matrix_psutil.tests import HAS_BATTERY
+from matrix_psutil.tests import TOLERANCE_SYS_MEM
+from matrix_psutil.tests import PsutilTestCase
+from matrix_psutil.tests import retry_on_failure
+from matrix_psutil.tests import sh
+from matrix_psutil.tests import spawn_testproc
+from matrix_psutil.tests import terminate
+from matrix_psutil.tests import which
 
 
 if BSD:
-    from psutil._psutil_posix import getpagesize
+    from matrix_psutil._psutil_posix import getpagesize
 
     PAGESIZE = getpagesize()
     # muse requires root privileges
@@ -89,7 +89,7 @@ class BSDTestCase(PsutilTestCase):
     def test_process_create_time(self):
         output = sh("ps -o lstart -p %s" % self.pid)
         start_ps = output.replace('STARTED', '').strip()
-        start_psutil = psutil.Process(self.pid).create_time()
+        start_psutil = matrix_psutil.Process(self.pid).create_time()
         start_psutil = time.strftime("%a %b %e %H:%M:%S %Y",
                                      time.localtime(start_psutil))
         self.assertEqual(start_ps, start_psutil)
@@ -110,8 +110,8 @@ class BSDTestCase(PsutilTestCase):
             free = int(free) * 1024
             return dev, total, used, free
 
-        for part in psutil.disk_partitions(all=False):
-            usage = psutil.disk_usage(part.mountpoint)
+        for part in matrix_psutil.disk_partitions(all=False):
+            usage = matrix_psutil.disk_usage(part.mountpoint)
             dev, total, used, free = df(part.mountpoint)
             self.assertEqual(part.device, dev)
             self.assertEqual(usage.total, total)
@@ -124,17 +124,17 @@ class BSDTestCase(PsutilTestCase):
     @unittest.skipIf(not which('sysctl'), "sysctl cmd not available")
     def test_cpu_count_logical(self):
         syst = sysctl("hw.ncpu")
-        self.assertEqual(psutil.cpu_count(logical=True), syst)
+        self.assertEqual(matrix_psutil.cpu_count(logical=True), syst)
 
     @unittest.skipIf(not which('sysctl'), "sysctl cmd not available")
     @unittest.skipIf(NETBSD, "skipped on NETBSD")  # we check /proc/meminfo
     def test_virtual_memory_total(self):
         num = sysctl('hw.physmem')
-        self.assertEqual(num, psutil.virtual_memory().total)
+        self.assertEqual(num, matrix_psutil.virtual_memory().total)
 
     @unittest.skipIf(not which('ifconfig'), "ifconfig cmd not available")
     def test_net_if_stats(self):
-        for name, stats in psutil.net_if_stats().items():
+        for name, stats in matrix_psutil.net_if_stats().items():
             try:
                 out = sh("ifconfig %s" % name)
             except RuntimeError:
@@ -165,7 +165,7 @@ class FreeBSDPsutilTestCase(PsutilTestCase):
     @retry_on_failure()
     def test_memory_maps(self):
         out = sh('procstat -v %s' % self.pid)
-        maps = psutil.Process(self.pid).memory_maps(grouped=False)
+        maps = matrix_psutil.Process(self.pid).memory_maps(grouped=False)
         lines = out.split('\n')[1:]
         while lines:
             line = lines.pop()
@@ -179,18 +179,18 @@ class FreeBSDPsutilTestCase(PsutilTestCase):
 
     def test_exe(self):
         out = sh('procstat -b %s' % self.pid)
-        self.assertEqual(psutil.Process(self.pid).exe(),
+        self.assertEqual(matrix_psutil.Process(self.pid).exe(),
                          out.split('\n')[1].split()[-1])
 
     def test_cmdline(self):
         out = sh('procstat -c %s' % self.pid)
-        self.assertEqual(' '.join(psutil.Process(self.pid).cmdline()),
+        self.assertEqual(' '.join(matrix_psutil.Process(self.pid).cmdline()),
                          ' '.join(out.split('\n')[1].split()[2:]))
 
     def test_uids_gids(self):
         out = sh('procstat -s %s' % self.pid)
         euid, ruid, suid, egid, rgid, sgid = out.split('\n')[1].split()[2:8]
-        p = psutil.Process(self.pid)
+        p = matrix_psutil.Process(self.pid)
         uids = p.uids()
         gids = p.gids()
         self.assertEqual(uids.real, int(ruid))
@@ -204,7 +204,7 @@ class FreeBSDPsutilTestCase(PsutilTestCase):
     def test_ctx_switches(self):
         tested = []
         out = sh('procstat -r %s' % self.pid)
-        p = psutil.Process(self.pid)
+        p = matrix_psutil.Process(self.pid)
         for line in out.split('\n'):
             line = line.lower().strip()
             if ' voluntary context' in line:
@@ -224,7 +224,7 @@ class FreeBSDPsutilTestCase(PsutilTestCase):
     def test_cpu_times(self):
         tested = []
         out = sh('procstat -r %s' % self.pid)
-        p = psutil.Process(self.pid)
+        p = matrix_psutil.Process(self.pid)
         for line in out.split('\n'):
             line = line.lower().strip()
             if 'user time' in line:
@@ -265,7 +265,7 @@ class FreeBSDSystemTestCase(PsutilTestCase):
             sysctl_result = int(sysctl(sensor))
         except RuntimeError:
             self.skipTest("frequencies not supported by kernel")
-        self.assertEqual(psutil.cpu_freq().current, sysctl_result)
+        self.assertEqual(matrix_psutil.cpu_freq().current, sysctl_result)
 
         sensor = "dev.cpu.0.freq_levels"
         sysctl_result = sysctl(sensor)
@@ -274,45 +274,45 @@ class FreeBSDSystemTestCase(PsutilTestCase):
         # Ordered highest available to lowest available.
         max_freq = int(sysctl_result.split()[0].split("/")[0])
         min_freq = int(sysctl_result.split()[-1].split("/")[0])
-        self.assertEqual(psutil.cpu_freq().max, max_freq)
-        self.assertEqual(psutil.cpu_freq().min, min_freq)
+        self.assertEqual(matrix_psutil.cpu_freq().max, max_freq)
+        self.assertEqual(matrix_psutil.cpu_freq().min, min_freq)
 
     # --- virtual_memory(); tests against sysctl
 
     @retry_on_failure()
     def test_vmem_active(self):
         syst = sysctl("vm.stats.vm.v_active_count") * PAGESIZE
-        self.assertAlmostEqual(psutil.virtual_memory().active, syst,
+        self.assertAlmostEqual(matrix_psutil.virtual_memory().active, syst,
                                delta=TOLERANCE_SYS_MEM)
 
     @retry_on_failure()
     def test_vmem_inactive(self):
         syst = sysctl("vm.stats.vm.v_inactive_count") * PAGESIZE
-        self.assertAlmostEqual(psutil.virtual_memory().inactive, syst,
+        self.assertAlmostEqual(matrix_psutil.virtual_memory().inactive, syst,
                                delta=TOLERANCE_SYS_MEM)
 
     @retry_on_failure()
     def test_vmem_wired(self):
         syst = sysctl("vm.stats.vm.v_wire_count") * PAGESIZE
-        self.assertAlmostEqual(psutil.virtual_memory().wired, syst,
+        self.assertAlmostEqual(matrix_psutil.virtual_memory().wired, syst,
                                delta=TOLERANCE_SYS_MEM)
 
     @retry_on_failure()
     def test_vmem_cached(self):
         syst = sysctl("vm.stats.vm.v_cache_count") * PAGESIZE
-        self.assertAlmostEqual(psutil.virtual_memory().cached, syst,
+        self.assertAlmostEqual(matrix_psutil.virtual_memory().cached, syst,
                                delta=TOLERANCE_SYS_MEM)
 
     @retry_on_failure()
     def test_vmem_free(self):
         syst = sysctl("vm.stats.vm.v_free_count") * PAGESIZE
-        self.assertAlmostEqual(psutil.virtual_memory().free, syst,
+        self.assertAlmostEqual(matrix_psutil.virtual_memory().free, syst,
                                delta=TOLERANCE_SYS_MEM)
 
     @retry_on_failure()
     def test_vmem_buffers(self):
         syst = sysctl("vfs.bufspace")
-        self.assertAlmostEqual(psutil.virtual_memory().buffers, syst,
+        self.assertAlmostEqual(matrix_psutil.virtual_memory().buffers, syst,
                                delta=TOLERANCE_SYS_MEM)
 
     # --- virtual_memory(); tests against muse
@@ -320,66 +320,66 @@ class FreeBSDSystemTestCase(PsutilTestCase):
     @unittest.skipIf(not MUSE_AVAILABLE, "muse not installed")
     def test_muse_vmem_total(self):
         num = muse('Total')
-        self.assertEqual(psutil.virtual_memory().total, num)
+        self.assertEqual(matrix_psutil.virtual_memory().total, num)
 
     @unittest.skipIf(not MUSE_AVAILABLE, "muse not installed")
     @retry_on_failure()
     def test_muse_vmem_active(self):
         num = muse('Active')
-        self.assertAlmostEqual(psutil.virtual_memory().active, num,
+        self.assertAlmostEqual(matrix_psutil.virtual_memory().active, num,
                                delta=TOLERANCE_SYS_MEM)
 
     @unittest.skipIf(not MUSE_AVAILABLE, "muse not installed")
     @retry_on_failure()
     def test_muse_vmem_inactive(self):
         num = muse('Inactive')
-        self.assertAlmostEqual(psutil.virtual_memory().inactive, num,
+        self.assertAlmostEqual(matrix_psutil.virtual_memory().inactive, num,
                                delta=TOLERANCE_SYS_MEM)
 
     @unittest.skipIf(not MUSE_AVAILABLE, "muse not installed")
     @retry_on_failure()
     def test_muse_vmem_wired(self):
         num = muse('Wired')
-        self.assertAlmostEqual(psutil.virtual_memory().wired, num,
+        self.assertAlmostEqual(matrix_psutil.virtual_memory().wired, num,
                                delta=TOLERANCE_SYS_MEM)
 
     @unittest.skipIf(not MUSE_AVAILABLE, "muse not installed")
     @retry_on_failure()
     def test_muse_vmem_cached(self):
         num = muse('Cache')
-        self.assertAlmostEqual(psutil.virtual_memory().cached, num,
+        self.assertAlmostEqual(matrix_psutil.virtual_memory().cached, num,
                                delta=TOLERANCE_SYS_MEM)
 
     @unittest.skipIf(not MUSE_AVAILABLE, "muse not installed")
     @retry_on_failure()
     def test_muse_vmem_free(self):
         num = muse('Free')
-        self.assertAlmostEqual(psutil.virtual_memory().free, num,
+        self.assertAlmostEqual(matrix_psutil.virtual_memory().free, num,
                                delta=TOLERANCE_SYS_MEM)
 
     @unittest.skipIf(not MUSE_AVAILABLE, "muse not installed")
     @retry_on_failure()
     def test_muse_vmem_buffers(self):
         num = muse('Buffer')
-        self.assertAlmostEqual(psutil.virtual_memory().buffers, num,
+        self.assertAlmostEqual(matrix_psutil.virtual_memory().buffers, num,
                                delta=TOLERANCE_SYS_MEM)
 
     def test_cpu_stats_ctx_switches(self):
-        self.assertAlmostEqual(psutil.cpu_stats().ctx_switches,
+        self.assertAlmostEqual(matrix_psutil.cpu_stats().ctx_switches,
                                sysctl('vm.stats.sys.v_swtch'), delta=1000)
 
     def test_cpu_stats_interrupts(self):
-        self.assertAlmostEqual(psutil.cpu_stats().interrupts,
+        self.assertAlmostEqual(matrix_psutil.cpu_stats().interrupts,
                                sysctl('vm.stats.sys.v_intr'), delta=1000)
 
     def test_cpu_stats_soft_interrupts(self):
-        self.assertAlmostEqual(psutil.cpu_stats().soft_interrupts,
+        self.assertAlmostEqual(matrix_psutil.cpu_stats().soft_interrupts,
                                sysctl('vm.stats.sys.v_soft'), delta=1000)
 
     @retry_on_failure()
     def test_cpu_stats_syscalls(self):
         # pretty high tolerance but it looks like it's OK.
-        self.assertAlmostEqual(psutil.cpu_stats().syscalls,
+        self.assertAlmostEqual(matrix_psutil.cpu_stats().syscalls,
                                sysctl('vm.stats.sys.v_syscall'), delta=200000)
 
     # def test_cpu_stats_traps(self):
@@ -391,17 +391,17 @@ class FreeBSDSystemTestCase(PsutilTestCase):
     def test_swapmem_free(self):
         total, used, free = self.parse_swapinfo()
         self.assertAlmostEqual(
-            psutil.swap_memory().free, free, delta=TOLERANCE_SYS_MEM)
+            matrix_psutil.swap_memory().free, free, delta=TOLERANCE_SYS_MEM)
 
     def test_swapmem_used(self):
         total, used, free = self.parse_swapinfo()
         self.assertAlmostEqual(
-            psutil.swap_memory().used, used, delta=TOLERANCE_SYS_MEM)
+            matrix_psutil.swap_memory().used, used, delta=TOLERANCE_SYS_MEM)
 
     def test_swapmem_total(self):
         total, used, free = self.parse_swapinfo()
         self.assertAlmostEqual(
-            psutil.swap_memory().total, total, delta=TOLERANCE_SYS_MEM)
+            matrix_psutil.swap_memory().total, total, delta=TOLERANCE_SYS_MEM)
 
     # --- others
 
@@ -410,7 +410,7 @@ class FreeBSDSystemTestCase(PsutilTestCase):
         s = s[s.find(" sec = ") + 7:]
         s = s[:s.find(',')]
         btime = int(s)
-        self.assertEqual(btime, psutil.boot_time())
+        self.assertEqual(btime, matrix_psutil.boot_time())
 
     # --- sensors_battery
 
@@ -424,22 +424,22 @@ class FreeBSDSystemTestCase(PsutilTestCase):
         out = sh("acpiconf -i 0")
         fields = dict([(x.split('\t')[0], x.split('\t')[-1])
                        for x in out.split("\n")])
-        metrics = psutil.sensors_battery()
+        metrics = matrix_psutil.sensors_battery()
         percent = int(fields['Remaining capacity:'].replace('%', ''))
         remaining_time = fields['Remaining time:']
         self.assertEqual(metrics.percent, percent)
         if remaining_time == 'unknown':
-            self.assertEqual(metrics.secsleft, psutil.POWER_TIME_UNLIMITED)
+            self.assertEqual(metrics.secsleft, matrix_psutil.POWER_TIME_UNLIMITED)
         else:
             self.assertEqual(secs2hours(metrics.secsleft), remaining_time)
 
     @unittest.skipIf(not HAS_BATTERY, "no battery")
     def test_sensors_battery_against_sysctl(self):
-        self.assertEqual(psutil.sensors_battery().percent,
+        self.assertEqual(matrix_psutil.sensors_battery().percent,
                          sysctl("hw.acpi.battery.life"))
-        self.assertEqual(psutil.sensors_battery().power_plugged,
+        self.assertEqual(matrix_psutil.sensors_battery().power_plugged,
                          sysctl("hw.acpi.acline") == 1)
-        secsleft = psutil.sensors_battery().secsleft
+        secsleft = matrix_psutil.sensors_battery().secsleft
         if secsleft < 0:
             self.assertEqual(sysctl("hw.acpi.battery.time"), -1)
         else:
@@ -454,12 +454,12 @@ class FreeBSDSystemTestCase(PsutilTestCase):
             sysctl("hw.acpi.battery.life")
             sysctl("hw.acpi.battery.time")
             sysctl("hw.acpi.acline")
-        self.assertIsNone(psutil.sensors_battery())
+        self.assertIsNone(matrix_psutil.sensors_battery())
 
     # --- sensors_temperatures
 
     def test_sensors_temperatures_against_sysctl(self):
-        num_cpus = psutil.cpu_count(True)
+        num_cpus = matrix_psutil.cpu_count(True)
         for cpu in range(num_cpus):
             sensor = "dev.cpu.%s.temperature" % cpu
             # sysctl returns a string in the format 46.0C
@@ -468,13 +468,13 @@ class FreeBSDSystemTestCase(PsutilTestCase):
             except RuntimeError:
                 self.skipTest("temperatures not supported by kernel")
             self.assertAlmostEqual(
-                psutil.sensors_temperatures()["coretemp"][cpu].current,
+                matrix_psutil.sensors_temperatures()["coretemp"][cpu].current,
                 sysctl_result, delta=10)
 
             sensor = "dev.cpu.%s.coretemp.tjmax" % cpu
             sysctl_result = int(float(sysctl(sensor)[:-1]))
             self.assertEqual(
-                psutil.sensors_temperatures()["coretemp"][cpu].high,
+                matrix_psutil.sensors_temperatures()["coretemp"][cpu].high,
                 sysctl_result)
 
 
@@ -489,7 +489,7 @@ class OpenBSDTestCase(PsutilTestCase):
     def test_boot_time(self):
         s = sysctl('kern.boottime')
         sys_bt = datetime.datetime.strptime(s, "%a %b %d %H:%M:%S %Y")
-        psutil_bt = datetime.datetime.fromtimestamp(psutil.boot_time())
+        psutil_bt = datetime.datetime.fromtimestamp(matrix_psutil.boot_time())
         self.assertEqual(sys_bt, psutil_bt)
 
 
@@ -513,42 +513,42 @@ class NetBSDTestCase(PsutilTestCase):
 
     def test_vmem_total(self):
         self.assertEqual(
-            psutil.virtual_memory().total, self.parse_meminfo("MemTotal:"))
+            matrix_psutil.virtual_memory().total, self.parse_meminfo("MemTotal:"))
 
     def test_vmem_free(self):
         self.assertAlmostEqual(
-            psutil.virtual_memory().free, self.parse_meminfo("MemFree:"),
+            matrix_psutil.virtual_memory().free, self.parse_meminfo("MemFree:"),
             delta=TOLERANCE_SYS_MEM)
 
     def test_vmem_buffers(self):
         self.assertAlmostEqual(
-            psutil.virtual_memory().buffers, self.parse_meminfo("Buffers:"),
+            matrix_psutil.virtual_memory().buffers, self.parse_meminfo("Buffers:"),
             delta=TOLERANCE_SYS_MEM)
 
     def test_vmem_shared(self):
         self.assertAlmostEqual(
-            psutil.virtual_memory().shared, self.parse_meminfo("MemShared:"),
+            matrix_psutil.virtual_memory().shared, self.parse_meminfo("MemShared:"),
             delta=TOLERANCE_SYS_MEM)
 
     def test_vmem_cached(self):
         self.assertAlmostEqual(
-            psutil.virtual_memory().cached, self.parse_meminfo("Cached:"),
+            matrix_psutil.virtual_memory().cached, self.parse_meminfo("Cached:"),
             delta=TOLERANCE_SYS_MEM)
 
     # --- swap mem
 
     def test_swapmem_total(self):
         self.assertAlmostEqual(
-            psutil.swap_memory().total, self.parse_meminfo("SwapTotal:"),
+            matrix_psutil.swap_memory().total, self.parse_meminfo("SwapTotal:"),
             delta=TOLERANCE_SYS_MEM)
 
     def test_swapmem_free(self):
         self.assertAlmostEqual(
-            psutil.swap_memory().free, self.parse_meminfo("SwapFree:"),
+            matrix_psutil.swap_memory().free, self.parse_meminfo("SwapFree:"),
             delta=TOLERANCE_SYS_MEM)
 
     def test_swapmem_used(self):
-        smem = psutil.swap_memory()
+        smem = matrix_psutil.swap_memory()
         self.assertEqual(smem.used, smem.total - smem.free)
 
     # --- others
@@ -562,7 +562,7 @@ class NetBSDTestCase(PsutilTestCase):
             else:
                 raise ValueError("couldn't find line")
         self.assertAlmostEqual(
-            psutil.cpu_stats().interrupts, interrupts, delta=1000)
+            matrix_psutil.cpu_stats().interrupts, interrupts, delta=1000)
 
     def test_cpu_stats_ctx_switches(self):
         with open('/proc/stat', 'rb') as f:
@@ -573,9 +573,9 @@ class NetBSDTestCase(PsutilTestCase):
             else:
                 raise ValueError("couldn't find line")
         self.assertAlmostEqual(
-            psutil.cpu_stats().ctx_switches, ctx_switches, delta=1000)
+            matrix_psutil.cpu_stats().ctx_switches, ctx_switches, delta=1000)
 
 
 if __name__ == '__main__':
-    from psutil.tests.runner import run_from_name
+    from matrix_psutil.tests.runner import run_from_name
     run_from_name(__file__)

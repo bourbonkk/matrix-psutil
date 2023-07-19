@@ -11,7 +11,7 @@ Kill a process by name.
 import os
 import sys
 
-import psutil
+import matrix_psutil
 
 
 def main():
@@ -21,7 +21,7 @@ def main():
         NAME = sys.argv[1]
 
     killed = []
-    for proc in psutil.process_iter():
+    for proc in matrix_psutil.process_iter():
         if proc.name() == NAME and proc.pid != os.getpid():
             proc.kill()
             killed.append(proc.pid)

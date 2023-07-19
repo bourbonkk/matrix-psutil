@@ -40,8 +40,8 @@ try:
 except ImportError:
     sys.exit('platform not supported')
 
-import psutil
-from psutil._common import bytes2human
+import matrix_psutil
+from matrix_psutil._common import bytes2human
 
 
 lineno = 0
@@ -67,12 +67,12 @@ def printl(line, highlight=False):
 
 def poll(interval):
     """Retrieve raw stats within an interval window."""
-    tot_before = psutil.net_io_counters()
-    pnic_before = psutil.net_io_counters(pernic=True)
+    tot_before = matrix_psutil.net_io_counters()
+    pnic_before = matrix_psutil.net_io_counters(pernic=True)
     # sleep some time
     time.sleep(interval)
-    tot_after = psutil.net_io_counters()
-    pnic_after = psutil.net_io_counters(pernic=True)
+    tot_after = matrix_psutil.net_io_counters()
+    pnic_after = matrix_psutil.net_io_counters(pernic=True)
     return (tot_before, tot_after, pnic_before, pnic_after)
 
 

@@ -14,10 +14,10 @@ import sys
 import pyperf  # requires "pip install pyperf"
 from bench_oneshot import names
 
-import psutil
+import matrix_psutil
 
 
-p = psutil.Process()
+p = matrix_psutil.Process()
 funs = [getattr(p, n) for n in names]
 
 
@@ -42,7 +42,7 @@ def main():
     args = runner.parse_args()
     if not args.worker:
         print("%s methods involved on platform %r (psutil %s):" % (
-            len(names), sys.platform, psutil.__version__))
+            len(names), sys.platform, matrix_psutil.__version__))
         for name in sorted(names):
             print("    " + name)
 

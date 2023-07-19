@@ -20,9 +20,9 @@ import sys
 
 import requests
 
-from psutil import __version__ as PSUTIL_VERSION
-from psutil._common import bytes2human
-from psutil._common import print_color
+from matrix_psutil import __version__ as PSUTIL_VERSION
+from matrix_psutil._common import bytes2human
+from matrix_psutil._common import print_color
 
 
 USER = "giampaolo"

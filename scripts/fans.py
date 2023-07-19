@@ -16,13 +16,13 @@ from __future__ import print_function
 
 import sys
 
-import psutil
+import matrix_psutil
 
 
 def main():
-    if not hasattr(psutil, "sensors_fans"):
+    if not hasattr(matrix_psutil, "sensors_fans"):
         return sys.exit("platform not supported")
-    fans = psutil.sensors_fans()
+    fans = matrix_psutil.sensors_fans()
     if not fans:
         print("no fans detected")
         return

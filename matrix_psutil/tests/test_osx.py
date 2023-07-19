@@ -11,21 +11,21 @@ import re
 import time
 import unittest
 
-import psutil
-from psutil import MACOS
-from psutil import POSIX
-from psutil.tests import HAS_BATTERY
-from psutil.tests import TOLERANCE_DISK_USAGE
-from psutil.tests import TOLERANCE_SYS_MEM
-from psutil.tests import PsutilTestCase
-from psutil.tests import retry_on_failure
-from psutil.tests import sh
-from psutil.tests import spawn_testproc
-from psutil.tests import terminate
+import matrix_psutil
+from matrix_psutil import MACOS
+from matrix_psutil import POSIX
+from matrix_psutil.tests import HAS_BATTERY
+from matrix_psutil.tests import TOLERANCE_DISK_USAGE
+from matrix_psutil.tests import TOLERANCE_SYS_MEM
+from matrix_psutil.tests import PsutilTestCase
+from matrix_psutil.tests import retry_on_failure
+from matrix_psutil.tests import sh
+from matrix_psutil.tests import spawn_testproc
+from matrix_psutil.tests import terminate
 
 
 if POSIX:
-    from psutil._psutil_posix import getpagesize
+    from matrix_psutil._psutil_posix import getpagesize
 
 
 def sysctl(cmdline):
@@ -67,7 +67,7 @@ class TestProcess(PsutilTestCase):
         start_ps = output.replace('STARTED', '').strip()
         hhmmss = start_ps.split(' ')[-2]
         year = start_ps.split(' ')[-1]
-        start_psutil = psutil.Process(self.pid).create_time()
+        start_psutil = matrix_psutil.Process(self.pid).create_time()
         self.assertEqual(
             hhmmss,
             time.strftime("%H:%M:%S", time.localtime(start_psutil)))
@@ -98,8 +98,8 @@ class TestSystemAPIs(PsutilTestCase):
             free = int(free) * 1024
             return dev, total, used, free
 
-        for part in psutil.disk_partitions(all=False):
-            usage = psutil.disk_usage(part.mountpoint)
+        for part in matrix_psutil.disk_partitions(all=False):
+            usage = matrix_psutil.disk_usage(part.mountpoint)
             dev, total, used, free = df(part.mountpoint)
             self.assertEqual(part.device, dev)
             self.assertEqual(usage.total, total)
@@ -112,16 +112,16 @@ class TestSystemAPIs(PsutilTestCase):
 
     def test_cpu_count_logical(self):
         num = sysctl("sysctl hw.logicalcpu")
-        self.assertEqual(num, psutil.cpu_count(logical=True))
+        self.assertEqual(num, matrix_psutil.cpu_count(logical=True))
 
     def test_cpu_count_cores(self):
         num = sysctl("sysctl hw.physicalcpu")
-        self.assertEqual(num, psutil.cpu_count(logical=False))
+        self.assertEqual(num, matrix_psutil.cpu_count(logical=False))
 
     # TODO: remove this once 1892 is fixed
     @unittest.skipIf(platform.machine() == 'arm64', "skipped due to #1892")
     def test_cpu_freq(self):
-        freq = psutil.cpu_freq()
+        freq = matrix_psutil.cpu_freq()
         self.assertEqual(
             freq.current * 1000 * 1000, sysctl("sysctl hw.cpufrequency"))
         self.assertEqual(
@@ -133,30 +133,30 @@ class TestSystemAPIs(PsutilTestCase):
 
     def test_vmem_total(self):
         sysctl_hwphymem = sysctl('sysctl hw.memsize')
-        self.assertEqual(sysctl_hwphymem, psutil.virtual_memory().total)
+        self.assertEqual(sysctl_hwphymem, matrix_psutil.virtual_memory().total)
 
     @retry_on_failure()
     def test_vmem_free(self):
         vmstat_val = vm_stat("free")
-        psutil_val = psutil.virtual_memory().free
+        psutil_val = matrix_psutil.virtual_memory().free
         self.assertAlmostEqual(psutil_val, vmstat_val, delta=TOLERANCE_SYS_MEM)
 
     @retry_on_failure()
     def test_vmem_active(self):
         vmstat_val = vm_stat("active")
-        psutil_val = psutil.virtual_memory().active
+        psutil_val = matrix_psutil.virtual_memory().active
         self.assertAlmostEqual(psutil_val, vmstat_val, delta=TOLERANCE_SYS_MEM)
 
     @retry_on_failure()
     def test_vmem_inactive(self):
         vmstat_val = vm_stat("inactive")
-        psutil_val = psutil.virtual_memory().inactive
+        psutil_val = matrix_psutil.virtual_memory().inactive
         self.assertAlmostEqual(psutil_val, vmstat_val, delta=TOLERANCE_SYS_MEM)
 
     @retry_on_failure()
     def test_vmem_wired(self):
         vmstat_val = vm_stat("wired")
-        psutil_val = psutil.virtual_memory().wired
+        psutil_val = matrix_psutil.virtual_memory().wired
         self.assertAlmostEqual(psutil_val, vmstat_val, delta=TOLERANCE_SYS_MEM)
 
     # --- swap mem
@@ -164,19 +164,19 @@ class TestSystemAPIs(PsutilTestCase):
     @retry_on_failure()
     def test_swapmem_sin(self):
         vmstat_val = vm_stat("Pageins")
-        psutil_val = psutil.swap_memory().sin
+        psutil_val = matrix_psutil.swap_memory().sin
         self.assertAlmostEqual(psutil_val, vmstat_val, delta=TOLERANCE_SYS_MEM)
 
     @retry_on_failure()
     def test_swapmem_sout(self):
         vmstat_val = vm_stat("Pageout")
-        psutil_val = psutil.swap_memory().sout
+        psutil_val = matrix_psutil.swap_memory().sout
         self.assertAlmostEqual(psutil_val, vmstat_val, delta=TOLERANCE_SYS_MEM)
 
     # --- network
 
     def test_net_if_stats(self):
-        for name, stats in psutil.net_if_stats().items():
+        for name, stats in matrix_psutil.net_if_stats().items():
             try:
                 out = sh("ifconfig %s" % name)
             except RuntimeError:
@@ -194,11 +194,11 @@ class TestSystemAPIs(PsutilTestCase):
         percent = re.search(r"(\d+)%", out).group(1)
         drawing_from = re.search("Now drawing from '([^']+)'", out).group(1)
         power_plugged = drawing_from == "AC Power"
-        psutil_result = psutil.sensors_battery()
+        psutil_result = matrix_psutil.sensors_battery()
         self.assertEqual(psutil_result.power_plugged, power_plugged)
         self.assertEqual(psutil_result.percent, int(percent))
 
 
 if __name__ == '__main__':
-    from psutil.tests.runner import run_from_name
+    from matrix_psutil.tests.runner import run_from_name
     run_from_name(__file__)

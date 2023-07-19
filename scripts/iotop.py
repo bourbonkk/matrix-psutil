@@ -39,8 +39,8 @@ try:
 except ImportError:
     sys.exit('platform not supported')
 
-import psutil
-from psutil._common import bytes2human
+import matrix_psutil
+from matrix_psutil._common import bytes2human
 
 
 win = curses.initscr()
@@ -71,14 +71,14 @@ def poll(interval):
     sorted by IO activity and total disks I/O activity.
     """
     # first get a list of all processes and disk io counters
-    procs = list(psutil.process_iter())
+    procs = list(matrix_psutil.process_iter())
     for p in procs[:]:
         try:
             p._before = p.io_counters()
-        except psutil.Error:
+        except matrix_psutil.Error:
             procs.remove(p)
             continue
-    disks_before = psutil.disk_io_counters()
+    disks_before = matrix_psutil.disk_io_counters()
 
     # sleep some time
     time.sleep(interval)
@@ -92,9 +92,9 @@ def poll(interval):
                 if not p._cmdline:
                     p._cmdline = p.name()
                 p._username = p.username()
-            except (psutil.NoSuchProcess, psutil.ZombieProcess):
+            except (matrix_psutil.NoSuchProcess, matrix_psutil.ZombieProcess):
                 procs.remove(p)
-    disks_after = psutil.disk_io_counters()
+    disks_after = matrix_psutil.disk_io_counters()
 
     # finally calculate results by comparing data before and
     # after the interval

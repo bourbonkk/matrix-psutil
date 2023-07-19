@@ -11,10 +11,10 @@
 import re
 import unittest
 
-import psutil
-from psutil import AIX
-from psutil.tests import PsutilTestCase
-from psutil.tests import sh
+import matrix_psutil
+from matrix_psutil import AIX
+from matrix_psutil.tests import PsutilTestCase
+from matrix_psutil.tests import sh
 
 
 @unittest.skipIf(not AIX, "AIX only")
@@ -36,7 +36,7 @@ class AIXSpecificTestCase(PsutilTestCase):
         used = int(matchobj.group("inuse")) * KB
         free = int(matchobj.group("free")) * KB
 
-        psutil_result = psutil.virtual_memory()
+        psutil_result = matrix_psutil.virtual_memory()
 
         # TOLERANCE_SYS_MEM from psutil.tests is not enough. For some reason
         # we're seeing differences of ~1.2 MB. 2 MB is still a good tolerance
@@ -66,7 +66,7 @@ class AIXSpecificTestCase(PsutilTestCase):
 
         total_mb = int(matchobj.group("size"))
         MB = 1024 ** 2
-        psutil_result = psutil.swap_memory()
+        psutil_result = matrix_psutil.swap_memory()
         # we divide our result by MB instead of multiplying the lsps value by
         # MB because lsps may round down, so we round down too
         self.assertEqual(int(psutil_result.total / MB), total_mb)
@@ -86,7 +86,7 @@ class AIXSpecificTestCase(PsutilTestCase):
 
         # numbers are usually in the millions so 1000 is ok for tolerance
         CPU_STATS_TOLERANCE = 1000
-        psutil_result = psutil.cpu_stats()
+        psutil_result = matrix_psutil.cpu_stats()
         self.assertAlmostEqual(
             psutil_result.ctx_switches,
             int(matchobj.group("cs")),
@@ -107,16 +107,16 @@ class AIXSpecificTestCase(PsutilTestCase):
     def test_cpu_count_logical(self):
         out = sh('/usr/bin/mpstat -a')
         mpstat_lcpu = int(re.search(r"lcpu=(\d+)", out).group(1))
-        psutil_lcpu = psutil.cpu_count(logical=True)
+        psutil_lcpu = matrix_psutil.cpu_count(logical=True)
         self.assertEqual(mpstat_lcpu, psutil_lcpu)
 
     def test_net_if_addrs_names(self):
         out = sh('/etc/ifconfig -l')
         ifconfig_names = set(out.split())
-        psutil_names = set(psutil.net_if_addrs().keys())
+        psutil_names = set(matrix_psutil.net_if_addrs().keys())
         self.assertSetEqual(ifconfig_names, psutil_names)
 
 
 if __name__ == '__main__':
-    from psutil.tests.runner import run_from_name
+    from matrix_psutil.tests.runner import run_from_name
     run_from_name(__file__)

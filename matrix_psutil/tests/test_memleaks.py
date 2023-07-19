@@ -22,40 +22,40 @@ import os
 import platform
 import unittest
 
-import psutil
-import psutil._common
-from psutil import LINUX
-from psutil import MACOS
-from psutil import OPENBSD
-from psutil import POSIX
-from psutil import SUNOS
-from psutil import WINDOWS
-from psutil._compat import ProcessLookupError
-from psutil._compat import super
-from psutil.tests import HAS_CPU_AFFINITY
-from psutil.tests import HAS_CPU_FREQ
-from psutil.tests import HAS_ENVIRON
-from psutil.tests import HAS_IONICE
-from psutil.tests import HAS_MEMORY_MAPS
-from psutil.tests import HAS_NET_IO_COUNTERS
-from psutil.tests import HAS_PROC_CPU_NUM
-from psutil.tests import HAS_PROC_IO_COUNTERS
-from psutil.tests import HAS_RLIMIT
-from psutil.tests import HAS_SENSORS_BATTERY
-from psutil.tests import HAS_SENSORS_FANS
-from psutil.tests import HAS_SENSORS_TEMPERATURES
-from psutil.tests import TestMemoryLeak
-from psutil.tests import create_sockets
-from psutil.tests import get_testfn
-from psutil.tests import process_namespace
-from psutil.tests import skip_on_access_denied
-from psutil.tests import spawn_testproc
-from psutil.tests import system_namespace
-from psutil.tests import terminate
+import matrix_psutil
+import matrix_psutil._common
+from matrix_psutil import LINUX
+from matrix_psutil import MACOS
+from matrix_psutil import OPENBSD
+from matrix_psutil import POSIX
+from matrix_psutil import SUNOS
+from matrix_psutil import WINDOWS
+from matrix_psutil._compat import ProcessLookupError
+from matrix_psutil._compat import super
+from matrix_psutil.tests import HAS_CPU_AFFINITY
+from matrix_psutil.tests import HAS_CPU_FREQ
+from matrix_psutil.tests import HAS_ENVIRON
+from matrix_psutil.tests import HAS_IONICE
+from matrix_psutil.tests import HAS_MEMORY_MAPS
+from matrix_psutil.tests import HAS_NET_IO_COUNTERS
+from matrix_psutil.tests import HAS_PROC_CPU_NUM
+from matrix_psutil.tests import HAS_PROC_IO_COUNTERS
+from matrix_psutil.tests import HAS_RLIMIT
+from matrix_psutil.tests import HAS_SENSORS_BATTERY
+from matrix_psutil.tests import HAS_SENSORS_FANS
+from matrix_psutil.tests import HAS_SENSORS_TEMPERATURES
+from matrix_psutil.tests import TestMemoryLeak
+from matrix_psutil.tests import create_sockets
+from matrix_psutil.tests import get_testfn
+from matrix_psutil.tests import process_namespace
+from matrix_psutil.tests import skip_on_access_denied
+from matrix_psutil.tests import spawn_testproc
+from matrix_psutil.tests import system_namespace
+from matrix_psutil.tests import terminate
 
 
-cext = psutil._psplatform.cext
-thisproc = psutil.Process()
+cext = matrix_psutil._psplatform.cext
+thisproc = matrix_psutil.Process()
 FEW_TIMES = 5
 
 
@@ -140,7 +140,7 @@ class TestProcessObjectLeaks(TestMemoryLeak):
             value = thisproc.ionice()
             self.execute(lambda: self.proc.ionice(value))
         else:
-            self.execute(lambda: self.proc.ionice(psutil.IOPRIO_CLASS_NONE))
+            self.execute(lambda: self.proc.ionice(matrix_psutil.IOPRIO_CLASS_NONE))
             fun = functools.partial(cext.proc_ioprio_set, os.getpid(), -1, 0)
             self.execute_w_exc(OSError, fun)
 
@@ -152,7 +152,7 @@ class TestProcessObjectLeaks(TestMemoryLeak):
     @unittest.skipIf(POSIX, "worthless on POSIX")
     def test_username(self):
         # always open 1 handle on Windows (only once)
-        psutil.Process().username()
+        matrix_psutil.Process().username()
         self.execute(self.proc.username)
 
     @fewtimes_if_linux()
@@ -236,13 +236,13 @@ class TestProcessObjectLeaks(TestMemoryLeak):
     @unittest.skipIf(not LINUX, "LINUX only")
     @unittest.skipIf(not HAS_RLIMIT, "not supported")
     def test_rlimit(self):
-        self.execute(lambda: self.proc.rlimit(psutil.RLIMIT_NOFILE))
+        self.execute(lambda: self.proc.rlimit(matrix_psutil.RLIMIT_NOFILE))
 
     @unittest.skipIf(not LINUX, "LINUX only")
     @unittest.skipIf(not HAS_RLIMIT, "not supported")
     def test_rlimit_set(self):
-        limit = thisproc.rlimit(psutil.RLIMIT_NOFILE)
-        self.execute(lambda: self.proc.rlimit(psutil.RLIMIT_NOFILE, limit))
+        limit = thisproc.rlimit(matrix_psutil.RLIMIT_NOFILE)
+        self.execute(lambda: self.proc.rlimit(matrix_psutil.RLIMIT_NOFILE, limit))
         self.execute_w_exc((OSError, ValueError), lambda: self.proc.rlimit(-1))
 
     @fewtimes_if_linux()
@@ -277,7 +277,7 @@ class TestTerminatedProcessLeaks(TestProcessObjectLeaks):
     def setUpClass(cls):
         super().setUpClass()
         cls.subp = spawn_testproc()
-        cls.proc = psutil.Process(cls.subp.pid)
+        cls.proc = matrix_psutil.Process(cls.subp.pid)
         cls.proc.kill()
         cls.proc.wait()
 
@@ -289,7 +289,7 @@ class TestTerminatedProcessLeaks(TestProcessObjectLeaks):
     def call(self, fun):
         try:
             fun()
-        except psutil.NoSuchProcess:
+        except matrix_psutil.NoSuchProcess:
             pass
 
     if WINDOWS:
@@ -346,23 +346,23 @@ class TestModuleFunctionsLeaks(TestMemoryLeak):
 
     @fewtimes_if_linux()
     def test_cpu_count(self):  # logical
-        self.execute(lambda: psutil.cpu_count(logical=True))
+        self.execute(lambda: matrix_psutil.cpu_count(logical=True))
 
     @fewtimes_if_linux()
     def test_cpu_count_cores(self):
-        self.execute(lambda: psutil.cpu_count(logical=False))
+        self.execute(lambda: matrix_psutil.cpu_count(logical=False))
 
     @fewtimes_if_linux()
     def test_cpu_times(self):
-        self.execute(psutil.cpu_times)
+        self.execute(matrix_psutil.cpu_times)
 
     @fewtimes_if_linux()
     def test_per_cpu_times(self):
-        self.execute(lambda: psutil.cpu_times(percpu=True))
+        self.execute(lambda: matrix_psutil.cpu_times(percpu=True))
 
     @fewtimes_if_linux()
     def test_cpu_stats(self):
-        self.execute(psutil.cpu_stats)
+        self.execute(matrix_psutil.cpu_stats)
 
     @fewtimes_if_linux()
     # TODO: remove this once 1892 is fixed
@@ -370,99 +370,99 @@ class TestModuleFunctionsLeaks(TestMemoryLeak):
                      "skipped due to #1892")
     @unittest.skipIf(not HAS_CPU_FREQ, "not supported")
     def test_cpu_freq(self):
-        self.execute(psutil.cpu_freq)
+        self.execute(matrix_psutil.cpu_freq)
 
     @unittest.skipIf(not WINDOWS, "WINDOWS only")
     def test_getloadavg(self):
-        psutil.getloadavg()
-        self.execute(psutil.getloadavg)
+        matrix_psutil.getloadavg()
+        self.execute(matrix_psutil.getloadavg)
 
     # --- mem
 
     def test_virtual_memory(self):
-        self.execute(psutil.virtual_memory)
+        self.execute(matrix_psutil.virtual_memory)
 
     # TODO: remove this skip when this gets fixed
     @unittest.skipIf(SUNOS, "worthless on SUNOS (uses a subprocess)")
     def test_swap_memory(self):
-        self.execute(psutil.swap_memory)
+        self.execute(matrix_psutil.swap_memory)
 
     def test_pid_exists(self):
         times = FEW_TIMES if POSIX else self.times
-        self.execute(lambda: psutil.pid_exists(os.getpid()), times=times)
+        self.execute(lambda: matrix_psutil.pid_exists(os.getpid()), times=times)
 
     # --- disk
 
     def test_disk_usage(self):
         times = FEW_TIMES if POSIX else self.times
-        self.execute(lambda: psutil.disk_usage('.'), times=times)
+        self.execute(lambda: matrix_psutil.disk_usage('.'), times=times)
 
     def test_disk_partitions(self):
-        self.execute(psutil.disk_partitions)
+        self.execute(matrix_psutil.disk_partitions)
 
     @unittest.skipIf(LINUX and not os.path.exists('/proc/diskstats'),
                      '/proc/diskstats not available on this Linux version')
     @fewtimes_if_linux()
     def test_disk_io_counters(self):
-        self.execute(lambda: psutil.disk_io_counters(nowrap=False))
+        self.execute(lambda: matrix_psutil.disk_io_counters(nowrap=False))
 
     # --- proc
 
     @fewtimes_if_linux()
     def test_pids(self):
-        self.execute(psutil.pids)
+        self.execute(matrix_psutil.pids)
 
     # --- net
 
     @fewtimes_if_linux()
     @unittest.skipIf(not HAS_NET_IO_COUNTERS, 'not supported')
     def test_net_io_counters(self):
-        self.execute(lambda: psutil.net_io_counters(nowrap=False))
+        self.execute(lambda: matrix_psutil.net_io_counters(nowrap=False))
 
     @fewtimes_if_linux()
     @unittest.skipIf(MACOS and os.getuid() != 0, "need root access")
     def test_net_connections(self):
         # always opens and handle on Windows() (once)
-        psutil.net_connections(kind='all')
+        matrix_psutil.net_connections(kind='all')
         with create_sockets():
-            self.execute(lambda: psutil.net_connections(kind='all'))
+            self.execute(lambda: matrix_psutil.net_connections(kind='all'))
 
     def test_net_if_addrs(self):
         # Note: verified that on Windows this was a false positive.
         tolerance = 80 * 1024 if WINDOWS else self.tolerance
-        self.execute(psutil.net_if_addrs, tolerance=tolerance)
+        self.execute(matrix_psutil.net_if_addrs, tolerance=tolerance)
 
     def test_net_if_stats(self):
-        self.execute(psutil.net_if_stats)
+        self.execute(matrix_psutil.net_if_stats)
 
     # --- sensors
 
     @fewtimes_if_linux()
     @unittest.skipIf(not HAS_SENSORS_BATTERY, "not supported")
     def test_sensors_battery(self):
-        self.execute(psutil.sensors_battery)
+        self.execute(matrix_psutil.sensors_battery)
 
     @fewtimes_if_linux()
     @unittest.skipIf(not HAS_SENSORS_TEMPERATURES, "not supported")
     def test_sensors_temperatures(self):
-        self.execute(psutil.sensors_temperatures)
+        self.execute(matrix_psutil.sensors_temperatures)
 
     @fewtimes_if_linux()
     @unittest.skipIf(not HAS_SENSORS_FANS, "not supported")
     def test_sensors_fans(self):
-        self.execute(psutil.sensors_fans)
+        self.execute(matrix_psutil.sensors_fans)
 
     # --- others
 
     @fewtimes_if_linux()
     def test_boot_time(self):
-        self.execute(psutil.boot_time)
+        self.execute(matrix_psutil.boot_time)
 
     def test_users(self):
-        self.execute(psutil.users)
+        self.execute(matrix_psutil.users)
 
     def test_set_debug(self):
-        self.execute(lambda: psutil._set_debug(False))
+        self.execute(lambda: matrix_psutil._set_debug(False))
 
     if WINDOWS:
 
@@ -475,18 +475,18 @@ class TestModuleFunctionsLeaks(TestMemoryLeak):
             pass
 
         def test_win_service_get_config(self):
-            name = next(psutil.win_service_iter()).name()
+            name = next(matrix_psutil.win_service_iter()).name()
             self.execute(lambda: cext.winservice_query_config(name))
 
         def test_win_service_get_status(self):
-            name = next(psutil.win_service_iter()).name()
+            name = next(matrix_psutil.win_service_iter()).name()
             self.execute(lambda: cext.winservice_query_status(name))
 
         def test_win_service_get_description(self):
-            name = next(psutil.win_service_iter()).name()
+            name = next(matrix_psutil.win_service_iter()).name()
             self.execute(lambda: cext.winservice_query_descr(name))
 
 
 if __name__ == '__main__':
-    from psutil.tests.runner import run_from_name
+    from matrix_psutil.tests.runner import run_from_name
     run_from_name(__file__)

@@ -78,8 +78,8 @@ import os
 import sys
 from timeit import default_timer as timer
 
-import psutil
-from psutil._common import print_color
+import matrix_psutil
+from matrix_psutil._common import print_color
 
 
 TIMES = 300
@@ -121,16 +121,16 @@ def timecall(title, fun, *args, **kw):
 
 def set_highest_priority():
     """Set highest CPU and I/O priority (requires root)."""
-    p = psutil.Process()
-    if psutil.WINDOWS:
-        p.nice(psutil.HIGH_PRIORITY_CLASS)
+    p = matrix_psutil.Process()
+    if matrix_psutil.WINDOWS:
+        p.nice(matrix_psutil.HIGH_PRIORITY_CLASS)
     else:
         p.nice(-20)
 
-    if psutil.LINUX:
-        p.ionice(psutil.IOPRIO_CLASS_RT, value=7)
-    elif psutil.WINDOWS:
-        p.ionice(psutil.IOPRIO_HIGH)
+    if matrix_psutil.LINUX:
+        p.ionice(matrix_psutil.IOPRIO_CLASS_RT, value=7)
+    elif matrix_psutil.WINDOWS:
+        p.ionice(matrix_psutil.IOPRIO_HIGH)
 
 
 def main():
@@ -145,7 +145,7 @@ def main():
 
     try:
         set_highest_priority()
-    except psutil.AccessDenied:
+    except matrix_psutil.AccessDenied:
         prio_set = False
     else:
         prio_set = True
@@ -155,25 +155,25 @@ def main():
     public_apis = []
     ignore = ['wait_procs', 'process_iter', 'win_service_get',
               'win_service_iter']
-    if psutil.MACOS:
+    if matrix_psutil.MACOS:
         ignore.append('net_connections')  # raises AD
-    for name in psutil.__all__:
-        obj = getattr(psutil, name, None)
+    for name in matrix_psutil.__all__:
+        obj = getattr(matrix_psutil, name, None)
         if inspect.isfunction(obj):
             if name not in ignore:
                 public_apis.append(name)
 
     print_header("SYSTEM APIS")
     for name in public_apis:
-        fun = getattr(psutil, name)
+        fun = getattr(matrix_psutil, name)
         args = ()
         if name == 'pid_exists':
             args = (os.getpid(), )
         elif name == 'disk_usage':
             args = (os.getcwd(), )
         timecall(name, fun, *args)
-    timecall('cpu_count (cores)', psutil.cpu_count, logical=False)
-    timecall('process_iter (all)', lambda: list(psutil.process_iter()))
+    timecall('cpu_count (cores)', matrix_psutil.cpu_count, logical=False)
+    timecall('process_iter (all)', lambda: list(matrix_psutil.process_iter()))
     print_timings()
 
     # --- process
@@ -182,9 +182,9 @@ def main():
     ignore = ['send_signal', 'suspend', 'resume', 'terminate', 'kill', 'wait',
               'as_dict', 'parent', 'parents', 'memory_info_ex', 'oneshot',
               'pid', 'rlimit', 'children']
-    if psutil.MACOS:
+    if matrix_psutil.MACOS:
         ignore.append('memory_maps')  # XXX
-    p = psutil.Process()
+    p = matrix_psutil.Process()
     for name in sorted(dir(p)):
         if not name.startswith('_') and name not in ignore:
             fun = getattr(p, name)

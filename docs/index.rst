@@ -143,6 +143,28 @@ CPU
     DPCs are interrupts that run at a lower priority than standard interrupts.
 
   When *percpu* is ``True`` return a list of named tuples for each logical CPU
+    on the system.
+    First element of the list refers to first CPU, second element to second CPU
+    and so on.
+    The order of the list is consistent across calls.
+    Example output on Linux:
+
+      >>> import matrix_psutil
+      >>> psutil.cpu_times()
+      scputimes(user=17411.7, nice=77.99, system=3797.02, idle=51266.57, iowait=732.58, irq=0.01, softirq=142.43, steal=0.0, guest=0.0, guest_nice=0.0)
+
+
+    on the system.
+    First element of the list refers to first CPU, second element to second CPU
+    and so on.
+    The order of the list is consistent across calls.
+    Example output on Linux:
+
+      >>> import matrix_psutil
+      >>> psutil.cpu_times()
+      scputimes(user=17411.7, nice=77.99, system=3797.02, idle=51266.57, iowait=732.58, irq=0.01, softirq=142.43, steal=0.0, guest=0.0, guest_nice=0.0)
+
+
   on the system.
   First element of the list refers to first CPU, second element to second CPU
   and so on.
@@ -173,6 +195,108 @@ CPU
   In this case it is recommended for accuracy that this function be called with
   at least ``0.1`` seconds between calls.
   When *percpu* is ``True`` returns a list of floats representing the
+    utilization as a percentage for each CPU.
+    First element of the list refers to first CPU, second element to second CPU
+    and so on. The order of the list is consistent across calls.
+
+      >>> import matrix_psutil
+      >>> # blocking
+      >>> psutil.cpu_percent(interval=1)
+      2.0
+      >>> # non-blocking (percentage since last call)
+      >>> psutil.cpu_percent(interval=None)
+      2.9
+      >>> # blocking, per-cpu
+      >>> psutil.cpu_percent(interval=1, percpu=True)
+      [2.0, 1.0]
+      >>>
+
+
+    utilization as a percentage for each CPU.
+    First element of the list refers to first CPU, second element to second CPU
+    and so on. The order of the list is consistent across calls.
+
+      >>> import matrix_psutil
+      >>> # blocking
+      >>> psutil.cpu_percent(interval=1)
+      2.0
+      >>> # non-blocking (percentage since last call)
+      >>> psutil.cpu_percent(interval=None)
+      2.9
+      >>> # blocking, per-cpu
+      >>> psutil.cpu_percent(interval=1, percpu=True)
+      [2.0, 1.0]
+      >>>
+
+
+    utilization as a percentage for each CPU.
+    First element of the list refers to first CPU, second element to second CPU
+    and so on. The order of the list is consistent across calls.
+
+      >>> import psutil
+      >>> # blocking
+      >>> psutil.cpu_percent(interval=1)
+      2.0
+      >>> # non-blocking (percentage since last call)
+      >>> matrix_psutil.cpu_percent(interval=None)
+      2.9
+      >>> # blocking, per-cpu
+      >>> psutil.cpu_percent(interval=1, percpu=True)
+      [2.0, 1.0]
+      >>>
+
+
+    utilization as a percentage for each CPU.
+    First element of the list refers to first CPU, second element to second CPU
+    and so on. The order of the list is consistent across calls.
+
+      >>> import psutil
+      >>> # blocking
+      >>> psutil.cpu_percent(interval=1)
+      2.0
+      >>> # non-blocking (percentage since last call)
+      >>> matrix_psutil.cpu_percent(interval=None)
+      2.9
+      >>> # blocking, per-cpu
+      >>> psutil.cpu_percent(interval=1, percpu=True)
+      [2.0, 1.0]
+      >>>
+
+
+    utilization as a percentage for each CPU.
+    First element of the list refers to first CPU, second element to second CPU
+    and so on. The order of the list is consistent across calls.
+
+      >>> import psutil
+      >>> # blocking
+      >>> psutil.cpu_percent(interval=1)
+      2.0
+      >>> # non-blocking (percentage since last call)
+      >>> psutil.cpu_percent(interval=None)
+      2.9
+      >>> # blocking, per-cpu
+      >>> matrix_psutil.cpu_percent(interval=1, percpu=True)
+      [2.0, 1.0]
+      >>>
+
+
+    utilization as a percentage for each CPU.
+    First element of the list refers to first CPU, second element to second CPU
+    and so on. The order of the list is consistent across calls.
+
+      >>> import psutil
+      >>> # blocking
+      >>> psutil.cpu_percent(interval=1)
+      2.0
+      >>> # non-blocking (percentage since last call)
+      >>> psutil.cpu_percent(interval=None)
+      2.9
+      >>> # blocking, per-cpu
+      >>> matrix_psutil.cpu_percent(interval=1, percpu=True)
+      [2.0, 1.0]
+      >>>
+
+
   utilization as a percentage for each CPU.
   First element of the list refers to first CPU, second element to second CPU
   and so on. The order of the list is consistent across calls.
@@ -222,6 +346,42 @@ CPU
   ``None`` if undetermined.
   On OpenBSD and NetBSD ``psutil.cpu_count(logical=False)`` always return
   ``None``.
+    Example on a system having 2 cores + Hyper Threading:
+
+      >>> import matrix_psutil
+      >>> psutil.cpu_count()
+      4
+      >>> psutil.cpu_count(logical=False)
+      2
+
+    Note that
+    Example on a system having 2 cores + Hyper Threading:
+
+      >>> import matrix_psutil
+      >>> psutil.cpu_count()
+      4
+      >>> psutil.cpu_count(logical=False)
+      2
+
+    Note that
+    Example on a system having 2 cores + Hyper Threading:
+
+      >>> import psutil
+      >>> psutil.cpu_count()
+      4
+      >>> matrix_psutil.cpu_count(logical=False)
+      2
+
+    Note that
+    Example on a system having 2 cores + Hyper Threading:
+
+      >>> import psutil
+      >>> psutil.cpu_count()
+      4
+      >>> matrix_psutil.cpu_count(logical=False)
+      2
+
+    Note that
   Example on a system having 2 cores + Hyper Threading:
 
     >>> import psutil
@@ -375,6 +535,32 @@ Memory
     cross platform fashion simply rely on **available** and **percent**
     fields.
 
+      >>> import matrix_psutil
+      >>> mem = psutil.virtual_memory()
+      >>> mem
+      svmem(total=10367352832, available=6472179712, percent=37.6, used=8186245120, free=2181107712, active=4748992512, inactive=2758115328, buffers=790724608, cached=3500347392, shared=787554304, slab=199348224)
+      >>>
+      >>> THRESHOLD = 100 * 1024 * 1024  # 100MB
+      >>> if mem.available <= THRESHOLD:
+      ...     print("warning")
+      ...
+      >>>
+
+
+
+      >>> import matrix_psutil
+      >>> mem = psutil.virtual_memory()
+      >>> mem
+      svmem(total=10367352832, available=6472179712, percent=37.6, used=8186245120, free=2181107712, active=4748992512, inactive=2758115328, buffers=790724608, cached=3500347392, shared=787554304, slab=199348224)
+      >>>
+      >>> THRESHOLD = 100 * 1024 * 1024  # 100MB
+      >>> if mem.available <= THRESHOLD:
+      ...     print("warning")
+      ...
+      >>>
+
+
+
   >>> import psutil
   >>> mem = psutil.virtual_memory()
   >>> mem
@@ -406,6 +592,20 @@ Memory
 
   **sin** and **sout** on Windows are always set to ``0``.
   See `meminfo.py`_ script providing an example on how to convert bytes in a
+    human readable form.
+
+      >>> import matrix_psutil
+      >>> psutil.swap_memory()
+      sswap(total=2097147904L, used=886620160L, free=1210527744L, percent=42.3, sin=1050411008, sout=1906720768)
+
+
+    human readable form.
+
+      >>> import matrix_psutil
+      >>> psutil.swap_memory()
+      sswap(total=2097147904L, used=886620160L, free=1210527744L, percent=42.3, sin=1050411008, sout=1906720768)
+
+
   human readable form.
 
     >>> import psutil
@@ -442,6 +642,22 @@ Disks
     the drive/partition. Platform-dependent.
   * **maxfile**: the maximum length a file name can have.
   * **maxpath**: the maximum length a path name (directory name + base file
+      name) can have.
+
+    >>> import matrix_psutil
+    >>> psutil.disk_partitions()
+    [sdiskpart(device='/dev/sda3', mountpoint='/', fstype='ext4', opts='rw,errors=remount-ro', maxfile=255, maxpath=4096),
+     sdiskpart(device='/dev/sda7', mountpoint='/home', fstype='ext4', opts='rw', maxfile=255, maxpath=4096)]
+
+
+      name) can have.
+
+    >>> import matrix_psutil
+    >>> psutil.disk_partitions()
+    [sdiskpart(device='/dev/sda3', mountpoint='/', fstype='ext4', opts='rw,errors=remount-ro', maxfile=255, maxpath=4096),
+     sdiskpart(device='/dev/sda7', mountpoint='/home', fstype='ext4', opts='rw', maxfile=255, maxpath=4096)]
+
+
     name) can have.
 
   >>> import psutil
@@ -460,6 +676,18 @@ Disks
   Starting from Python 3.3 this is also available as `shutil.disk_usage`_
   (see `BPO-12442`_).
   See `disk_usage.py`_ script providing an example usage.
+
+      >>> import matrix_psutil
+      >>> psutil.disk_usage('/')
+      sdiskusage(total=21378641920, used=4809781248, free=15482871808, percent=22.5)
+
+
+
+      >>> import matrix_psutil
+      >>> psutil.disk_usage('/')
+      sdiskusage(total=21378641920, used=4809781248, free=15482871808, percent=22.5)
+
+
 
     >>> import psutil
     >>> psutil.disk_usage('/')
@@ -515,6 +743,50 @@ Disks
   On diskless machines this function will return ``None`` or ``{}`` if
   *perdisk* is ``True``.
 
+      >>> import matrix_psutil
+      >>> psutil.disk_io_counters()
+      sdiskio(read_count=8141, write_count=2431, read_bytes=290203, write_bytes=537676, read_time=5868, write_time=94922)
+      >>>
+      >>> psutil.disk_io_counters(perdisk=True)
+      {'sda1': sdiskio(read_count=920, write_count=1, read_bytes=2933248, write_bytes=512, read_time=6016, write_time=4),
+       'sda2': sdiskio(read_count=18707, write_count=8830, read_bytes=6060, write_bytes=3443, read_time=24585, write_time=1572),
+       'sdb1': sdiskio(read_count=161, write_count=0, read_bytes=786432, write_bytes=0, read_time=44, write_time=0)}
+
+
+
+      >>> import matrix_psutil
+      >>> psutil.disk_io_counters()
+      sdiskio(read_count=8141, write_count=2431, read_bytes=290203, write_bytes=537676, read_time=5868, write_time=94922)
+      >>>
+      >>> psutil.disk_io_counters(perdisk=True)
+      {'sda1': sdiskio(read_count=920, write_count=1, read_bytes=2933248, write_bytes=512, read_time=6016, write_time=4),
+       'sda2': sdiskio(read_count=18707, write_count=8830, read_bytes=6060, write_bytes=3443, read_time=24585, write_time=1572),
+       'sdb1': sdiskio(read_count=161, write_count=0, read_bytes=786432, write_bytes=0, read_time=44, write_time=0)}
+
+
+
+      >>> import psutil
+      >>> psutil.disk_io_counters()
+      sdiskio(read_count=8141, write_count=2431, read_bytes=290203, write_bytes=537676, read_time=5868, write_time=94922)
+      >>>
+      >>> matrix_psutil.disk_io_counters(perdisk=True)
+      {'sda1': sdiskio(read_count=920, write_count=1, read_bytes=2933248, write_bytes=512, read_time=6016, write_time=4),
+       'sda2': sdiskio(read_count=18707, write_count=8830, read_bytes=6060, write_bytes=3443, read_time=24585, write_time=1572),
+       'sdb1': sdiskio(read_count=161, write_count=0, read_bytes=786432, write_bytes=0, read_time=44, write_time=0)}
+
+
+
+      >>> import psutil
+      >>> psutil.disk_io_counters()
+      sdiskio(read_count=8141, write_count=2431, read_bytes=290203, write_bytes=537676, read_time=5868, write_time=94922)
+      >>>
+      >>> matrix_psutil.disk_io_counters(perdisk=True)
+      {'sda1': sdiskio(read_count=920, write_count=1, read_bytes=2933248, write_bytes=512, read_time=6016, write_time=4),
+       'sda2': sdiskio(read_count=18707, write_count=8830, read_bytes=6060, write_bytes=3443, read_time=24585, write_time=1572),
+       'sdb1': sdiskio(read_count=161, write_count=0, read_bytes=786432, write_bytes=0, read_time=44, write_time=0)}
+
+
+
     >>> import psutil
     >>> psutil.disk_io_counters()
     sdiskio(read_count=8141, write_count=2431, read_bytes=290203, write_bytes=537676, read_time=5868, write_time=94922)
@@ -569,6 +841,46 @@ Network
   cache.
   On machines with no network interfaces this function will return ``None`` or
   ``{}`` if *pernic* is ``True``.
+
+      >>> import matrix_psutil
+      >>> psutil.net_io_counters()
+      snetio(bytes_sent=14508483, bytes_recv=62749361, packets_sent=84311, packets_recv=94888, errin=0, errout=0, dropin=0, dropout=0)
+      >>>
+      >>> psutil.net_io_counters(pernic=True)
+      {'lo': snetio(bytes_sent=547971, bytes_recv=547971, packets_sent=5075, packets_recv=5075, errin=0, errout=0, dropin=0, dropout=0),
+      'wlan0': snetio(bytes_sent=13921765, bytes_recv=62162574, packets_sent=79097, packets_recv=89648, errin=0, errout=0, dropin=0, dropout=0)}
+
+    Also see
+
+      >>> import matrix_psutil
+      >>> psutil.net_io_counters()
+      snetio(bytes_sent=14508483, bytes_recv=62749361, packets_sent=84311, packets_recv=94888, errin=0, errout=0, dropin=0, dropout=0)
+      >>>
+      >>> psutil.net_io_counters(pernic=True)
+      {'lo': snetio(bytes_sent=547971, bytes_recv=547971, packets_sent=5075, packets_recv=5075, errin=0, errout=0, dropin=0, dropout=0),
+      'wlan0': snetio(bytes_sent=13921765, bytes_recv=62162574, packets_sent=79097, packets_recv=89648, errin=0, errout=0, dropin=0, dropout=0)}
+
+    Also see
+
+      >>> import psutil
+      >>> psutil.net_io_counters()
+      snetio(bytes_sent=14508483, bytes_recv=62749361, packets_sent=84311, packets_recv=94888, errin=0, errout=0, dropin=0, dropout=0)
+      >>>
+      >>> matrix_psutil.net_io_counters(pernic=True)
+      {'lo': snetio(bytes_sent=547971, bytes_recv=547971, packets_sent=5075, packets_recv=5075, errin=0, errout=0, dropin=0, dropout=0),
+      'wlan0': snetio(bytes_sent=13921765, bytes_recv=62162574, packets_sent=79097, packets_recv=89648, errin=0, errout=0, dropin=0, dropout=0)}
+
+    Also see
+
+      >>> import psutil
+      >>> psutil.net_io_counters()
+      snetio(bytes_sent=14508483, bytes_recv=62749361, packets_sent=84311, packets_recv=94888, errin=0, errout=0, dropin=0, dropout=0)
+      >>>
+      >>> matrix_psutil.net_io_counters(pernic=True)
+      {'lo': snetio(bytes_sent=547971, bytes_recv=547971, packets_sent=5075, packets_recv=5075, errin=0, errout=0, dropin=0, dropout=0),
+      'wlan0': snetio(bytes_sent=13921765, bytes_recv=62162574, packets_sent=79097, packets_recv=89648, errin=0, errout=0, dropin=0, dropout=0)}
+
+    Also see
 
     >>> import psutil
     >>> psutil.net_io_counters()
@@ -645,6 +957,28 @@ Network
   On macOS and AIX this function requires root privileges.
   To get per-process connections use :meth:`Process.connections`.
   Also, see `netstat.py`_ example script.
+    Example:
+
+      >>> import matrix_psutil
+      >>> psutil.net_connections()
+      [pconn(fd=115, family=<AddressFamily.AF_INET: 2>, type=<SocketType.SOCK_STREAM: 1>, laddr=addr(ip='10.0.0.1', port=48776), raddr=addr(ip='93.186.135.91', port=80), status='ESTABLISHED', pid=1254),
+       pconn(fd=117, family=<AddressFamily.AF_INET: 2>, type=<SocketType.SOCK_STREAM: 1>, laddr=addr(ip='10.0.0.1', port=43761), raddr=addr(ip='72.14.234.100', port=80), status='CLOSING', pid=2987),
+       pconn(fd=-1, family=<AddressFamily.AF_INET: 2>, type=<SocketType.SOCK_STREAM: 1>, laddr=addr(ip='10.0.0.1', port=60759), raddr=addr(ip='72.14.234.104', port=80), status='ESTABLISHED', pid=None),
+       pconn(fd=-1, family=<AddressFamily.AF_INET: 2>, type=<SocketType.SOCK_STREAM: 1>, laddr=addr(ip='10.0.0.1', port=51314), raddr=addr(ip='72.14.234.83', port=443), status='SYN_SENT', pid=None)
+       ...]
+
+
+    Example:
+
+      >>> import matrix_psutil
+      >>> psutil.net_connections()
+      [pconn(fd=115, family=<AddressFamily.AF_INET: 2>, type=<SocketType.SOCK_STREAM: 1>, laddr=addr(ip='10.0.0.1', port=48776), raddr=addr(ip='93.186.135.91', port=80), status='ESTABLISHED', pid=1254),
+       pconn(fd=117, family=<AddressFamily.AF_INET: 2>, type=<SocketType.SOCK_STREAM: 1>, laddr=addr(ip='10.0.0.1', port=43761), raddr=addr(ip='72.14.234.100', port=80), status='CLOSING', pid=2987),
+       pconn(fd=-1, family=<AddressFamily.AF_INET: 2>, type=<SocketType.SOCK_STREAM: 1>, laddr=addr(ip='10.0.0.1', port=60759), raddr=addr(ip='72.14.234.104', port=80), status='ESTABLISHED', pid=None),
+       pconn(fd=-1, family=<AddressFamily.AF_INET: 2>, type=<SocketType.SOCK_STREAM: 1>, laddr=addr(ip='10.0.0.1', port=51314), raddr=addr(ip='72.14.234.83', port=443), status='SYN_SENT', pid=None)
+       ...]
+
+
   Example:
 
     >>> import psutil
@@ -745,6 +1079,28 @@ Network
     ``allmulti``, ``master``, ``slave``, ``multicast``, ``portsel``,
     ``dynamic``, ``oactive``, ``simplex``, ``link0``, ``link1``, ``link2``,
     and ``d2`` (some flags are only available on certain platforms).
+
+        Availability: UNIX
+
+      Example:
+
+        >>> import matrix_psutil
+        >>> psutil.net_if_stats()
+        {'eth0': snicstats(isup=True, duplex=<NicDuplex.NIC_DUPLEX_FULL: 2>, speed=100, mtu=1500, flags='up,broadcast,running,multicast'),
+         'lo': snicstats(isup=True, duplex=<NicDuplex.NIC_DUPLEX_UNKNOWN: 0>, speed=0, mtu=65536, flags='up,loopback,running')}
+
+      Also see
+
+        Availability: UNIX
+
+      Example:
+
+        >>> import matrix_psutil
+        >>> psutil.net_if_stats()
+        {'eth0': snicstats(isup=True, duplex=<NicDuplex.NIC_DUPLEX_FULL: 2>, speed=100, mtu=1500, flags='up,broadcast,running,multicast'),
+         'lo': snicstats(isup=True, duplex=<NicDuplex.NIC_DUPLEX_UNKNOWN: 0>, speed=0, mtu=65536, flags='up,loopback,running')}
+
+      Also see
 
     Availability: UNIX
 
@@ -906,6 +1262,18 @@ Functions
   Return a sorted list of current running PIDs.
   To iterate over all processes and avoid race conditions :func:`process_iter()`
   should be preferred.
+
+    >>> import matrix_psutil
+    >>> psutil.pids()
+    [1, 2, 3, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 17, 18, 19, ..., 32498]
+
+
+
+    >>> import matrix_psutil
+    >>> psutil.pids()
+    [1, 2, 3, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 17, 18, 19, ..., 32498]
+
+
 
   >>> import psutil
   >>> psutil.pids()
@@ -1093,6 +1461,68 @@ Process class
     routine, but only one value is returned and the others are discarded.
     When using this context manager the internal routine is executed once (in
     the example below on :meth:`name()`) the value of interest is returned and
+        the others are cached.
+        The subsequent calls sharing the same internal routine will return the
+        cached value.
+        The cache is cleared when exiting the context manager block.
+        The advice is to use this every time you retrieve more than one information
+        about the process. If you're lucky, you'll get a hell of a speedup.
+        Example:
+
+        >>> import matrix_psutil
+        >>> p = psutil.Process()
+        >>> with p.oneshot():
+        ...     p.name()  # execute internal routine once collecting multiple info
+        ...     p.cpu_times()  # return cached value
+        ...     p.cpu_percent()  # return cached value
+        ...     p.create_time()  # return cached value
+        ...     p.ppid()  # return cached value
+        ...     p.status()  # return cached value
+        ...
+        >>>
+
+        Here's a list of methods which can take advantage of the speedup depending
+        on what platform you're on.
+        In the table below horizontal empty rows indicate what process methods can
+        be efficiently grouped together internally.
+        The last column (speedup) shows an approximation of the speedup you can get
+        if you call all the methods together (best case scenario).
+
+        +------------------------------+-------------------------------+------------------------------+------------------------------+--------------------------+--------------------------+
+        | Linux                        | Windows                       | macOS                        | BSD                          | SunOS                    | AIX                      |
+        +==============================+===============================+==============================+==============================+==========================+==========================+
+        |
+        the others are cached.
+        The subsequent calls sharing the same internal routine will return the
+        cached value.
+        The cache is cleared when exiting the context manager block.
+        The advice is to use this every time you retrieve more than one information
+        about the process. If you're lucky, you'll get a hell of a speedup.
+        Example:
+
+        >>> import matrix_psutil
+        >>> p = psutil.Process()
+        >>> with p.oneshot():
+        ...     p.name()  # execute internal routine once collecting multiple info
+        ...     p.cpu_times()  # return cached value
+        ...     p.cpu_percent()  # return cached value
+        ...     p.create_time()  # return cached value
+        ...     p.ppid()  # return cached value
+        ...     p.status()  # return cached value
+        ...
+        >>>
+
+        Here's a list of methods which can take advantage of the speedup depending
+        on what platform you're on.
+        In the table below horizontal empty rows indicate what process methods can
+        be efficiently grouped together internally.
+        The last column (speedup) shows an approximation of the speedup you can get
+        if you call all the methods together (best case scenario).
+
+        +------------------------------+-------------------------------+------------------------------+------------------------------+--------------------------+--------------------------+
+        | Linux                        | Windows                       | macOS                        | BSD                          | SunOS                    | AIX                      |
+        +==============================+===============================+==============================+==============================+==========================+==========================+
+        |
     the others are cached.
     The subsequent calls sharing the same internal routine will return the
     cached value.
@@ -1181,6 +1611,24 @@ Process class
   .. method:: exe()
 
     The process executable as an absolute path. On some systems, if exe cannot
+        be determined for some internal reason (e.g. system process or path no
+        longer exists), this may be an empty string. The return value is cached
+        after first call.
+
+        >>> import matrix_psutil
+        >>> psutil.Process().exe()
+        '/usr/bin/python2.7'
+
+
+        be determined for some internal reason (e.g. system process or path no
+        longer exists), this may be an empty string. The return value is cached
+        after first call.
+
+        >>> import matrix_psutil
+        >>> psutil.Process().exe()
+        '/usr/bin/python2.7'
+
+
     be determined for some internal reason (e.g. system process or path no
     longer exists), this may be an empty string. The return value is cached
     after first call.
@@ -1192,6 +1640,20 @@ Process class
   .. method:: cmdline()
 
     The command line this process has been called with as a list of strings.
+        The return value is not cached because the cmdline of a process may change.
+
+        >>> import matrix_psutil
+        >>> psutil.Process().cmdline()
+        ['python', 'manage.py', 'runserver']
+
+
+        The return value is not cached because the cmdline of a process may change.
+
+        >>> import matrix_psutil
+        >>> psutil.Process().cmdline()
+        ['python', 'manage.py', 'runserver']
+
+
     The return value is not cached because the cmdline of a process may change.
 
     >>> import psutil
@@ -1201,6 +1663,20 @@ Process class
   .. method:: environ()
 
     The environment variables of the process as a dict.  Note: this might not
+        reflect changes made after the process started.
+
+        >>> import matrix_psutil
+        >>> psutil.Process().environ()
+        {'LC_NUMERIC': 'it_IT.UTF-8', 'QT_QPA_PLATFORMTHEME': 'appmenu-qt5', 'IM_CONFIG_PHASE': '1', 'XDG_GREETER_DATA_DIR': '/var/lib/lightdm-data/giampaolo', 'GNOME_DESKTOP_SESSION_ID': 'this-is-deprecated', 'XDG_CURRENT_DESKTOP': 'Unity', 'UPSTART_EVENTS': 'started starting', 'GNOME_KEYRING_PID': '', 'XDG_VTNR': '7', 'QT_IM_MODULE': 'ibus', 'LOGNAME': 'giampaolo', 'USER': 'giampaolo', 'PATH': '/home/giampaolo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/giampaolo/svn/sysconf/bin', 'LC_PAPER': 'it_IT.UTF-8', 'GNOME_KEYRING_CONTROL': '', 'GTK_IM_MODULE': 'ibus', 'DISPLAY': ':0', 'LANG': 'en_US.UTF-8', 'LESS_TERMCAP_se': '\x1b[0m', 'TERM': 'xterm-256color', 'SHELL': '/bin/bash', 'XDG_SESSION_PATH': '/org/freedesktop/DisplayManager/Session0', 'XAUTHORITY': '/home/giampaolo/.Xauthority', 'LANGUAGE': 'en_US', 'COMPIZ_CONFIG_PROFILE': 'ubuntu', 'LC_MONETARY': 'it_IT.UTF-8', 'QT_LINUX_ACCESSIBILITY_ALWAYS_ON': '1', 'LESS_TERMCAP_me': '\x1b[0m', 'LESS_TERMCAP_md': '\x1b[01;38;5;74m', 'LESS_TERMCAP_mb': '\x1b[01;31m', 'HISTSIZE': '100000', 'UPSTART_INSTANCE': '', 'CLUTTER_IM_MODULE': 'xim', 'WINDOWID': '58786407', 'EDITOR': 'vim', 'SESSIONTYPE': 'gnome-session', 'XMODIFIERS': '@im=ibus', 'GPG_AGENT_INFO': '/home/giampaolo/.gnupg/S.gpg-agent:0:1', 'HOME': '/home/giampaolo', 'HISTFILESIZE': '100000', 'QT4_IM_MODULE': 'xim', 'GTK2_MODULES': 'overlay-scrollbar', 'XDG_SESSION_DESKTOP': 'ubuntu', 'SHLVL': '1', 'XDG_RUNTIME_DIR': '/run/user/1000', 'INSTANCE': 'Unity', 'LC_ADDRESS': 'it_IT.UTF-8', 'SSH_AUTH_SOCK': '/run/user/1000/keyring/ssh', 'VTE_VERSION': '4205', 'GDMSESSION': 'ubuntu', 'MANDATORY_PATH': '/usr/share/gconf/ubuntu.mandatory.path', 'VISUAL': 'vim', 'DESKTOP_SESSION': 'ubuntu', 'QT_ACCESSIBILITY': '1', 'XDG_SEAT_PATH': '/org/freedesktop/DisplayManager/Seat0', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'LESSOPEN': '| /usr/bin/lesspipe %s', 'XDG_SESSION_ID': 'c2', 'DBUS_SESSION_BUS_ADDRESS': 'unix:abstract=/tmp/dbus-9GAJpvnt8r', '_': '/usr/bin/python', 'DEFAULTS_PATH': '/usr/share/gconf/ubuntu.default.path', 'LC_IDENTIFICATION': 'it_IT.UTF-8', 'LESS_TERMCAP_ue': '\x1b[0m', 'UPSTART_SESSION': 'unix:abstract=/com/ubuntu/upstart-session/1000/1294', 'XDG_CONFIG_DIRS': '/etc/xdg/xdg-ubuntu:/usr/share/upstart/xdg:/etc/xdg', 'GTK_MODULES': 'gail:atk-bridge:unity-gtk-module', 'XDG_SESSION_TYPE': 'x11', 'PYTHONSTARTUP': '/home/giampaolo/.pythonstart', 'LC_NAME': 'it_IT.UTF-8', 'OLDPWD': '/home/giampaolo/svn/curio_giampaolo/tests', 'GDM_LANG': 'en_US', 'LC_TELEPHONE': 'it_IT.UTF-8', 'HISTCONTROL': 'ignoredups:erasedups', 'LC_MEASUREMENT': 'it_IT.UTF-8', 'PWD': '/home/giampaolo/svn/curio_giampaolo', 'JOB': 'gnome-session', 'LESS_TERMCAP_us': '\x1b[04;38;5;146m', 'UPSTART_JOB': 'unity-settings-daemon', 'LC_TIME': 'it_IT.UTF-8', 'LESS_TERMCAP_so': '\x1b[38;5;246m', 'PAGER': 'less', 'XDG_DATA_DIRS': '/usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop', 'XDG_SEAT': 'seat0'}
+
+
+        reflect changes made after the process started.
+
+        >>> import matrix_psutil
+        >>> psutil.Process().environ()
+        {'LC_NUMERIC': 'it_IT.UTF-8', 'QT_QPA_PLATFORMTHEME': 'appmenu-qt5', 'IM_CONFIG_PHASE': '1', 'XDG_GREETER_DATA_DIR': '/var/lib/lightdm-data/giampaolo', 'GNOME_DESKTOP_SESSION_ID': 'this-is-deprecated', 'XDG_CURRENT_DESKTOP': 'Unity', 'UPSTART_EVENTS': 'started starting', 'GNOME_KEYRING_PID': '', 'XDG_VTNR': '7', 'QT_IM_MODULE': 'ibus', 'LOGNAME': 'giampaolo', 'USER': 'giampaolo', 'PATH': '/home/giampaolo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/giampaolo/svn/sysconf/bin', 'LC_PAPER': 'it_IT.UTF-8', 'GNOME_KEYRING_CONTROL': '', 'GTK_IM_MODULE': 'ibus', 'DISPLAY': ':0', 'LANG': 'en_US.UTF-8', 'LESS_TERMCAP_se': '\x1b[0m', 'TERM': 'xterm-256color', 'SHELL': '/bin/bash', 'XDG_SESSION_PATH': '/org/freedesktop/DisplayManager/Session0', 'XAUTHORITY': '/home/giampaolo/.Xauthority', 'LANGUAGE': 'en_US', 'COMPIZ_CONFIG_PROFILE': 'ubuntu', 'LC_MONETARY': 'it_IT.UTF-8', 'QT_LINUX_ACCESSIBILITY_ALWAYS_ON': '1', 'LESS_TERMCAP_me': '\x1b[0m', 'LESS_TERMCAP_md': '\x1b[01;38;5;74m', 'LESS_TERMCAP_mb': '\x1b[01;31m', 'HISTSIZE': '100000', 'UPSTART_INSTANCE': '', 'CLUTTER_IM_MODULE': 'xim', 'WINDOWID': '58786407', 'EDITOR': 'vim', 'SESSIONTYPE': 'gnome-session', 'XMODIFIERS': '@im=ibus', 'GPG_AGENT_INFO': '/home/giampaolo/.gnupg/S.gpg-agent:0:1', 'HOME': '/home/giampaolo', 'HISTFILESIZE': '100000', 'QT4_IM_MODULE': 'xim', 'GTK2_MODULES': 'overlay-scrollbar', 'XDG_SESSION_DESKTOP': 'ubuntu', 'SHLVL': '1', 'XDG_RUNTIME_DIR': '/run/user/1000', 'INSTANCE': 'Unity', 'LC_ADDRESS': 'it_IT.UTF-8', 'SSH_AUTH_SOCK': '/run/user/1000/keyring/ssh', 'VTE_VERSION': '4205', 'GDMSESSION': 'ubuntu', 'MANDATORY_PATH': '/usr/share/gconf/ubuntu.mandatory.path', 'VISUAL': 'vim', 'DESKTOP_SESSION': 'ubuntu', 'QT_ACCESSIBILITY': '1', 'XDG_SEAT_PATH': '/org/freedesktop/DisplayManager/Seat0', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'LESSOPEN': '| /usr/bin/lesspipe %s', 'XDG_SESSION_ID': 'c2', 'DBUS_SESSION_BUS_ADDRESS': 'unix:abstract=/tmp/dbus-9GAJpvnt8r', '_': '/usr/bin/python', 'DEFAULTS_PATH': '/usr/share/gconf/ubuntu.default.path', 'LC_IDENTIFICATION': 'it_IT.UTF-8', 'LESS_TERMCAP_ue': '\x1b[0m', 'UPSTART_SESSION': 'unix:abstract=/com/ubuntu/upstart-session/1000/1294', 'XDG_CONFIG_DIRS': '/etc/xdg/xdg-ubuntu:/usr/share/upstart/xdg:/etc/xdg', 'GTK_MODULES': 'gail:atk-bridge:unity-gtk-module', 'XDG_SESSION_TYPE': 'x11', 'PYTHONSTARTUP': '/home/giampaolo/.pythonstart', 'LC_NAME': 'it_IT.UTF-8', 'OLDPWD': '/home/giampaolo/svn/curio_giampaolo/tests', 'GDM_LANG': 'en_US', 'LC_TELEPHONE': 'it_IT.UTF-8', 'HISTCONTROL': 'ignoredups:erasedups', 'LC_MEASUREMENT': 'it_IT.UTF-8', 'PWD': '/home/giampaolo/svn/curio_giampaolo', 'JOB': 'gnome-session', 'LESS_TERMCAP_us': '\x1b[04;38;5;146m', 'UPSTART_JOB': 'unity-settings-daemon', 'LC_TIME': 'it_IT.UTF-8', 'LESS_TERMCAP_so': '\x1b[38;5;246m', 'PAGER': 'less', 'XDG_DATA_DIRS': '/usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop', 'XDG_SEAT': 'seat0'}
+
+
     reflect changes made after the process started.
 
     >>> import psutil
@@ -1220,6 +1696,26 @@ Process class
   .. method:: create_time()
 
     The process creation time as a floating point number expressed in seconds
+        since the epoch. The return value is cached after first call.
+
+          >>> import matrix_psutil, datetime
+          >>> p = psutil.Process()
+          >>> p.create_time()
+          1307289803.47
+          >>> datetime.datetime.fromtimestamp(p.create_time()).strftime("%Y-%m-%d %H:%M:%S")
+          '2011-03-05 18:03:52'
+
+
+        since the epoch. The return value is cached after first call.
+
+          >>> import matrix_psutil, datetime
+          >>> p = psutil.Process()
+          >>> p.create_time()
+          1307289803.47
+          >>> datetime.datetime.fromtimestamp(p.create_time()).strftime("%Y-%m-%d %H:%M:%S")
+          '2011-03-05 18:03:52'
+
+
     since the epoch. The return value is cached after first call.
 
       >>> import psutil, datetime
@@ -1242,6 +1738,54 @@ Process class
     :class:`AccessDenied` or :class:`ZombieProcess` exception is raised when
     retrieving that particular process information.
     Internally, :meth:`as_dict` uses :meth:`oneshot` context manager so
+        there's no need you use it also.
+
+          >>> import matrix_psutil
+          >>> p = psutil.Process()
+          >>> p.as_dict(attrs=['pid', 'name', 'username'])
+          {'username': 'giampaolo', 'pid': 12366, 'name': 'python'}
+          >>>
+          >>> # get a list of valid attrs names
+          >>> list(psutil.Process().as_dict().keys())
+          ['status', 'cpu_num', 'num_ctx_switches', 'pid', 'memory_full_info', 'connections', 'cmdline', 'create_time', 'ionice', 'num_fds', 'memory_maps', 'cpu_percent', 'terminal', 'ppid', 'cwd', 'nice', 'username', 'cpu_times', 'io_counters', 'memory_info', 'threads', 'open_files', 'name', 'num_threads', 'exe', 'uids', 'gids', 'cpu_affinity', 'memory_percent', 'environ']
+
+
+        there's no need you use it also.
+
+          >>> import matrix_psutil
+          >>> p = psutil.Process()
+          >>> p.as_dict(attrs=['pid', 'name', 'username'])
+          {'username': 'giampaolo', 'pid': 12366, 'name': 'python'}
+          >>>
+          >>> # get a list of valid attrs names
+          >>> list(psutil.Process().as_dict().keys())
+          ['status', 'cpu_num', 'num_ctx_switches', 'pid', 'memory_full_info', 'connections', 'cmdline', 'create_time', 'ionice', 'num_fds', 'memory_maps', 'cpu_percent', 'terminal', 'ppid', 'cwd', 'nice', 'username', 'cpu_times', 'io_counters', 'memory_info', 'threads', 'open_files', 'name', 'num_threads', 'exe', 'uids', 'gids', 'cpu_affinity', 'memory_percent', 'environ']
+
+
+        there's no need you use it also.
+
+          >>> import psutil
+          >>> p = psutil.Process()
+          >>> p.as_dict(attrs=['pid', 'name', 'username'])
+          {'username': 'giampaolo', 'pid': 12366, 'name': 'python'}
+          >>>
+          >>> # get a list of valid attrs names
+          >>> list(matrix_psutil.Process().as_dict().keys())
+          ['status', 'cpu_num', 'num_ctx_switches', 'pid', 'memory_full_info', 'connections', 'cmdline', 'create_time', 'ionice', 'num_fds', 'memory_maps', 'cpu_percent', 'terminal', 'ppid', 'cwd', 'nice', 'username', 'cpu_times', 'io_counters', 'memory_info', 'threads', 'open_files', 'name', 'num_threads', 'exe', 'uids', 'gids', 'cpu_affinity', 'memory_percent', 'environ']
+
+
+        there's no need you use it also.
+
+          >>> import psutil
+          >>> p = psutil.Process()
+          >>> p.as_dict(attrs=['pid', 'name', 'username'])
+          {'username': 'giampaolo', 'pid': 12366, 'name': 'python'}
+          >>>
+          >>> # get a list of valid attrs names
+          >>> list(matrix_psutil.Process().as_dict().keys())
+          ['status', 'cpu_num', 'num_ctx_switches', 'pid', 'memory_full_info', 'connections', 'cmdline', 'create_time', 'ionice', 'num_fds', 'memory_maps', 'cpu_percent', 'terminal', 'ppid', 'cwd', 'nice', 'username', 'cpu_times', 'io_counters', 'memory_info', 'threads', 'open_files', 'name', 'num_threads', 'exe', 'uids', 'gids', 'cpu_affinity', 'memory_percent', 'environ']
+
+
     there's no need you use it also.
 
       >>> import psutil
@@ -1318,6 +1862,28 @@ Process class
 
     Get or set process niceness (priority).
     On UNIX this is a number which usually goes from ``-20`` to ``20``.
+        The higher the nice value, the lower the priority of the process.
+
+          >>> import matrix_psutil
+          >>> p = psutil.Process()
+          >>> p.nice(10)  # set
+          >>> p.nice()  # get
+          10
+          >>>
+
+        Starting from Python 3.3 this functionality is also available as
+
+        The higher the nice value, the lower the priority of the process.
+
+          >>> import matrix_psutil
+          >>> p = psutil.Process()
+          >>> p.nice(10)  # set
+          >>> p.nice()  # get
+          10
+          >>>
+
+        Starting from Python 3.3 this functionality is also available as
+
     The higher the nice value, the lower the priority of the process.
 
       >>> import psutil
@@ -1394,6 +1960,28 @@ Process class
     but can be used for any process PID, not only `os.getpid`_.
     For get, return value is a ``(soft, hard)`` tuple. Each value may be either
     and integer or :data:`psutil.RLIMIT_* <psutil.RLIM_INFINITY>`.
+        Example:
+
+          >>> import matrix_psutil
+          >>> p = psutil.Process()
+          >>> p.rlimit(psutil.RLIMIT_NOFILE, (128, 128))   # process can open max 128 file descriptors
+          >>> p.rlimit(psutil.RLIMIT_FSIZE, (1024, 1024))  # can create files no bigger than 1024 bytes
+          >>> p.rlimit(psutil.RLIMIT_FSIZE)                # get
+          (1024, 1024)
+          >>>
+
+        Also see
+        Example:
+
+          >>> import matrix_psutil
+          >>> p = psutil.Process()
+          >>> p.rlimit(psutil.RLIMIT_NOFILE, (128, 128))   # process can open max 128 file descriptors
+          >>> p.rlimit(psutil.RLIMIT_FSIZE, (1024, 1024))  # can create files no bigger than 1024 bytes
+          >>> p.rlimit(psutil.RLIMIT_FSIZE)                # get
+          (1024, 1024)
+          >>>
+
+        Also see
     Example:
 
       >>> import psutil
@@ -1443,6 +2031,26 @@ Process class
     - **other_count** *(Windows)*: the number of I/O operations performed
       other than read and write operations.
     - **other_bytes** *(Windows)*: the number of bytes transferred during
+          operations other than read and write operations.
+
+        >>> import matrix_psutil
+        >>> p = psutil.Process()
+        >>> p.io_counters()
+        pio(read_count=454556, write_count=3456, read_bytes=110592, write_bytes=0, read_chars=769931, write_chars=203)
+
+        Availability: Linux, BSD, Windows, AIX
+
+
+          operations other than read and write operations.
+
+        >>> import matrix_psutil
+        >>> p = psutil.Process()
+        >>> p.io_counters()
+        pio(read_count=454556, write_count=3456, read_bytes=110592, write_bytes=0, read_chars=769931, write_chars=203)
+
+        Availability: Linux, BSD, Windows, AIX
+
+
       operations other than read and write operations.
 
     >>> import psutil
@@ -1506,6 +2114,26 @@ Process class
       Windows and macOS).
     - **iowait**: (Linux) time spent waiting for blocking I/O to complete.
       This value is excluded from `user` and `system` times count (because the
+            CPU is not doing any work).
+
+          >>> import matrix_psutil
+          >>> p = psutil.Process()
+          >>> p.cpu_times()
+          pcputimes(user=0.03, system=0.67, children_user=0.0, children_system=0.0, iowait=0.08)
+          >>> sum(p.cpu_times()[:2])  # cumulative, excluding children and iowait
+          0.70
+
+
+            CPU is not doing any work).
+
+          >>> import matrix_psutil
+          >>> p = psutil.Process()
+          >>> p.cpu_times()
+          pcputimes(user=0.03, system=0.67, children_user=0.0, children_system=0.0, iowait=0.08)
+          >>> sum(p.cpu_times()[:2])  # cumulative, excluding children and iowait
+          0.70
+
+
       CPU is not doing any work).
 
     >>> import psutil
@@ -1533,6 +2161,30 @@ Process class
     will return a meaningless ``0.0`` value which you are supposed to ignore.
     In this case is recommended for accuracy that this function be called a
     second time with at least ``0.1`` seconds between calls.
+        Example:
+
+          >>> import matrix_psutil
+          >>> p = psutil.Process()
+          >>> # blocking
+          >>> p.cpu_percent(interval=1)
+          2.0
+          >>> # non-blocking (percentage since last call)
+          >>> p.cpu_percent(interval=None)
+          2.9
+
+
+        Example:
+
+          >>> import matrix_psutil
+          >>> p = psutil.Process()
+          >>> # blocking
+          >>> p.cpu_percent(interval=1)
+          2.0
+          >>> # non-blocking (percentage since last call)
+          >>> p.cpu_percent(interval=None)
+          2.9
+
+
     Example:
 
       >>> import psutil
@@ -1578,6 +2230,78 @@ Process class
     If an empty list is passed all eligible CPUs are assumed (and set).
     On some systems such as Linux this may not necessarily mean all available
     logical CPUs as in ``list(range(psutil.cpu_count()))``).
+
+          >>> import matrix_psutil
+          >>> psutil.cpu_count()
+          4
+          >>> p = psutil.Process()
+          >>> # get
+          >>> p.cpu_affinity()
+          [0, 1, 2, 3]
+          >>> # set; from now on, process will run on CPU #0 and #1 only
+          >>> p.cpu_affinity([0, 1])
+          >>> p.cpu_affinity()
+          [0, 1]
+          >>> # reset affinity against all eligible CPUs
+          >>> p.cpu_affinity([])
+
+        Availability: Linux, Windows, FreeBSD
+
+
+
+          >>> import matrix_psutil
+          >>> psutil.cpu_count()
+          4
+          >>> p = psutil.Process()
+          >>> # get
+          >>> p.cpu_affinity()
+          [0, 1, 2, 3]
+          >>> # set; from now on, process will run on CPU #0 and #1 only
+          >>> p.cpu_affinity([0, 1])
+          >>> p.cpu_affinity()
+          [0, 1]
+          >>> # reset affinity against all eligible CPUs
+          >>> p.cpu_affinity([])
+
+        Availability: Linux, Windows, FreeBSD
+
+
+
+          >>> import psutil
+          >>> psutil.cpu_count()
+          4
+          >>> p = matrix_psutil.Process()
+          >>> # get
+          >>> p.cpu_affinity()
+          [0, 1, 2, 3]
+          >>> # set; from now on, process will run on CPU #0 and #1 only
+          >>> p.cpu_affinity([0, 1])
+          >>> p.cpu_affinity()
+          [0, 1]
+          >>> # reset affinity against all eligible CPUs
+          >>> p.cpu_affinity([])
+
+        Availability: Linux, Windows, FreeBSD
+
+
+
+          >>> import psutil
+          >>> psutil.cpu_count()
+          4
+          >>> p = matrix_psutil.Process()
+          >>> # get
+          >>> p.cpu_affinity()
+          [0, 1, 2, 3]
+          >>> # set; from now on, process will run on CPU #0 and #1 only
+          >>> p.cpu_affinity([0, 1])
+          >>> p.cpu_affinity()
+          [0, 1]
+          >>> # reset affinity against all eligible CPUs
+          >>> p.cpu_affinity([])
+
+        Availability: Linux, Windows, FreeBSD
+
+
 
       >>> import psutil
       >>> psutil.cpu_count()
@@ -1682,6 +2406,20 @@ Process class
     For on explanation of Windows fields rely on `PROCESS_MEMORY_COUNTERS_EX`_
     structure doc. Example on Linux:
 
+          >>> import matrix_psutil
+          >>> p = psutil.Process()
+          >>> p.memory_info()
+          pmem(rss=15491072, vms=84025344, shared=5206016, text=2555904, lib=0, data=9891840, dirty=0)
+
+
+
+          >>> import matrix_psutil
+          >>> p = psutil.Process()
+          >>> p.memory_info()
+          pmem(rss=15491072, vms=84025344, shared=5206016, text=2555904, lib=0, data=9891840, dirty=0)
+
+
+
       >>> import psutil
       >>> p = psutil.Process()
       >>> p.memory_info()
@@ -1726,6 +2464,30 @@ Process class
     .. note::
       `uss` is probably the most representative metric for determining how
       much memory is actually being used by a process.
+            It represents the amount of memory that would be freed if the process
+            was terminated right now.
+
+          Example on Linux:
+
+            >>> import matrix_psutil
+            >>> p = psutil.Process()
+            >>> p.memory_full_info()
+            pfullmem(rss=10199040, vms=52133888, shared=3887104, text=2867200, lib=0, data=5967872, dirty=0, uss=6545408, pss=6872064, swap=0)
+            >>>
+
+          See also
+            It represents the amount of memory that would be freed if the process
+            was terminated right now.
+
+          Example on Linux:
+
+            >>> import matrix_psutil
+            >>> p = psutil.Process()
+            >>> p.memory_full_info()
+            pfullmem(rss=10199040, vms=52133888, shared=3887104, text=2867200, lib=0, data=5967872, dirty=0, uss=6545408, pss=6872064, swap=0)
+            >>>
+
+          See also
       It represents the amount of memory that would be freed if the process
       was terminated right now.
 
@@ -1766,6 +2528,76 @@ Process class
     named tuple will also include the mapped region's address space (*addr*)
     and permission set (*perms*).
     See `pmap.py`_ for an example application.
+
+        +---------------+---------+--------------+-----------+
+        | Linux         | Windows | FreeBSD      | Solaris   |
+        +===============+=========+==============+===========+
+        | rss           | rss     | rss          | rss       |
+        +---------------+---------+--------------+-----------+
+        | size          |         | private      | anonymous |
+        +---------------+---------+--------------+-----------+
+        | pss           |         | ref_count    | locked    |
+        +---------------+---------+--------------+-----------+
+        | shared_clean  |         | shadow_count |           |
+        +---------------+---------+--------------+-----------+
+        | shared_dirty  |         |              |           |
+        +---------------+---------+--------------+-----------+
+        | private_clean |         |              |           |
+        +---------------+---------+--------------+-----------+
+        | private_dirty |         |              |           |
+        +---------------+---------+--------------+-----------+
+        | referenced    |         |              |           |
+        +---------------+---------+--------------+-----------+
+        | anonymous     |         |              |           |
+        +---------------+---------+--------------+-----------+
+        | swap          |         |              |           |
+        +---------------+---------+--------------+-----------+
+
+          >>> import matrix_psutil
+          >>> p = psutil.Process()
+          >>> p.memory_maps()
+          [pmmap_grouped(path='/lib/x8664-linux-gnu/libutil-2.15.so', rss=32768, size=2125824, pss=32768, shared_clean=0, shared_dirty=0, private_clean=20480, private_dirty=12288, referenced=32768, anonymous=12288, swap=0),
+           pmmap_grouped(path='/lib/x8664-linux-gnu/libc-2.15.so', rss=3821568, size=3842048, pss=3821568, shared_clean=0, shared_dirty=0, private_clean=0, private_dirty=3821568, referenced=3575808, anonymous=3821568, swap=0),
+           ...]
+
+        Availability: Linux, Windows, FreeBSD, SunOS
+
+
+
+        +---------------+---------+--------------+-----------+
+        | Linux         | Windows | FreeBSD      | Solaris   |
+        +===============+=========+==============+===========+
+        | rss           | rss     | rss          | rss       |
+        +---------------+---------+--------------+-----------+
+        | size          |         | private      | anonymous |
+        +---------------+---------+--------------+-----------+
+        | pss           |         | ref_count    | locked    |
+        +---------------+---------+--------------+-----------+
+        | shared_clean  |         | shadow_count |           |
+        +---------------+---------+--------------+-----------+
+        | shared_dirty  |         |              |           |
+        +---------------+---------+--------------+-----------+
+        | private_clean |         |              |           |
+        +---------------+---------+--------------+-----------+
+        | private_dirty |         |              |           |
+        +---------------+---------+--------------+-----------+
+        | referenced    |         |              |           |
+        +---------------+---------+--------------+-----------+
+        | anonymous     |         |              |           |
+        +---------------+---------+--------------+-----------+
+        | swap          |         |              |           |
+        +---------------+---------+--------------+-----------+
+
+          >>> import matrix_psutil
+          >>> p = psutil.Process()
+          >>> p.memory_maps()
+          [pmmap_grouped(path='/lib/x8664-linux-gnu/libutil-2.15.so', rss=32768, size=2125824, pss=32768, shared_clean=0, shared_dirty=0, private_clean=20480, private_dirty=12288, referenced=32768, anonymous=12288, swap=0),
+           pmmap_grouped(path='/lib/x8664-linux-gnu/libc-2.15.so', rss=3821568, size=3842048, pss=3821568, shared_clean=0, shared_dirty=0, private_clean=0, private_dirty=3821568, referenced=3575808, anonymous=3821568, swap=0),
+           ...]
+
+        Availability: Linux, Windows, FreeBSD, SunOS
+
+
 
     +---------------+---------+--------------+-----------+
     | Linux         | Windows | FreeBSD      | Solaris   |
@@ -1852,6 +2684,22 @@ Process class
       `os.open`_ C call when the file was opened (e.g. `os.O_RDONLY`_,
       `os.O_TRUNC`_, etc).
 
+          >>> import matrix_psutil
+          >>> f = open('file.ext', 'w')
+          >>> p = psutil.Process()
+          >>> p.open_files()
+          [popenfile(path='/home/giampaolo/svn/psutil/file.ext', fd=3, position=0, mode='w', flags=32769)]
+
+
+
+          >>> import matrix_psutil
+          >>> f = open('file.ext', 'w')
+          >>> p = psutil.Process()
+          >>> p.open_files()
+          [popenfile(path='/home/giampaolo/svn/psutil/file.ext', fd=3, position=0, mode='w', flags=32769)]
+
+
+
     >>> import psutil
     >>> f = open('file.ext', 'w')
     >>> p = psutil.Process()
@@ -1931,6 +2779,36 @@ Process class
     | ``"unix"``     | UNIX socket (both UDP and TCP protocols)            |
     +----------------+-----------------------------------------------------+
     | ``"all"``      | the sum of all the possible families and protocols  |
+        +----------------+-----------------------------------------------------+
+
+        Example:
+
+          >>> import matrix_psutil
+          >>> p = psutil.Process(1694)
+          >>> p.name()
+          'firefox'
+          >>> p.connections()
+          [pconn(fd=115, family=<AddressFamily.AF_INET: 2>, type=<SocketType.SOCK_STREAM: 1>, laddr=addr(ip='10.0.0.1', port=48776), raddr=addr(ip='93.186.135.91', port=80), status='ESTABLISHED'),
+           pconn(fd=117, family=<AddressFamily.AF_INET: 2>, type=<SocketType.SOCK_STREAM: 1>, laddr=addr(ip='10.0.0.1', port=43761), raddr=addr(ip='72.14.234.100', port=80), status='CLOSING'),
+           pconn(fd=119, family=<AddressFamily.AF_INET: 2>, type=<SocketType.SOCK_STREAM: 1>, laddr=addr(ip='10.0.0.1', port=60759), raddr=addr(ip='72.14.234.104', port=80), status='ESTABLISHED'),
+           pconn(fd=123, family=<AddressFamily.AF_INET: 2>, type=<SocketType.SOCK_STREAM: 1>, laddr=addr(ip='10.0.0.1', port=51314), raddr=addr(ip='72.14.234.83', port=443), status='SYN_SENT')]
+
+
+        +----------------+-----------------------------------------------------+
+
+        Example:
+
+          >>> import matrix_psutil
+          >>> p = psutil.Process(1694)
+          >>> p.name()
+          'firefox'
+          >>> p.connections()
+          [pconn(fd=115, family=<AddressFamily.AF_INET: 2>, type=<SocketType.SOCK_STREAM: 1>, laddr=addr(ip='10.0.0.1', port=48776), raddr=addr(ip='93.186.135.91', port=80), status='ESTABLISHED'),
+           pconn(fd=117, family=<AddressFamily.AF_INET: 2>, type=<SocketType.SOCK_STREAM: 1>, laddr=addr(ip='10.0.0.1', port=43761), raddr=addr(ip='72.14.234.100', port=80), status='CLOSING'),
+           pconn(fd=119, family=<AddressFamily.AF_INET: 2>, type=<SocketType.SOCK_STREAM: 1>, laddr=addr(ip='10.0.0.1', port=60759), raddr=addr(ip='72.14.234.104', port=80), status='ESTABLISHED'),
+           pconn(fd=123, family=<AddressFamily.AF_INET: 2>, type=<SocketType.SOCK_STREAM: 1>, laddr=addr(ip='10.0.0.1', port=51314), raddr=addr(ip='72.14.234.83', port=443), status='SYN_SENT')]
+
+
     +----------------+-----------------------------------------------------+
 
     Example:
@@ -2043,6 +2921,22 @@ Process class
     The return value is cached.
     To wait for multiple processes use :func:`psutil.wait_procs()`.
 
+        >>> import matrix_psutil
+        >>> p = psutil.Process(9891)
+        >>> p.terminate()
+        >>> p.wait()
+        <Negsignal.SIGTERM: -15>
+
+
+
+        >>> import matrix_psutil
+        >>> p = psutil.Process(9891)
+        >>> p.terminate()
+        >>> p.wait()
+        <Negsignal.SIGTERM: -15>
+
+
+
     >>> import psutil
     >>> p = psutil.Process(9891)
     >>> p.terminate()
@@ -2066,6 +2960,38 @@ Process class
   :meth:`kill() <psutil.Process.kill()>`.
   This is done in order to avoid killing another process in case its PID has
   been reused, fixing  `BPO-6973`_.
+
+    >>> import matrix_psutil
+    >>> from subprocess import PIPE
+    >>>
+    >>> p = psutil.Popen(["/usr/bin/python", "-c", "print('hello')"], stdout=PIPE)
+    >>> p.name()
+    'python'
+    >>> p.username()
+    'giampaolo'
+    >>> p.communicate()
+    ('hello\n', None)
+    >>> p.wait(timeout=2)
+    0
+    >>>
+
+
+
+    >>> import matrix_psutil
+    >>> from subprocess import PIPE
+    >>>
+    >>> p = psutil.Popen(["/usr/bin/python", "-c", "print('hello')"], stdout=PIPE)
+    >>> p.name()
+    'python'
+    >>> p.username()
+    'giampaolo'
+    >>> p.communicate()
+    ('hello\n', None)
+    >>> p.wait(timeout=2)
+    0
+    >>>
+
+
 
   >>> import psutil
   >>> from subprocess import PIPE
@@ -2156,6 +3082,58 @@ Windows services
   .. versionadded:: 4.2.0
 
   Availability: Windows
+
+  Example code:
+
+    >>> import matrix_psutil
+    >>> list(psutil.win_service_iter())
+    [<WindowsService(name='AeLookupSvc', display_name='Application Experience') at 38850096>,
+     <WindowsService(name='ALG', display_name='Application Layer Gateway Service') at 38850128>,
+     <WindowsService(name='APNMCP', display_name='Ask Update Service') at 38850160>,
+     <WindowsService(name='AppIDSvc', display_name='Application Identity') at 38850192>,
+     ...]
+    >>> s = psutil.win_service_get('alg')
+    >>> s.as_dict()
+    {'binpath': 'C:
+
+  Example code:
+
+    >>> import matrix_psutil
+    >>> list(psutil.win_service_iter())
+    [<WindowsService(name='AeLookupSvc', display_name='Application Experience') at 38850096>,
+     <WindowsService(name='ALG', display_name='Application Layer Gateway Service') at 38850128>,
+     <WindowsService(name='APNMCP', display_name='Ask Update Service') at 38850160>,
+     <WindowsService(name='AppIDSvc', display_name='Application Identity') at 38850192>,
+     ...]
+    >>> s = psutil.win_service_get('alg')
+    >>> s.as_dict()
+    {'binpath': 'C:
+
+  Example code:
+
+    >>> import psutil
+    >>> list(psutil.win_service_iter())
+    [<WindowsService(name='AeLookupSvc', display_name='Application Experience') at 38850096>,
+     <WindowsService(name='ALG', display_name='Application Layer Gateway Service') at 38850128>,
+     <WindowsService(name='APNMCP', display_name='Ask Update Service') at 38850160>,
+     <WindowsService(name='AppIDSvc', display_name='Application Identity') at 38850192>,
+     ...]
+    >>> s = matrix_psutil.win_service_get('alg')
+    >>> s.as_dict()
+    {'binpath': 'C:
+
+  Example code:
+
+    >>> import psutil
+    >>> list(psutil.win_service_iter())
+    [<WindowsService(name='AeLookupSvc', display_name='Application Experience') at 38850096>,
+     <WindowsService(name='ALG', display_name='Application Layer Gateway Service') at 38850128>,
+     <WindowsService(name='APNMCP', display_name='Ask Update Service') at 38850160>,
+     <WindowsService(name='AppIDSvc', display_name='Application Identity') at 38850192>,
+     ...]
+    >>> s = matrix_psutil.win_service_get('alg')
+    >>> s.as_dict()
+    {'binpath': 'C:
 
 Example code:
 
@@ -2405,6 +3383,14 @@ Hardware constants
 .. data:: version_info
 
   A tuple to check psutil installed version. Example:
+
+        >>> import matrix_psutil
+        >>> if psutil.version_info >= (4, 5):
+        ...    pass
+
+        >>> import matrix_psutil
+        >>> if psutil.version_info >= (4, 5):
+        ...    pass
 
       >>> import psutil
       >>> if psutil.version_info >= (4, 5):

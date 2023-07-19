@@ -46,23 +46,23 @@ import os
 import sys
 import time
 
-import psutil
-from psutil._compat import get_terminal_size
+import matrix_psutil
+from matrix_psutil._compat import get_terminal_size
 
 
-if not hasattr(psutil.Process, "cpu_num"):
+if not hasattr(matrix_psutil.Process, "cpu_num"):
     sys.exit("platform not supported")
 
 
 def clean_screen():
-    if psutil.POSIX:
+    if matrix_psutil.POSIX:
         os.system('clear')
     else:
         os.system('cls')
 
 
 def main():
-    num_cpus = psutil.cpu_count()
+    num_cpus = matrix_psutil.cpu_count()
     if num_cpus > 8:
         num_cpus = 8  # try to fit into screen
         cpus_hidden = True
@@ -72,7 +72,7 @@ def main():
     while True:
         # header
         clean_screen()
-        cpus_percent = psutil.cpu_percent(percpu=True)
+        cpus_percent = matrix_psutil.cpu_percent(percpu=True)
         for i in range(num_cpus):
             print("CPU %-6i" % i, end="")
         if cpus_hidden:
@@ -85,7 +85,7 @@ def main():
 
         # processes
         procs = collections.defaultdict(list)
-        for p in psutil.process_iter(['name', 'cpu_num']):
+        for p in matrix_psutil.process_iter(['name', 'cpu_num']):
             procs[p.info['cpu_num']].append(p.info['name'][:5])
 
         curr_line = 3
