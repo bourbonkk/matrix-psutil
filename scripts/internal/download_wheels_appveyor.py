@@ -26,7 +26,7 @@ from matrix_psutil._common import print_color
 
 
 USER = "giampaolo"
-PROJECT = "psutil"
+PROJECT = "matrix_psutil"
 BASE_URL = 'https://ci.appveyor.com/api'
 PY_VERSIONS = ['2.7']
 TIMEOUT = 30

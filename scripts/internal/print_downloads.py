@@ -25,7 +25,7 @@ from matrix_psutil._common import memoize
 
 
 AUTH_FILE = os.path.expanduser("~/.pypinfo.json")
-PKGNAME = 'psutil'
+PKGNAME = 'matrix_psutil'
 DAYS = 30
 LIMIT = 100
 GITHUB_SCRIPT_URL = "https://github.com/giampaolo/psutil/blob/master/" \

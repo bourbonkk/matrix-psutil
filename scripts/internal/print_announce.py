@@ -23,7 +23,7 @@ HISTORY = os.path.join(ROOT, 'HISTORY.rst')
 PRINT_HASHES_SCRIPT = os.path.join(
     ROOT, 'scripts', 'internal', 'print_hashes.py')
 
-PRJ_NAME = 'psutil'
+PRJ_NAME = 'matrix_psutil'
 PRJ_URL_HOME = 'https://github.com/giampaolo/psutil'
 PRJ_URL_DOC = 'http://psutil.readthedocs.io'
 PRJ_URL_DOWNLOAD = 'https://pypi.org/project/psutil/#files'

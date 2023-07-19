@@ -328,7 +328,7 @@ def uninstall():
 
     for dir in site.getsitepackages():
         for name in os.listdir(dir):
-            if name.startswith('psutil'):
+            if name.startswith('matrix_psutil'):
                 rm(os.path.join(dir, name))
             elif name == 'easy-install.pth':
                 # easy_install can add a line (installation path) into
@@ -338,13 +338,13 @@ def uninstall():
                     lines = f.readlines()
                     hasit = False
                     for line in lines:
-                        if 'psutil' in line:
+                        if 'matrix_psutil' in line:
                             hasit = True
                             break
                 if hasit:
                     with open(path, 'wt') as f:
                         for line in lines:
-                            if 'psutil' not in line:
+                            if 'matrix_psutil' not in line:
                                 f.write(line)
                             else:
                                 print("removed line %r from %r" % (line, path))

@@ -279,7 +279,7 @@ class Error(Exception):
     """Base exception class. All other psutil exceptions inherit
     from this one.
     """
-    __module__ = 'psutil'
+    __module__ = 'matrix_psutil'
 
     def _infodict(self, attrs):
         info = collections.OrderedDict()
@@ -312,7 +312,7 @@ class NoSuchProcess(Error):
     """Exception raised when a process with a certain PID doesn't
     or no longer exists.
     """
-    __module__ = 'psutil'
+    __module__ = 'matrix_psutil'
 
     def __init__(self, pid, name=None, msg=None):
         Error.__init__(self)
@@ -328,7 +328,7 @@ class ZombieProcess(NoSuchProcess):
     On Linux all zombie processes are querable (hence this is never
     raised). Windows doesn't have zombie processes.
     """
-    __module__ = 'psutil'
+    __module__ = 'matrix_psutil'
 
     def __init__(self, pid, name=None, ppid=None, msg=None):
         NoSuchProcess.__init__(self, pid, name, msg)
@@ -338,7 +338,7 @@ class ZombieProcess(NoSuchProcess):
 
 class AccessDenied(Error):
     """Exception raised when permission to perform an action is denied."""
-    __module__ = 'psutil'
+    __module__ = 'matrix_psutil'
 
     def __init__(self, pid=None, name=None, msg=None):
         Error.__init__(self)
@@ -351,7 +351,7 @@ class TimeoutExpired(Error):
     """Raised on Process.wait(timeout) if timeout expires and process
     is still alive.
     """
-    __module__ = 'psutil'
+    __module__ = 'matrix_psutil'
 
     def __init__(self, seconds, pid=None, name=None):
         Error.__init__(self)
@@ -835,7 +835,7 @@ def bytes2human(n, format="%(value).1f%(symbol)s"):
 
 def get_procfs_path():
     """Return updated psutil.PROCFS_PATH constant."""
-    return sys.modules['psutil'].PROCFS_PATH
+    return sys.modules['matrix_psutil'].PROCFS_PATH
 
 
 if PY3:
