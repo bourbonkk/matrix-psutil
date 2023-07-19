@@ -29,6 +29,6 @@ per-file-ignores =
     # T001, T201 = print() statement (flake8-print plugin)
     setup.py:T001,T201
     scripts/*:T001,T201
-    psutil/tests/runner.py:T001,T201
-    psutil/tests/test_memleaks.py:T001,T201
+    matrix_psutil/tests/runner.py:T001,T201
+    matrix_psutil/tests/test_memleaks.py:T001,T201
     .github/workflows/*:T001,T201

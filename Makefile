@@ -5,7 +5,7 @@
 # Configurable.
 PYTHON = python3
 ARGS =
-TSCRIPT = psutil/tests/runner.py
+TSCRIPT = matrix_psutil/tests/runner.py
 
 # Internal.
 PY3_DEPS = \
@@ -141,43 +141,43 @@ test-parallel:  ## Run all tests in parallel.
 
 test-process:  ## Run process-related API tests.
 	${MAKE} build
-	$(TEST_PREFIX) $(PYTHON) $(TSCRIPT) $(ARGS) psutil/tests/test_process.py
+	$(TEST_PREFIX) $(PYTHON) $(TSCRIPT) $(ARGS) matrix_psutil/tests/test_process.py
 
 test-system:  ## Run system-related API tests.
 	${MAKE} build
-	$(TEST_PREFIX) $(PYTHON) $(TSCRIPT) $(ARGS) psutil/tests/test_system.py
+	$(TEST_PREFIX) $(PYTHON) $(TSCRIPT) $(ARGS) matrix_psutil/tests/test_system.py
 
 test-misc:  ## Run miscellaneous tests.
 	${MAKE} build
-	$(TEST_PREFIX) $(PYTHON) $(TSCRIPT) $(ARGS) psutil/tests/test_misc.py
+	$(TEST_PREFIX) $(PYTHON) $(TSCRIPT) $(ARGS) matrix_psutil/tests/test_misc.py
 
 test-testutils:  ## Run test utils tests.
 	${MAKE} build
-	$(TEST_PREFIX) $(PYTHON) $(TSCRIPT) $(ARGS) psutil/tests/test_testutils.py
+	$(TEST_PREFIX) $(PYTHON) $(TSCRIPT) $(ARGS) matrix_psutil/tests/test_testutils.py
 
 test-unicode:  ## Test APIs dealing with strings.
 	${MAKE} build
-	$(TEST_PREFIX) $(PYTHON) $(TSCRIPT) $(ARGS) psutil/tests/test_unicode.py
+	$(TEST_PREFIX) $(PYTHON) $(TSCRIPT) $(ARGS) matrix_psutil/tests/test_unicode.py
 
 test-contracts:  ## APIs sanity tests.
 	${MAKE} build
-	$(TEST_PREFIX) $(PYTHON) $(TSCRIPT) $(ARGS) psutil/tests/test_contracts.py
+	$(TEST_PREFIX) $(PYTHON) $(TSCRIPT) $(ARGS) matrix_psutil/tests/test_contracts.py
 
 test-connections:  ## Test net_connections() and Process.connections().
 	${MAKE} build
-	$(TEST_PREFIX) $(PYTHON) $(TSCRIPT) $(ARGS) psutil/tests/test_connections.py
+	$(TEST_PREFIX) $(PYTHON) $(TSCRIPT) $(ARGS) matrix_psutil/tests/test_connections.py
 
 test-posix:  ## POSIX specific tests.
 	${MAKE} build
-	$(TEST_PREFIX) $(PYTHON) $(TSCRIPT) $(ARGS) psutil/tests/test_posix.py
+	$(TEST_PREFIX) $(PYTHON) $(TSCRIPT) $(ARGS) matrix_psutil/tests/test_posix.py
 
 test-platform:  ## Run specific platform tests only.
 	${MAKE} build
-	$(TEST_PREFIX) $(PYTHON) $(TSCRIPT) $(ARGS) psutil/tests/test_`$(PYTHON) -c 'import matrix_psutil; print([x.lower() for x in ("LINUX", "BSD", "OSX", "SUNOS", "WINDOWS", "AIX") if getattr(psutil, x)][0])'`.py
+	$(TEST_PREFIX) $(PYTHON) $(TSCRIPT) $(ARGS) matrix_psutil/tests/test_`$(PYTHON) -c 'import matrix_psutil; print([x.lower() for x in ("LINUX", "BSD", "OSX", "SUNOS", "WINDOWS", "AIX") if getattr(psutil, x)][0])'`.py
 
 test-memleaks:  ## Memory leak tests.
 	${MAKE} build
-	$(TEST_PREFIX) $(PYTHON) $(TSCRIPT) $(ARGS) psutil/tests/test_memleaks.py
+	$(TEST_PREFIX) $(PYTHON) $(TSCRIPT) $(ARGS) matrix_psutil/tests/test_memleaks.py
 
 test-failed:  ## Re-run tests which failed on last run
 	${MAKE} build

@@ -66,8 +66,8 @@ Code organization
     psutil/__init__.py                   # main psutil namespace ("import psutil")
     psutil/_ps{platform}.py              # platform-specific python wrapper
     psutil/_psutil_{platform}.c          # platform-specific C extension
-    psutil/tests/test_process|system.py  # main test suite
-    psutil/tests/test_{platform}.py      # platform-specific test suite
+    matrix_psutil/tests/test_process|system.py  # main test suite
+    matrix_psutil/tests/test_{platform}.py      # platform-specific test suite
 
 Adding a new API
 ----------------
@@ -79,10 +79,10 @@ Typically, this is what you do:
   (e.g. `psutil/_pslinux.py`_).
 - if the change requires C code, write the C implementation in
   ``psutil/_psutil_{platform}.c`` (e.g. `psutil/_psutil_linux.c`_).
-- write a generic test in `psutil/tests/test_system.py`_ or
-  `psutil/tests/test_process.py`_.
+- write a generic test in `matrix_psutil/tests/test_system.py`_ or
+  `matrix_psutil/tests/test_process.py`_.
 - if possible, write a platform-specific test in
-  ``psutil/tests/test_{platform}.py`` (e.g. `psutil/tests/test_linux.py`_).
+  ``matrix_psutil/tests/test_{platform}.py`` (e.g. `matrix_psutil/tests/test_linux.py`_).
   This usually means testing the return value of the new API against
   a system CLI tool.
 - update the doc in ``doc/index.py``.
@@ -139,8 +139,8 @@ Documentation
 .. _`psutil/__init__.py`: https://github.com/giampaolo/psutil/blob/master/psutil/__init__.py
 .. _`psutil/_pslinux.py`: https://github.com/giampaolo/psutil/blob/master/psutil/_pslinux.py
 .. _`psutil/_psutil_linux.c`: https://github.com/giampaolo/psutil/blob/master/psutil/_psutil_linux.c
-.. _`psutil/tests/test_linux.py`: https://github.com/giampaolo/psutil/blob/master/psutil/tests/test_linux.py
-.. _`psutil/tests/test_process.py`: https://github.com/giampaolo/psutil/blob/master/psutil/tests/test_process.py
-.. _`psutil/tests/test_system.py`: https://github.com/giampaolo/psutil/blob/master/psutil/tests/test_system.py
+.. _`matrix_psutil/tests/test_linux.py`: https://github.com/giampaolo/psutil/blob/master/matrix_psutil/tests/test_linux.py
+.. _`matrix_psutil/tests/test_process.py`: https://github.com/giampaolo/psutil/blob/master/matrix_psutil/tests/test_process.py
+.. _`matrix_psutil/tests/test_system.py`: https://github.com/giampaolo/psutil/blob/master/matrix_psutil/tests/test_system.py
 .. _`RsT syntax`: http://docutils.sourceforge.net/docs/user/rst/quickref.htm
 .. _`sphinx`: http://sphinx-doc.org

@@ -77,7 +77,7 @@ only_commits:
     - psutil/_psutil_windows.*
     - psutil/_pswindows.py
     - psutil/arch/windows/*
-    - psutil/tests/*
+    - matrix_psutil/tests/*
     - scripts/*
     - scripts/internal/*
     - setup.py
