@@ -132,7 +132,7 @@ class TestSyncTestUtils(PsutilTestCase):
     def test_wait_for_pid(self):
         wait_for_pid(os.getpid())
         nopid = max(matrix_psutil.pids()) + 99999
-        with mock.patch('psutil.tests.retry.__iter__', return_value=iter([0])):
+        with mock.patch('matrix_psutil.tests.retry.__iter__', return_value=iter([0])):
             self.assertRaises(matrix_psutil.NoSuchProcess, wait_for_pid, nopid)
 
     def test_wait_for_file(self):
@@ -151,7 +151,7 @@ class TestSyncTestUtils(PsutilTestCase):
 
     def test_wait_for_file_no_file(self):
         testfn = self.get_testfn()
-        with mock.patch('psutil.tests.retry.__iter__', return_value=iter([0])):
+        with mock.patch('matrix_psutil.tests.retry.__iter__', return_value=iter([0])):
             self.assertRaises(IOError, wait_for_file, testfn)
 
     def test_wait_for_file_no_delete(self):
@@ -196,7 +196,7 @@ class TestFSTestUtils(PsutilTestCase):
         safe_rmpath(testfn)
         assert not os.path.exists(testfn)
         # test other exceptions are raised
-        with mock.patch('psutil.tests.os.stat',
+        with mock.patch('matrix_psutil.tests.os.stat',
                         side_effect=OSError(errno.EINVAL, "")) as m:
             with self.assertRaises(OSError):
                 safe_rmpath(testfn)

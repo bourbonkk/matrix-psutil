@@ -29,7 +29,7 @@ from matrix_psutil.tests import safe_rmpath
 
 
 USER = "giampaolo"
-PROJECT = "psutil"
+PROJECT = "matrix_psutil"
 OUTFILE = "wheels-github.zip"
 TOKEN = ""
 

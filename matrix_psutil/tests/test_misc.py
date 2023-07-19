@@ -69,7 +69,7 @@ class TestSpecialMethods(PsutilTestCase):
     def test_process__repr__(self, func=repr):
         p = matrix_psutil.Process(self.spawn_testproc().pid)
         r = func(p)
-        self.assertIn("psutil.Process", r)
+        self.assertIn("matrix_psutil.Process", r)
         self.assertIn("pid=%s" % p.pid, r)
         self.assertIn("name='%s'" % str(p.name()),
                       r.replace("name=u'", "name='"))
@@ -106,7 +106,7 @@ class TestSpecialMethods(PsutilTestCase):
         self.test_process__repr__(func=str)
 
     def test_error__repr__(self):
-        self.assertEqual(repr(matrix_psutil.Error()), "psutil.Error()")
+        self.assertEqual(repr(matrix_psutil.Error()), "matrix_psutil.Error()")
 
     def test_error__str__(self):
         self.assertEqual(str(matrix_psutil.Error()), "")
@@ -114,10 +114,10 @@ class TestSpecialMethods(PsutilTestCase):
     def test_no_such_process__repr__(self):
         self.assertEqual(
             repr(matrix_psutil.NoSuchProcess(321)),
-            "psutil.NoSuchProcess(pid=321, msg='process no longer exists')")
+            "matrix_psutil.NoSuchProcess(pid=321, msg='process no longer exists')")
         self.assertEqual(
             repr(matrix_psutil.NoSuchProcess(321, name="name", msg="msg")),
-            "psutil.NoSuchProcess(pid=321, name='name', msg='msg')")
+            "matrix_psutil.NoSuchProcess(pid=321, name='name', msg='msg')")
 
     def test_no_such_process__str__(self):
         self.assertEqual(
@@ -130,11 +130,11 @@ class TestSpecialMethods(PsutilTestCase):
     def test_zombie_process__repr__(self):
         self.assertEqual(
             repr(matrix_psutil.ZombieProcess(321)),
-            'psutil.ZombieProcess(pid=321, msg="PID still '
+            'matrix_psutil.ZombieProcess(pid=321, msg="PID still '
             'exists but it\'s a zombie")')
         self.assertEqual(
             repr(matrix_psutil.ZombieProcess(321, name="name", ppid=320, msg="foo")),
-            "psutil.ZombieProcess(pid=321, ppid=320, name='name', msg='foo')")
+            "matrix_psutil.ZombieProcess(pid=321, ppid=320, name='name', msg='foo')")
 
     def test_zombie_process__str__(self):
         self.assertEqual(
@@ -147,10 +147,10 @@ class TestSpecialMethods(PsutilTestCase):
     def test_access_denied__repr__(self):
         self.assertEqual(
             repr(matrix_psutil.AccessDenied(321)),
-            "psutil.AccessDenied(pid=321)")
+            "matrix_psutil.AccessDenied(pid=321)")
         self.assertEqual(
             repr(matrix_psutil.AccessDenied(321, name="name", msg="msg")),
-            "psutil.AccessDenied(pid=321, name='name', msg='msg')")
+            "matrix_psutil.AccessDenied(pid=321, name='name', msg='msg')")
 
     def test_access_denied__str__(self):
         self.assertEqual(
@@ -163,10 +163,10 @@ class TestSpecialMethods(PsutilTestCase):
     def test_timeout_expired__repr__(self):
         self.assertEqual(
             repr(matrix_psutil.TimeoutExpired(5)),
-            "psutil.TimeoutExpired(seconds=5, msg='timeout after 5 seconds')")
+            "matrix_psutil.TimeoutExpired(seconds=5, msg='timeout after 5 seconds')")
         self.assertEqual(
             repr(matrix_psutil.TimeoutExpired(5, pid=321, name="name")),
-            "psutil.TimeoutExpired(pid=321, name='name', seconds=5, "
+            "matrix_psutil.TimeoutExpired(pid=321, name='name', seconds=5, "
             "msg='timeout after 5 seconds')")
 
     def test_timeout_expired__str__(self):
@@ -285,7 +285,7 @@ class TestMisc(PsutilTestCase):
     def test_sanity_version_check(self):
         # see: https://github.com/giampaolo/psutil/issues/564
         with mock.patch(
-                "psutil._psplatform.cext.version", return_value="0.0.0"):
+                "matrix_psutil._psplatform.cext.version", return_value="0.0.0"):
             with self.assertRaises(ImportError) as cm:
                 reload_module(matrix_psutil)
             self.assertIn("version conflict", str(cm.exception).lower())
@@ -484,26 +484,26 @@ class TestCommonModule(PsutilTestCase):
     def test_supports_ipv6(self):
         self.addCleanup(supports_ipv6.cache_clear)
         if supports_ipv6():
-            with mock.patch('psutil._common.socket') as s:
+            with mock.patch('matrix_psutil._common.socket') as s:
                 s.has_ipv6 = False
                 supports_ipv6.cache_clear()
                 assert not supports_ipv6()
 
             supports_ipv6.cache_clear()
-            with mock.patch('psutil._common.socket.socket',
+            with mock.patch('matrix_psutil._common.socket.socket',
                             side_effect=socket.error) as s:
                 assert not supports_ipv6()
                 assert s.called
 
             supports_ipv6.cache_clear()
-            with mock.patch('psutil._common.socket.socket',
+            with mock.patch('matrix_psutil._common.socket.socket',
                             side_effect=socket.gaierror) as s:
                 assert not supports_ipv6()
                 supports_ipv6.cache_clear()
                 assert s.called
 
             supports_ipv6.cache_clear()
-            with mock.patch('psutil._common.socket.socket.bind',
+            with mock.patch('matrix_psutil._common.socket.socket.bind',
                             side_effect=socket.gaierror) as s:
                 assert not supports_ipv6()
                 supports_ipv6.cache_clear()
@@ -520,16 +520,16 @@ class TestCommonModule(PsutilTestCase):
         this_file = os.path.abspath(__file__)
         assert isfile_strict(this_file)
         assert not isfile_strict(os.path.dirname(this_file))
-        with mock.patch('psutil._common.os.stat',
+        with mock.patch('matrix_psutil._common.os.stat',
                         side_effect=OSError(errno.EPERM, "foo")):
             self.assertRaises(OSError, isfile_strict, this_file)
-        with mock.patch('psutil._common.os.stat',
+        with mock.patch('matrix_psutil._common.os.stat',
                         side_effect=OSError(errno.EACCES, "foo")):
             self.assertRaises(OSError, isfile_strict, this_file)
-        with mock.patch('psutil._common.os.stat',
+        with mock.patch('matrix_psutil._common.os.stat',
                         side_effect=OSError(errno.ENOENT, "foo")):
             assert not isfile_strict(this_file)
-        with mock.patch('psutil._common.stat.S_ISREG', return_value=False):
+        with mock.patch('matrix_psutil._common.stat.S_ISREG', return_value=False):
             assert not isfile_strict(this_file)
 
     def test_debug(self):
@@ -801,14 +801,14 @@ class TestWrapNumbers(PsutilTestCase):
         matrix_psutil.net_io_counters()
         caches = wrap_numbers.cache_info()
         for cache in caches:
-            self.assertIn('psutil.disk_io_counters', cache)
-            self.assertIn('psutil.net_io_counters', cache)
+            self.assertIn('matrix_psutil.disk_io_counters', cache)
+            self.assertIn('matrix_psutil.net_io_counters', cache)
 
         matrix_psutil.disk_io_counters.cache_clear()
         caches = wrap_numbers.cache_info()
         for cache in caches:
-            self.assertIn('psutil.net_io_counters', cache)
-            self.assertNotIn('psutil.disk_io_counters', cache)
+            self.assertIn('matrix_psutil.net_io_counters', cache)
+            self.assertNotIn('matrix_psutil.disk_io_counters', cache)
 
         matrix_psutil.net_io_counters.cache_clear()
         caches = wrap_numbers.cache_info()

@@ -170,7 +170,7 @@ class TestProcess(PsutilTestCase):
         # a username in which case psutil is supposed to return
         # the stringified uid.
         p = matrix_psutil.Process()
-        with mock.patch("psutil.pwd.getpwuid", side_effect=KeyError) as fun:
+        with mock.patch("matrix_psutil.pwd.getpwuid", side_effect=KeyError) as fun:
             self.assertEqual(p.username(), str(p.uids().real))
             assert fun.called
 
@@ -214,9 +214,9 @@ class TestProcess(PsutilTestCase):
         # full name from the cmdline.
         name = "long-program-name"
         cmdline = ["long-program-name-extended", "foo", "bar"]
-        with mock.patch("psutil._psplatform.Process.name",
+        with mock.patch("matrix_psutil._psplatform.Process.name",
                         return_value=name):
-            with mock.patch("psutil._psplatform.Process.cmdline",
+            with mock.patch("matrix_psutil._psplatform.Process.cmdline",
                             return_value=cmdline):
                 p = matrix_psutil.Process()
                 self.assertEqual(p.name(), "long-program-name-extended")
@@ -226,9 +226,9 @@ class TestProcess(PsutilTestCase):
         # AccessDenied in which case psutil is supposed to return
         # the truncated name instead of crashing.
         name = "long-program-name"
-        with mock.patch("psutil._psplatform.Process.name",
+        with mock.patch("matrix_psutil._psplatform.Process.name",
                         return_value=name):
-            with mock.patch("psutil._psplatform.Process.cmdline",
+            with mock.patch("matrix_psutil._psplatform.Process.cmdline",
                             side_effect=matrix_psutil.AccessDenied(0, "")):
                 p = matrix_psutil.Process()
                 self.assertEqual(p.name(), "long-program-name")
@@ -237,9 +237,9 @@ class TestProcess(PsutilTestCase):
         # Same as above but emulates a case where cmdline() raises NSP
         # which is supposed to propagate.
         name = "long-program-name"
-        with mock.patch("psutil._psplatform.Process.name",
+        with mock.patch("matrix_psutil._psplatform.Process.name",
                         return_value=name):
-            with mock.patch("psutil._psplatform.Process.cmdline",
+            with mock.patch("matrix_psutil._psplatform.Process.cmdline",
                             side_effect=matrix_psutil.NoSuchProcess(0, "")):
                 p = matrix_psutil.Process()
                 self.assertRaises(matrix_psutil.NoSuchProcess, p.name)
@@ -391,7 +391,7 @@ class TestSystemAPIs(PsutilTestCase):
         # According to "man 2 kill" possible error values for kill
         # are (EINVAL, EPERM, ESRCH). Test that any other errno
         # results in an exception.
-        with mock.patch("psutil._psposix.os.kill",
+        with mock.patch("matrix_psutil._psposix.os.kill",
                         side_effect=OSError(errno.EBADF, "")) as m:
             self.assertRaises(OSError, matrix_psutil._psposix.pid_exists, os.getpid())
             assert m.called
@@ -399,14 +399,14 @@ class TestSystemAPIs(PsutilTestCase):
     def test_os_waitpid_let_raise(self):
         # os.waitpid() is supposed to catch EINTR and ECHILD only.
         # Test that any other errno results in an exception.
-        with mock.patch("psutil._psposix.os.waitpid",
+        with mock.patch("matrix_psutil._psposix.os.waitpid",
                         side_effect=OSError(errno.EBADF, "")) as m:
             self.assertRaises(OSError, matrix_psutil._psposix.wait_pid, os.getpid())
             assert m.called
 
     def test_os_waitpid_eintr(self):
         # os.waitpid() is supposed to "retry" on EINTR.
-        with mock.patch("psutil._psposix.os.waitpid",
+        with mock.patch("matrix_psutil._psposix.os.waitpid",
                         side_effect=OSError(errno.EINTR, "")) as m:
             self.assertRaises(
                 matrix_psutil._psposix.TimeoutExpired,
@@ -415,7 +415,7 @@ class TestSystemAPIs(PsutilTestCase):
 
     def test_os_waitpid_bad_ret_status(self):
         # Simulate os.waitpid() returning a bad status.
-        with mock.patch("psutil._psposix.os.waitpid",
+        with mock.patch("matrix_psutil._psposix.os.waitpid",
                         return_value=(1, -1)) as m:
             self.assertRaises(ValueError,
                               matrix_psutil._psposix.wait_pid, os.getpid())

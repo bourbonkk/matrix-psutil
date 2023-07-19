@@ -2078,7 +2078,7 @@ def disk_io_counters(perdisk=False, nowrap=True):
     if not rawdict:
         return {} if perdisk else None
     if nowrap:
-        rawdict = _wrap_numbers(rawdict, 'psutil.disk_io_counters')
+        rawdict = _wrap_numbers(rawdict, 'matrix_psutil.disk_io_counters')
     nt = getattr(_psplatform, "sdiskio", _common.sdiskio)
     if perdisk:
         for disk, fields in rawdict.items():
@@ -2089,7 +2089,7 @@ def disk_io_counters(perdisk=False, nowrap=True):
 
 
 disk_io_counters.cache_clear = functools.partial(
-    _wrap_numbers.cache_clear, 'psutil.disk_io_counters')
+    _wrap_numbers.cache_clear, 'matrix_psutil.disk_io_counters')
 disk_io_counters.cache_clear.__doc__ = "Clears nowrap argument cache"
 
 
@@ -2128,7 +2128,7 @@ def net_io_counters(pernic=False, nowrap=True):
     if not rawdict:
         return {} if pernic else None
     if nowrap:
-        rawdict = _wrap_numbers(rawdict, 'psutil.net_io_counters')
+        rawdict = _wrap_numbers(rawdict, 'matrix_psutil.net_io_counters')
     if pernic:
         for nic, fields in rawdict.items():
             rawdict[nic] = _common.snetio(*fields)
@@ -2138,7 +2138,7 @@ def net_io_counters(pernic=False, nowrap=True):
 
 
 net_io_counters.cache_clear = functools.partial(
-    _wrap_numbers.cache_clear, 'psutil.net_io_counters')
+    _wrap_numbers.cache_clear, 'matrix_psutil.net_io_counters')
 net_io_counters.cache_clear.__doc__ = "Clears nowrap argument cache"
 
 

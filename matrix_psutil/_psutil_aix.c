@@ -1056,7 +1056,7 @@ psutil_aix_clear(PyObject *m) {
 
 static struct PyModuleDef moduledef = {
     PyModuleDef_HEAD_INIT,
-    "psutil_aix",
+    "matrix_psutil_aix",
     NULL,
     sizeof(struct module_state),
     PsutilMethods,

@@ -123,12 +123,12 @@ class TestProcess(PsutilTestCase):
     def test_send_signal_mocked(self):
         sig = signal.SIGTERM
         p = self.spawn_psproc()
-        with mock.patch('psutil.os.kill',
+        with mock.patch('matrix_psutil.os.kill',
                         side_effect=OSError(errno.ESRCH, "")):
             self.assertRaises(matrix_psutil.NoSuchProcess, p.send_signal, sig)
 
         p = self.spawn_psproc()
-        with mock.patch('psutil.os.kill',
+        with mock.patch('matrix_psutil.os.kill',
                         side_effect=OSError(errno.EPERM, "")):
             self.assertRaises(matrix_psutil.AccessDenied, p.send_signal, sig)
 
@@ -241,7 +241,7 @@ class TestProcess(PsutilTestCase):
 
     def test_cpu_percent_numcpus_none(self):
         # See: https://github.com/giampaolo/psutil/issues/1087
-        with mock.patch('psutil.cpu_count', return_value=None) as m:
+        with mock.patch('matrix_psutil.cpu_count', return_value=None) as m:
             matrix_psutil.Process().cpu_percent()
             assert m.called
 
@@ -1094,7 +1094,7 @@ class TestProcess(PsutilTestCase):
     def test_parent_disappeared(self):
         # Emulate a case where the parent process disappeared.
         p = self.spawn_psproc()
-        with mock.patch("psutil.Process",
+        with mock.patch("matrix_psutil.Process",
                         side_effect=matrix_psutil.NoSuchProcess(0, 'foo')):
             self.assertIsNone(p.parent())
 
@@ -1193,26 +1193,26 @@ class TestProcess(PsutilTestCase):
             self.assertEqual(d['connections'], 'foo')
 
         # Test ad_value is set on AccessDenied.
-        with mock.patch('psutil.Process.nice', create=True,
+        with mock.patch('matrix_psutil.Process.nice', create=True,
                         side_effect=matrix_psutil.AccessDenied):
             self.assertEqual(
                 p.as_dict(attrs=["nice"], ad_value=1), {"nice": 1})
 
         # Test that NoSuchProcess bubbles up.
-        with mock.patch('psutil.Process.nice', create=True,
+        with mock.patch('matrix_psutil.Process.nice', create=True,
                         side_effect=matrix_psutil.NoSuchProcess(p.pid, "name")):
             self.assertRaises(
                 matrix_psutil.NoSuchProcess, p.as_dict, attrs=["nice"])
 
         # Test that ZombieProcess is swallowed.
-        with mock.patch('psutil.Process.nice', create=True,
+        with mock.patch('matrix_psutil.Process.nice', create=True,
                         side_effect=matrix_psutil.ZombieProcess(p.pid, "name")):
             self.assertEqual(
                 p.as_dict(attrs=["nice"], ad_value="foo"), {"nice": "foo"})
 
         # By default APIs raising NotImplementedError are
         # supposed to be skipped.
-        with mock.patch('psutil.Process.nice', create=True,
+        with mock.patch('matrix_psutil.Process.nice', create=True,
                         side_effect=NotImplementedError):
             d = p.as_dict()
             self.assertNotIn('nice', list(d.keys()))
@@ -1230,13 +1230,13 @@ class TestProcess(PsutilTestCase):
 
     def test_oneshot(self):
         p = matrix_psutil.Process()
-        with mock.patch("psutil._psplatform.Process.cpu_times") as m:
+        with mock.patch("matrix_psutil._psplatform.Process.cpu_times") as m:
             with p.oneshot():
                 p.cpu_times()
                 p.cpu_times()
             self.assertEqual(m.call_count, 1)
 
-        with mock.patch("psutil._psplatform.Process.cpu_times") as m:
+        with mock.patch("matrix_psutil._psplatform.Process.cpu_times") as m:
             p.cpu_times()
             p.cpu_times()
         self.assertEqual(m.call_count, 2)
@@ -1245,8 +1245,8 @@ class TestProcess(PsutilTestCase):
         # Test the case where the ctx manager is __enter__ed twice.
         # The second __enter__ is supposed to resut in a NOOP.
         p = matrix_psutil.Process()
-        with mock.patch("psutil._psplatform.Process.cpu_times") as m1:
-            with mock.patch("psutil._psplatform.Process.oneshot_enter") as m2:
+        with mock.patch("matrix_psutil._psplatform.Process.cpu_times") as m1:
+            with mock.patch("matrix_psutil._psplatform.Process.oneshot_enter") as m2:
                 with p.oneshot():
                     p.cpu_times()
                     p.cpu_times()
@@ -1256,7 +1256,7 @@ class TestProcess(PsutilTestCase):
                 self.assertEqual(m1.call_count, 1)
                 self.assertEqual(m2.call_count, 1)
 
-        with mock.patch("psutil._psplatform.Process.cpu_times") as m:
+        with mock.patch("matrix_psutil._psplatform.Process.cpu_times") as m:
             p.cpu_times()
             p.cpu_times()
         self.assertEqual(m.call_count, 2)
@@ -1360,7 +1360,7 @@ class TestProcess(PsutilTestCase):
         # Emulate a case where internally is_running() raises
         # ZombieProcess.
         p = matrix_psutil.Process()
-        with mock.patch("psutil.Process",
+        with mock.patch("matrix_psutil.Process",
                         side_effect=matrix_psutil.ZombieProcess(0)) as m:
             assert p.is_running()
             assert m.called
@@ -1370,7 +1370,7 @@ class TestProcess(PsutilTestCase):
         # Emulate a case where internally status() raises
         # ZombieProcess.
         p = matrix_psutil.Process()
-        with mock.patch("psutil._psplatform.Process.status",
+        with mock.patch("matrix_psutil._psplatform.Process.status",
                         side_effect=matrix_psutil.ZombieProcess(0)) as m:
             self.assertEqual(p.status(), matrix_psutil.STATUS_ZOMBIE)
             assert m.called

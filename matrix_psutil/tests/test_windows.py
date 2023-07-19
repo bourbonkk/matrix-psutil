@@ -278,13 +278,13 @@ class TestSystemAPIs(WindowsTestCase):
 
     def test_boot_time_fluctuation(self):
         # https://github.com/giampaolo/psutil/issues/1007
-        with mock.patch('psutil._pswindows.cext.boot_time', return_value=5):
+        with mock.patch('matrix_psutil._pswindows.cext.boot_time', return_value=5):
             self.assertEqual(matrix_psutil.boot_time(), 5)
-        with mock.patch('psutil._pswindows.cext.boot_time', return_value=4):
+        with mock.patch('matrix_psutil._pswindows.cext.boot_time', return_value=4):
             self.assertEqual(matrix_psutil.boot_time(), 5)
-        with mock.patch('psutil._pswindows.cext.boot_time', return_value=6):
+        with mock.patch('matrix_psutil._pswindows.cext.boot_time', return_value=6):
             self.assertEqual(matrix_psutil.boot_time(), 5)
-        with mock.patch('psutil._pswindows.cext.boot_time', return_value=333):
+        with mock.patch('matrix_psutil._pswindows.cext.boot_time', return_value=333):
             self.assertEqual(matrix_psutil.boot_time(), 333)
 
 
@@ -321,27 +321,27 @@ class TestSensorsBattery(WindowsTestCase):
                          battery_wmi.BatteryStatus == 2)
 
     def test_emulate_no_battery(self):
-        with mock.patch("psutil._pswindows.cext.sensors_battery",
+        with mock.patch("matrix_psutil._pswindows.cext.sensors_battery",
                         return_value=(0, 128, 0, 0)) as m:
             self.assertIsNone(matrix_psutil.sensors_battery())
             assert m.called
 
     def test_emulate_power_connected(self):
-        with mock.patch("psutil._pswindows.cext.sensors_battery",
+        with mock.patch("matrix_psutil._pswindows.cext.sensors_battery",
                         return_value=(1, 0, 0, 0)) as m:
             self.assertEqual(matrix_psutil.sensors_battery().secsleft,
                              matrix_psutil.POWER_TIME_UNLIMITED)
             assert m.called
 
     def test_emulate_power_charging(self):
-        with mock.patch("psutil._pswindows.cext.sensors_battery",
+        with mock.patch("matrix_psutil._pswindows.cext.sensors_battery",
                         return_value=(0, 8, 0, 0)) as m:
             self.assertEqual(matrix_psutil.sensors_battery().secsleft,
                              matrix_psutil.POWER_TIME_UNLIMITED)
             assert m.called
 
     def test_emulate_secs_left_unknown(self):
-        with mock.patch("psutil._pswindows.cext.sensors_battery",
+        with mock.patch("matrix_psutil._pswindows.cext.sensors_battery",
                         return_value=(0, 0, 0, -1)) as m:
             self.assertEqual(matrix_psutil.sensors_battery().secsleft,
                              matrix_psutil.POWER_TIME_UNKNOWN)
@@ -539,7 +539,7 @@ class TestProcess(WindowsTestCase):
         # https://github.com/giampaolo/psutil/issues/875
         exc = WindowsError()
         exc.winerror = 299
-        with mock.patch("psutil._psplatform.cext.proc_cwd", side_effect=exc):
+        with mock.patch("matrix_psutil._psplatform.cext.proc_cwd", side_effect=exc):
             with mock.patch("time.sleep") as m:
                 p = matrix_psutil.Process()
                 self.assertRaises(matrix_psutil.AccessDenied, p.cwd)
@@ -645,7 +645,7 @@ class TestDualProcessImplementation(PsutilTestCase):
 
     def test_memory_info(self):
         mem_1 = matrix_psutil.Process(self.pid).memory_info()
-        with mock.patch("psutil._psplatform.cext.proc_memory_info",
+        with mock.patch("matrix_psutil._psplatform.cext.proc_memory_info",
                         side_effect=OSError(errno.EPERM, "msg")) as fun:
             mem_2 = matrix_psutil.Process(self.pid).memory_info()
             self.assertEqual(len(mem_1), len(mem_2))
@@ -657,14 +657,14 @@ class TestDualProcessImplementation(PsutilTestCase):
 
     def test_create_time(self):
         ctime = matrix_psutil.Process(self.pid).create_time()
-        with mock.patch("psutil._psplatform.cext.proc_times",
+        with mock.patch("matrix_psutil._psplatform.cext.proc_times",
                         side_effect=OSError(errno.EPERM, "msg")) as fun:
             self.assertEqual(matrix_psutil.Process(self.pid).create_time(), ctime)
             assert fun.called
 
     def test_cpu_times(self):
         cpu_times_1 = matrix_psutil.Process(self.pid).cpu_times()
-        with mock.patch("psutil._psplatform.cext.proc_times",
+        with mock.patch("matrix_psutil._psplatform.cext.proc_times",
                         side_effect=OSError(errno.EPERM, "msg")) as fun:
             cpu_times_2 = matrix_psutil.Process(self.pid).cpu_times()
             assert fun.called
@@ -675,7 +675,7 @@ class TestDualProcessImplementation(PsutilTestCase):
 
     def test_io_counters(self):
         io_counters_1 = matrix_psutil.Process(self.pid).io_counters()
-        with mock.patch("psutil._psplatform.cext.proc_io_counters",
+        with mock.patch("matrix_psutil._psplatform.cext.proc_io_counters",
                         side_effect=OSError(errno.EPERM, "msg")) as fun:
             io_counters_2 = matrix_psutil.Process(self.pid).io_counters()
             for i in range(len(io_counters_1)):
@@ -685,7 +685,7 @@ class TestDualProcessImplementation(PsutilTestCase):
 
     def test_num_handles(self):
         num_handles = matrix_psutil.Process(self.pid).num_handles()
-        with mock.patch("psutil._psplatform.cext.proc_num_handles",
+        with mock.patch("matrix_psutil._psplatform.cext.proc_num_handles",
                         side_effect=OSError(errno.EPERM, "msg")) as fun:
             self.assertEqual(matrix_psutil.Process(self.pid).num_handles(),
                              num_handles)
@@ -866,10 +866,10 @@ class TestServices(PsutilTestCase):
         else:
             args = (ERROR_SERVICE_DOES_NOT_EXIST, "msg")
         exc = WindowsError(*args)
-        with mock.patch("psutil._psplatform.cext.winservice_query_status",
+        with mock.patch("matrix_psutil._psplatform.cext.winservice_query_status",
                         side_effect=exc):
             self.assertRaises(matrix_psutil.NoSuchProcess, service.status)
-        with mock.patch("psutil._psplatform.cext.winservice_query_config",
+        with mock.patch("matrix_psutil._psplatform.cext.winservice_query_config",
                         side_effect=exc):
             self.assertRaises(matrix_psutil.NoSuchProcess, service.username)
 
@@ -879,10 +879,10 @@ class TestServices(PsutilTestCase):
         else:
             args = (ERROR_ACCESS_DENIED, "msg")
         exc = WindowsError(*args)
-        with mock.patch("psutil._psplatform.cext.winservice_query_status",
+        with mock.patch("matrix_psutil._psplatform.cext.winservice_query_status",
                         side_effect=exc):
             self.assertRaises(matrix_psutil.AccessDenied, service.status)
-        with mock.patch("psutil._psplatform.cext.winservice_query_config",
+        with mock.patch("matrix_psutil._psplatform.cext.winservice_query_config",
                         side_effect=exc):
             self.assertRaises(matrix_psutil.AccessDenied, service.username)
 

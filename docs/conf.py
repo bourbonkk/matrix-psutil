@@ -26,7 +26,7 @@ import datetime
 import os
 
 
-PROJECT_NAME = "psutil"
+PROJECT_NAME = "matrix_psutil"
 AUTHOR = u"Giampaolo Rodola"
 THIS_YEAR = str(datetime.datetime.now().year)
 HERE = os.path.abspath(os.path.dirname(__file__))
@@ -288,7 +288,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'psutil.tex', u'psutil Documentation',
+    (master_doc, 'matrix_psutil.tex', u'psutil Documentation',
      AUTHOR, 'manual'),
 ]
 

@@ -305,7 +305,7 @@ class Error(Exception):
         # invoked on `repr(Error)`
         info = self._infodict(("pid", "ppid", "name", "seconds", "msg"))
         details = ", ".join(["%s=%r" % (k, v) for k, v in info.items()])
-        return "psutil.%s(%s)" % (self.__class__.__name__, details)
+        return "matrix_psutil.%s(%s)" % (self.__class__.__name__, details)
 
 
 class NoSuchProcess(Error):
@@ -932,5 +932,5 @@ def debug(msg):
                 msg = "ignoring %s" % msg
             else:
                 msg = "ignoring %r" % msg
-        print("psutil-debug [%s:%s]> %s" % (fname, lineno, msg),  # NOQA
+        print("matrix_psutil-debug [%s:%s]> %s" % (fname, lineno, msg),  # NOQA
               file=sys.stderr)

@@ -71,10 +71,10 @@ class TestProcessAPIs(PsutilTestCase):
         p.wait()
         self.assertNotIn(sproc.pid, [x.pid for x in matrix_psutil.process_iter()])
 
-        with mock.patch('psutil.Process',
+        with mock.patch('matrix_psutil.Process',
                         side_effect=matrix_psutil.NoSuchProcess(os.getpid())):
             self.assertEqual(list(matrix_psutil.process_iter()), [])
-        with mock.patch('psutil.Process',
+        with mock.patch('matrix_psutil.Process',
                         side_effect=matrix_psutil.AccessDenied(os.getpid())):
             with self.assertRaises(matrix_psutil.AccessDenied):
                 list(matrix_psutil.process_iter())
@@ -84,13 +84,13 @@ class TestProcessAPIs(PsutilTestCase):
             self.assertEqual(list(p.info.keys()), ['pid'])
         with self.assertRaises(ValueError):
             list(matrix_psutil.process_iter(attrs=['foo']))
-        with mock.patch("psutil._psplatform.Process.cpu_times",
+        with mock.patch("matrix_psutil._psplatform.Process.cpu_times",
                         side_effect=matrix_psutil.AccessDenied(0, "")) as m:
             for p in matrix_psutil.process_iter(attrs=["pid", "cpu_times"]):
                 self.assertIsNone(p.info['cpu_times'])
                 self.assertGreaterEqual(p.info['pid'], 0)
             assert m.called
-        with mock.patch("psutil._psplatform.Process.cpu_times",
+        with mock.patch("matrix_psutil._psplatform.Process.cpu_times",
                         side_effect=matrix_psutil.AccessDenied(0, "")) as m:
             flag = object()
             for p in matrix_psutil.process_iter(
@@ -331,11 +331,11 @@ class TestCpuAPIs(PsutilTestCase):
     def test_cpu_count_none(self):
         # https://github.com/giampaolo/psutil/issues/1085
         for val in (-1, 0, None):
-            with mock.patch('psutil._psplatform.cpu_count_logical',
+            with mock.patch('matrix_psutil._psplatform.cpu_count_logical',
                             return_value=val) as m:
                 self.assertIsNone(matrix_psutil.cpu_count())
                 assert m.called
-            with mock.patch('psutil._psplatform.cpu_count_cores',
+            with mock.patch('matrix_psutil._psplatform.cpu_count_cores',
                             return_value=val) as m:
                 self.assertIsNone(matrix_psutil.cpu_count(logical=False))
                 assert m.called
@@ -494,7 +494,7 @@ class TestCpuAPIs(PsutilTestCase):
         matrix_psutil.cpu_times_percent(percpu=True)
         zero_times = [x._make([0 for x in range(len(x._fields))])
                       for x in matrix_psutil.cpu_times(percpu=True)]
-        with mock.patch('psutil.cpu_times', return_value=zero_times):
+        with mock.patch('matrix_psutil.cpu_times', return_value=zero_times):
             for cpu in matrix_psutil.cpu_times_percent(percpu=True):
                 for percent in cpu:
                     self._test_cpu_percent(percent, None, None)
@@ -682,7 +682,7 @@ class TestDiskAPIs(PsutilTestCase):
     def test_disk_io_counters_no_disks(self):
         # Emulate a case where no disks are installed, see:
         # https://github.com/giampaolo/psutil/issues/1062
-        with mock.patch('psutil._psplatform.disk_io_counters',
+        with mock.patch('matrix_psutil._psplatform.disk_io_counters',
                         return_value={}) as m:
             self.assertIsNone(matrix_psutil.disk_io_counters(perdisk=False))
             self.assertEqual(matrix_psutil.disk_io_counters(perdisk=True), {})
@@ -724,7 +724,7 @@ class TestNetAPIs(PsutilTestCase):
     def test_net_io_counters_no_nics(self):
         # Emulate a case where no NICs are installed, see:
         # https://github.com/giampaolo/psutil/issues/1062
-        with mock.patch('psutil._psplatform.net_io_counters',
+        with mock.patch('matrix_psutil._psplatform.net_io_counters',
                         return_value={}) as m:
             self.assertIsNone(matrix_psutil.net_io_counters(pernic=False))
             self.assertEqual(matrix_psutil.net_io_counters(pernic=True), {})
@@ -798,7 +798,7 @@ class TestNetAPIs(PsutilTestCase):
             ret = [('em1', matrix_psutil.AF_LINK, '06:3d:29', None, None, None)]
         else:
             ret = [('em1', -1, '06-3d-29', None, None, None)]
-        with mock.patch('psutil._psplatform.net_if_addrs',
+        with mock.patch('matrix_psutil._psplatform.net_if_addrs',
                         return_value=ret) as m:
             addr = matrix_psutil.net_if_addrs()['em1'][0]
             assert m.called
@@ -827,7 +827,7 @@ class TestNetAPIs(PsutilTestCase):
                      "LINUX or BSD or MACOS specific")
     def test_net_if_stats_enodev(self):
         # See: https://github.com/giampaolo/psutil/issues/1279
-        with mock.patch('psutil._psutil_posix.net_if_mtu',
+        with mock.patch('matrix_psutil._psutil_posix.net_if_mtu',
                         side_effect=OSError(errno.ENODEV, "")) as m:
             ret = matrix_psutil.net_if_stats()
             self.assertEqual(ret, {})
@@ -853,7 +853,7 @@ class TestSensorsAPIs(PsutilTestCase):
     @unittest.skipIf(not HAS_SENSORS_TEMPERATURES, "not supported")
     def test_sensors_temperatures_fahreneit(self):
         d = {'coretemp': [('label', 50.0, 60.0, 70.0)]}
-        with mock.patch("psutil._psplatform.sensors_temperatures",
+        with mock.patch("matrix_psutil._psplatform.sensors_temperatures",
                         return_value=d) as m:
             temps = matrix_psutil.sensors_temperatures(
                 fahrenheit=True)['coretemp'][0]

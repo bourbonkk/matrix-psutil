@@ -884,8 +884,8 @@ class TestCase(unittest.TestCase):
     # being run.
     def __str__(self):
         fqmod = self.__class__.__module__
-        if not fqmod.startswith('psutil.'):
-            fqmod = 'psutil.tests.' + fqmod
+        if not fqmod.startswith('matrix_psutil.'):
+            fqmod = 'matrix_psutil.tests.' + fqmod
         return "%s.%s.%s" % (
             fqmod, self.__class__.__name__, self._testMethodName)
 
