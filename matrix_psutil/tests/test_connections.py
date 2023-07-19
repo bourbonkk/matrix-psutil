@@ -496,7 +496,7 @@ class TestSystemWideConnections(ConnectionTestCase):
             fnames.append(fname)
             src = textwrap.dedent("""\
                 import time, os
-                from psutil.tests import create_sockets
+                from matrix_psutil.tests import create_sockets
                 with create_sockets():
                     with open(r'%s', 'w') as f:
                         f.write("hello")

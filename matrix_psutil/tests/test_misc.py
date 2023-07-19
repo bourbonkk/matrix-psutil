@@ -541,7 +541,7 @@ class TestCommonModule(PsutilTestCase):
         with redirect_stderr(StringIO()) as f:
             debug("hello")
         msg = f.getvalue()
-        assert msg.startswith("psutil-debug"), msg
+        assert msg.startswith("matrix_psutil-debug"), msg
         self.assertIn("hello", msg)
         self.assertIn(__file__.replace('.pyc', '.py'), msg)
 

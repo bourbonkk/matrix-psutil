@@ -314,7 +314,7 @@ def setup():
 
 def main():
     setup()
-    usage = "python3 -m psutil.tests [opts] [test-name]"
+    usage = "python3 -m matrix_psutil.tests [opts] [test-name]"
     parser = optparse.OptionParser(usage=usage, description="run unit tests")
     parser.add_option("--last-failed",
                       action="store_true", default=False,

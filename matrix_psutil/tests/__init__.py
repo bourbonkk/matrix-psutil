@@ -455,7 +455,7 @@ def spawn_zombie():
             zpid = int(conn.recv(1024))
             _pids_started.add(zpid)
             zombie = matrix_psutil.Process(zpid)
-            call_until(zombie.status, "ret == psutil.STATUS_ZOMBIE")
+            call_until(zombie.status, "ret == matrix_psutil.STATUS_ZOMBIE")
             return (parent, zombie)
         finally:
             conn.close()
