@@ -71,12 +71,12 @@ def get_file_urls():
 
 def rename_win27_wheels():
     # See: https://github.com/giampaolo/psutil/issues/810
-    src = 'dist/psutil-%s-cp27-cp27m-win32.whl' % PSUTIL_VERSION
-    dst = 'dist/psutil-%s-cp27-none-win32.whl' % PSUTIL_VERSION
+    src = 'dist/matrix_psutil-%s-cp27-cp27m-win32.whl' % PSUTIL_VERSION
+    dst = 'dist/matrix_psutil-%s-cp27-none-win32.whl' % PSUTIL_VERSION
     print("rename: %s\n        %s" % (src, dst))
     os.rename(src, dst)
-    src = 'dist/psutil-%s-cp27-cp27m-win_amd64.whl' % PSUTIL_VERSION
-    dst = 'dist/psutil-%s-cp27-none-win_amd64.whl' % PSUTIL_VERSION
+    src = 'dist/matrix_psutil-%s-cp27-cp27m-win_amd64.whl' % PSUTIL_VERSION
+    dst = 'dist/matrix_psutil-%s-cp27-none-win_amd64.whl' % PSUTIL_VERSION
     print("rename: %s\n        %s" % (src, dst))
     os.rename(src, dst)
 
