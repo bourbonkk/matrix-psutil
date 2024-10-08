@@ -69,7 +69,7 @@ jobs:
       run: |
         make generate-manifest
         python setup.py sdist
-        mv dist/psutil*.tar.gz wheelhouse/
+        mv dist/matrix*.tar.gz wheelhouse/
 
   # Linux + macOS + Python 2
   py2:
@@ -103,7 +103,7 @@ jobs:
       run: |
         make generate-manifest
         python setup.py sdist
-        mv dist/psutil*.tar.gz wheelhouse/
+        mv dist/matrix*.tar.gz wheelhouse/
 
   # Run linters
   linters:
