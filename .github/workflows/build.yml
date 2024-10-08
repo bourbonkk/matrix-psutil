@@ -16,22 +16,20 @@ name: build
 jobs:
   # Linux + macOS + Windows Python 3
   py3:
-    name: py3-${{ matrix.os }}-${{ startsWith(matrix.os, 'windows') && matrix.archs || 'all' }}
+    name: "py3, ${{ matrix.os }}, ${{ matrix.arch }}"
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 20
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
         include:
-        - os: ubuntu-latest
-          archs: "x86_64 i686"
-        - os: macos-12
-          archs: "x86_64 arm64"
-        - os: windows-2019
-          archs: "AMD64"
-        - os: windows-2019
-          archs: "x86"
-
+        - {os: ubuntu-latest, arch: x86_64}
+        - {os: ubuntu-latest, arch: i686}
+        - {os: ubuntu-latest, arch: aarch64}
+        - {os: macos-12, arch: x86_64}
+        - {os: macos-14, arch: arm64}
+        - {os: windows-2019, arch: AMD64}
+        - {os: windows-2019, arch: x86}
     steps:
     - name: Cancel previous runs
       uses: styfle/cancel-workflow-action@0.9.1
