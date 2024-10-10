@@ -59,7 +59,6 @@ if LINUX:
     from matrix_psutil._pslinux import calculate_avail_vmem
     from matrix_psutil._pslinux import open_binary
 
-
 HERE = os.path.abspath(os.path.dirname(__file__))
 SIOCGIFADDR = 0x8915
 SIOCGIFCONF = 0x8912
@@ -613,7 +612,7 @@ class TestSystemSwapMemory(PsutilTestCase):
         assert abs(free_value - psutil_value) < TOLERANCE_SYS_MEM
 
     def test_missing_sin_sout(self):
-        with mock.patch('psutil._common.open', create=True) as m:
+        with mock.patch('matrix_psutil._common.open', create=True) as m:
             with warnings.catch_warnings(record=True) as ws:
                 warnings.simplefilter("always")
                 ret = psutil.swap_memory()
@@ -652,7 +651,7 @@ class TestSystemSwapMemory(PsutilTestCase):
         # https://github.com/giampaolo/psutil/issues/1015
         if not self.meminfo_has_swap_info():
             return unittest.skip("/proc/meminfo has no swap metrics")
-        with mock.patch('psutil._pslinux.cext.linux_sysinfo') as m:
+        with mock.patch('matrix_psutil._pslinux.cext.linux_sysinfo') as m:
             swap = psutil.swap_memory()
         assert not m.called
         import matrix_psutil._psutil_linux as cext
@@ -735,14 +734,14 @@ class TestSystemCPUCountLogical(PsutilTestCase):
         # Here we want to mock os.sysconf("SC_NPROCESSORS_ONLN") in
         # order to cause the parsing of /proc/cpuinfo and /proc/stat.
         with mock.patch(
-            'psutil._pslinux.os.sysconf', side_effect=ValueError
+            'matrix_psutil._pslinux.os.sysconf', side_effect=ValueError
         ) as m:
             assert psutil._pslinux.cpu_count_logical() == original
             assert m.called
 
             # Let's have open() return empty data and make sure None is
             # returned ('cause we mimic os.cpu_count()).
-            with mock.patch('psutil._common.open', create=True) as m:
+            with mock.patch('matrix_psutil._common.open', create=True) as m:
                 assert psutil._pslinux.cpu_count_logical() is None
                 assert m.call_count == 2
                 # /proc/stat should be the last one
@@ -754,7 +753,9 @@ class TestSystemCPUCountLogical(PsutilTestCase):
                 cpuinfo_data = f.read()
             fake_file = io.BytesIO(cpuinfo_data)
             with mock.patch(
-                'psutil._common.open', return_value=fake_file, create=True
+                'matrix_psutil._common.open',
+                return_value=fake_file,
+                create=True,
             ) as m:
                 assert psutil._pslinux.cpu_count_logical() == original
 
@@ -787,7 +788,7 @@ class TestSystemCPUCountCores(PsutilTestCase):
 
     def test_emulate_none(self):
         with mock.patch('glob.glob', return_value=[]) as m1:
-            with mock.patch('psutil._common.open', create=True) as m2:
+            with mock.patch('matrix_psutil._common.open', create=True) as m2:
                 assert psutil._pslinux.cpu_count_cores() is None
         assert m1.called
         assert m2.called
@@ -907,7 +908,7 @@ class TestSystemCPUFrequency(PsutilTestCase):
         with mock.patch(patch_point, side_effect=open_mock):
             with mock.patch('os.path.exists', return_value=True):
                 with mock.patch(
-                    'psutil._pslinux.cpu_count_logical', return_value=2
+                    'matrix_psutil._pslinux.cpu_count_logical', return_value=2
                 ):
                     freq = psutil.cpu_freq(percpu=True)
                     assert freq[0].current == 100.0
@@ -939,7 +940,7 @@ class TestSystemCPUFrequency(PsutilTestCase):
         with mock.patch(patch_point, side_effect=open_mock):
             with mock.patch('os.path.exists', return_value=True):
                 with mock.patch(
-                    'psutil._pslinux.cpu_count_logical', return_value=1
+                    'matrix_psutil._pslinux.cpu_count_logical', return_value=1
                 ):
                     freq = psutil.cpu_freq()
                     assert freq.current == 200
@@ -1122,8 +1123,10 @@ class TestSystemNetIOCounters(PsutilTestCase):
 
 @unittest.skipIf(not LINUX, "LINUX only")
 class TestSystemNetConnections(PsutilTestCase):
-    @mock.patch('psutil._pslinux.socket.inet_ntop', side_effect=ValueError)
-    @mock.patch('psutil._pslinux.supports_ipv6', return_value=False)
+    @mock.patch(
+        'matrix_psutil._pslinux.socket.inet_ntop', side_effect=ValueError
+    )
+    @mock.patch('matrix_psutil._pslinux.supports_ipv6', return_value=False)
     def test_emulate_ipv6_unsupported(self, supports_ipv6, inet_ntop):
         # see: https://github.com/giampaolo/psutil/issues/623
         try:
@@ -1190,10 +1193,12 @@ class TestSystemDiskPartitions(PsutilTestCase):
             # No ZFS partitions on this system. Let's fake one.
             fake_file = io.StringIO(u"nodev\tzfs\n")
             with mock.patch(
-                'psutil._common.open', return_value=fake_file, create=True
+                'matrix_psutil._common.open',
+                return_value=fake_file,
+                create=True,
             ) as m1:
                 with mock.patch(
-                    'psutil._pslinux.cext.disk_partitions',
+                    'matrix_psutil._pslinux.cext.disk_partitions',
                     return_value=[('/dev/sdb3', '/', 'zfs', 'rw')],
                 ) as m2:
                     ret = psutil.disk_partitions()
@@ -1223,7 +1228,7 @@ class TestSystemDiskIoCounters(PsutilTestCase):
         content = "   3     0   1 hda 2 3 4 5 6 7 8 9 10 11 12"
         with mock_open_content({'/proc/diskstats': content}):
             with mock.patch(
-                'psutil._pslinux.is_storage_device', return_value=True
+                'matrix_psutil._pslinux.is_storage_device', return_value=True
             ):
                 ret = psutil.disk_io_counters(nowrap=False)
                 assert ret.read_count == 1
@@ -1243,7 +1248,7 @@ class TestSystemDiskIoCounters(PsutilTestCase):
         content = "   3    0   hda 1 2 3 4 5 6 7 8 9 10 11"
         with mock_open_content({"/proc/diskstats": content}):
             with mock.patch(
-                'psutil._pslinux.is_storage_device', return_value=True
+                'matrix_psutil._pslinux.is_storage_device', return_value=True
             ):
                 ret = psutil.disk_io_counters(nowrap=False)
                 assert ret.read_count == 1
@@ -1264,7 +1269,7 @@ class TestSystemDiskIoCounters(PsutilTestCase):
         # https://github.com/giampaolo/psutil/issues/767
         with mock_open_content({"/proc/diskstats": "   3    1   hda 1 2 3 4"}):
             with mock.patch(
-                'psutil._pslinux.is_storage_device', return_value=True
+                'matrix_psutil._pslinux.is_storage_device', return_value=True
             ):
                 ret = psutil.disk_io_counters(nowrap=False)
                 assert ret.read_count == 1
@@ -1288,7 +1293,7 @@ class TestSystemDiskIoCounters(PsutilTestCase):
             """)
         with mock_open_content({"/proc/diskstats": content}):
             with mock.patch(
-                'psutil._pslinux.is_storage_device', return_value=False
+                'matrix_psutil._pslinux.is_storage_device', return_value=False
             ):
                 ret = psutil.disk_io_counters(perdisk=True, nowrap=False)
                 assert len(ret) == 2
@@ -1307,7 +1312,7 @@ class TestSystemDiskIoCounters(PsutilTestCase):
             """)
         with mock_open_content({"/proc/diskstats": content}):
             with mock.patch(
-                'psutil._pslinux.is_storage_device', return_value=False
+                'matrix_psutil._pslinux.is_storage_device', return_value=False
             ):
                 ret = psutil.disk_io_counters(perdisk=False, nowrap=False)
                 assert ret is None
@@ -1321,7 +1326,7 @@ class TestSystemDiskIoCounters(PsutilTestCase):
             """)
         with mock_open_content({"/proc/diskstats": content}):
             with mock.patch(
-                'psutil._pslinux.is_storage_device',
+                'matrix_psutil._pslinux.is_storage_device',
                 create=True,
                 side_effect=is_storage_device,
             ):
@@ -1335,7 +1340,9 @@ class TestSystemDiskIoCounters(PsutilTestCase):
 
         wprocfs = psutil.disk_io_counters(perdisk=True)
         with mock.patch(
-            'psutil._pslinux.os.path.exists', create=True, side_effect=exists
+            'matrix_psutil._pslinux.os.path.exists',
+            create=True,
+            side_effect=exists,
         ):
             wsysfs = psutil.disk_io_counters(perdisk=True)
         assert len(wprocfs) == len(wsysfs)
@@ -1345,7 +1352,9 @@ class TestSystemDiskIoCounters(PsutilTestCase):
             return False
 
         with mock.patch(
-            'psutil._pslinux.os.path.exists', create=True, side_effect=exists
+            'matrix_psutil._pslinux.os.path.exists',
+            create=True,
+            side_effect=exists,
         ):
             with pytest.raises(NotImplementedError):
                 psutil.disk_io_counters()
@@ -1405,7 +1414,7 @@ class TestRootFsDeviceFinder(PsutilTestCase):
 
     def test_disk_partitions_mocked(self):
         with mock.patch(
-            'psutil._pslinux.cext.disk_partitions',
+            'matrix_psutil._pslinux.cext.disk_partitions',
             return_value=[('/dev/root', '/', 'ext4', 'rw')],
         ) as m:
             part = psutil.disk_partitions()[0]
@@ -1535,7 +1544,7 @@ class TestMisc(PsutilTestCase):
             assert cpu_times_percent.user != 0
 
     def test_boot_time_mocked(self):
-        with mock.patch('psutil._common.open', create=True) as m:
+        with mock.patch('matrix_psutil._common.open', create=True) as m:
             with pytest.raises(RuntimeError):
                 psutil._pslinux.boot_time()
             assert m.called
@@ -1952,7 +1961,7 @@ class TestProcess(PsutilTestCase):
             # give the kernel some time to see the new file
             call_until(lambda: len(p.open_files()) != len(files))
             with mock.patch(
-                'psutil._pslinux.os.readlink',
+                'matrix_psutil._pslinux.os.readlink',
                 side_effect=OSError(errno.ENOENT, ""),
             ) as m:
                 assert p.open_files() == []
@@ -1960,7 +1969,7 @@ class TestProcess(PsutilTestCase):
             # also simulate the case where os.readlink() returns EINVAL
             # in which case psutil is supposed to 'continue'
             with mock.patch(
-                'psutil._pslinux.os.readlink',
+                'matrix_psutil._pslinux.os.readlink',
                 side_effect=OSError(errno.EINVAL, ""),
             ) as m:
                 assert p.open_files() == []
@@ -1991,11 +2000,11 @@ class TestProcess(PsutilTestCase):
         with open(self.get_testfn(), 'w'):
             # give the kernel some time to see the new file
             call_until(lambda: len(p.open_files()) != len(files))
-            patch_point = 'psutil._pslinux.os.readlink'
+            patch_point = 'matrix_psutil._pslinux.os.readlink'
             with mock.patch(
                 patch_point, side_effect=OSError(errno.ENAMETOOLONG, "")
             ) as m:
-                with mock.patch("psutil._pslinux.debug"):
+                with mock.patch("matrix_psutil._pslinux.debug"):
                     assert p.open_files() == []
                     assert m.called
 
@@ -2003,14 +2012,14 @@ class TestProcess(PsutilTestCase):
 
     def test_terminal_mocked(self):
         with mock.patch(
-            'psutil._pslinux._psposix.get_terminal_map', return_value={}
+            'matrix_psutil._pslinux._psposix.get_terminal_map', return_value={}
         ) as m:
             assert psutil._pslinux.Process(os.getpid()).terminal() is None
             assert m.called
 
     # TODO: re-enable this test.
     # def test_num_ctx_switches_mocked(self):
-    #     with mock.patch('psutil._common.open', create=True) as m:
+    #     with mock.patch('matrix_psutil._common.open', create=True) as m:
     #         self.assertRaises(
     #             NotImplementedError,
     #             psutil._pslinux.Process(os.getpid()).num_ctx_switches)
@@ -2021,13 +2030,13 @@ class TestProcess(PsutilTestCase):
         p = psutil.Process()
         fake_file = io.StringIO(u'foo\x00bar\x00')
         with mock.patch(
-            'psutil._common.open', return_value=fake_file, create=True
+            'matrix_psutil._common.open', return_value=fake_file, create=True
         ) as m:
             assert p.cmdline() == ['foo', 'bar']
             assert m.called
         fake_file = io.StringIO(u'foo\x00bar\x00\x00')
         with mock.patch(
-            'psutil._common.open', return_value=fake_file, create=True
+            'matrix_psutil._common.open', return_value=fake_file, create=True
         ) as m:
             assert p.cmdline() == ['foo', 'bar', '']
             assert m.called
@@ -2037,13 +2046,13 @@ class TestProcess(PsutilTestCase):
         p = psutil.Process()
         fake_file = io.StringIO(u'foo bar ')
         with mock.patch(
-            'psutil._common.open', return_value=fake_file, create=True
+            'matrix_psutil._common.open', return_value=fake_file, create=True
         ) as m:
             assert p.cmdline() == ['foo', 'bar']
             assert m.called
         fake_file = io.StringIO(u'foo bar  ')
         with mock.patch(
-            'psutil._common.open', return_value=fake_file, create=True
+            'matrix_psutil._common.open', return_value=fake_file, create=True
         ) as m:
             assert p.cmdline() == ['foo', 'bar', '']
             assert m.called
@@ -2054,14 +2063,15 @@ class TestProcess(PsutilTestCase):
         p = psutil.Process()
         fake_file = io.StringIO(u'foo\x20bar\x00')
         with mock.patch(
-            'psutil._common.open', return_value=fake_file, create=True
+            'matrix_psutil._common.open', return_value=fake_file, create=True
         ) as m:
             assert p.cmdline() == ['foo', 'bar']
             assert m.called
 
     def test_readlink_path_deleted_mocked(self):
         with mock.patch(
-            'psutil._pslinux.os.readlink', return_value='/home/foo (deleted)'
+            'matrix_psutil._pslinux.os.readlink',
+            return_value='/home/foo (deleted)',
         ):
             assert psutil.Process().exe() == "/home/foo"
             assert psutil.Process().cwd() == "/home/foo"
@@ -2098,11 +2108,12 @@ class TestProcess(PsutilTestCase):
 
     def test_exe_mocked(self):
         with mock.patch(
-            'psutil._pslinux.readlink', side_effect=OSError(errno.ENOENT, "")
+            'matrix_psutil._pslinux.readlink',
+            side_effect=OSError(errno.ENOENT, ""),
         ) as m:
             # de-activate guessing from cmdline()
             with mock.patch(
-                'psutil._pslinux.Process.cmdline', return_value=[]
+                'matrix_psutil._pslinux.Process.cmdline', return_value=[]
             ):
                 ret = psutil.Process().exe()
                 assert m.called
@@ -2125,10 +2136,11 @@ class TestProcess(PsutilTestCase):
         # happen in case of zombie process:
         # https://travis-ci.org/giampaolo/psutil/jobs/51368273
         with mock.patch(
-            "psutil._pslinux.prlimit", side_effect=OSError(errno.ENOSYS, "")
+            "matrix_psutil._pslinux.prlimit",
+            side_effect=OSError(errno.ENOSYS, ""),
         ) as m1:
             with mock.patch(
-                "psutil._pslinux.Process._is_zombie", return_value=True
+                "matrix_psutil._pslinux.Process._is_zombie", return_value=True
             ) as m2:
                 p = psutil.Process()
                 p.name()
@@ -2228,11 +2240,11 @@ class TestProcess(PsutilTestCase):
         # a file with full path longer than PATH_MAX, see:
         # https://github.com/giampaolo/psutil/issues/1940
         with mock.patch(
-            'psutil._pslinux.os.readlink',
+            'matrix_psutil._pslinux.os.readlink',
             side_effect=OSError(errno.ENAMETOOLONG, ""),
         ) as m:
             p = psutil.Process()
-            with mock.patch("psutil._pslinux.debug"):
+            with mock.patch("matrix_psutil._pslinux.debug"):
                 assert p.net_connections() == []
                 assert m.called
 
@@ -2308,7 +2320,7 @@ class TestProcessAgainstStatus(PsutilTestCase):
 
     def test_cpu_affinity_eligible_cpus(self):
         value = self.read_status_file("Cpus_allowed_list:")
-        with mock.patch("psutil._pslinux.per_cpu_times") as m:
+        with mock.patch("matrix_psutil._pslinux.per_cpu_times") as m:
             self.proc._proc._get_eligible_cpus()
         if '-' in str(value):
             assert not m.called

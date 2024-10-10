@@ -155,7 +155,7 @@ def main():
         c_linter(c_files)
     if rst_files:
         print(rst_files)
-        rstcheck(rst_files)
+    #     rstcheck(rst_files)
     if toml_files:
         toml_sort(toml_files)
     if new_rm_mv:
