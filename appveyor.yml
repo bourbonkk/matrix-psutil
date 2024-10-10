@@ -70,14 +70,14 @@ only_commits:
   files:
     - .ci/appveyor/*
     - appveyor.yml
-    - psutil/__init__.py
-    - psutil/_common.py
-    - psutil/_compat.py
-    - psutil/_psutil_common.*
-    - psutil/_psutil_windows.*
-    - psutil/_pswindows.py
-    - psutil/arch/windows/*
-    - psutil/tests/*
+    - matrix_psutil/__init__.py
+    - matrix_psutil/_common.py
+    - matrix_psutil/_compat.py
+    - matrix_psutil/_psutil_common.*
+    - matrix_psutil/_psutil_windows.*
+    - matrix_psutil/_pswindows.py
+    - matrix_psutil/arch/windows/*
+    - matrix_psutil/tests/*
     - scripts/*
     - scripts/internal/*
     - setup.py

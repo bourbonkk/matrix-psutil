@@ -40,7 +40,7 @@ with warnings.catch_warnings():
 HERE = os.path.abspath(os.path.dirname(__file__))
 
 # ...so we can import _common.py and _compat.py
-sys.path.insert(0, os.path.join(HERE, "psutil"))
+sys.path.insert(0, os.path.join(HERE, "matrix_psutil"))
 
 from _common import AIX  # NOQA
 from _common import BSD  # NOQA
@@ -126,13 +126,13 @@ else:
     macros.append(('PSUTIL_SIZEOF_PID_T', '8'))  # long
 
 
-sources = ['psutil/_psutil_common.c']
+sources = ['matrix_psutil/_psutil_common.c']
 if POSIX:
-    sources.append('psutil/_psutil_posix.c')
+    sources.append('matrix_psutil/_psutil_posix.c')
 
 
 def get_version():
-    INIT = os.path.join(HERE, 'psutil/__init__.py')
+    INIT = os.path.join(HERE, 'matrix_psutil/__init__.py')
     with open(INIT) as f:
         for line in f:
             if line.startswith('__version__'):
@@ -262,11 +262,11 @@ if WINDOWS:
         macros.append(('Py_GIL_DISABLED', 1))
 
     ext = Extension(
-        'psutil._psutil_windows',
+        'matrix_psutil._psutil_windows',
         sources=(
             sources
-            + ["psutil/_psutil_windows.c"]
-            + glob.glob("psutil/arch/windows/*.c")
+            + ["matrix_psutil/_psutil_windows.c"]
+            + glob.glob("matrix_psutil/arch/windows/*.c")
         ),
         define_macros=macros,
         libraries=[
@@ -290,11 +290,11 @@ if WINDOWS:
 elif MACOS:
     macros.append(("PSUTIL_OSX", 1))
     ext = Extension(
-        'psutil._psutil_osx',
+        'matrix_psutil._psutil_osx',
         sources=(
             sources
-            + ["psutil/_psutil_osx.c"]
-            + glob.glob("psutil/arch/osx/*.c")
+            + ["matrix_psutil/_psutil_osx.c"]
+            + glob.glob("matrix_psutil/arch/osx/*.c")
         ),
         define_macros=macros,
         extra_link_args=[
@@ -312,12 +312,12 @@ elif MACOS:
 elif FREEBSD:
     macros.append(("PSUTIL_FREEBSD", 1))
     ext = Extension(
-        'psutil._psutil_bsd',
+        'matrix_psutil._psutil_bsd',
         sources=(
             sources
-            + ["psutil/_psutil_bsd.c"]
-            + glob.glob("psutil/arch/bsd/*.c")
-            + glob.glob("psutil/arch/freebsd/*.c")
+            + ["matrix_psutil/_psutil_bsd.c"]
+            + glob.glob("matrix_psutil/arch/bsd/*.c")
+            + glob.glob("matrix_psutil/arch/freebsd/*.c")
         ),
         define_macros=macros,
         libraries=["devstat"],
@@ -330,12 +330,12 @@ elif FREEBSD:
 elif OPENBSD:
     macros.append(("PSUTIL_OPENBSD", 1))
     ext = Extension(
-        'psutil._psutil_bsd',
+        'matrix_psutil._psutil_bsd',
         sources=(
             sources
-            + ["psutil/_psutil_bsd.c"]
-            + glob.glob("psutil/arch/bsd/*.c")
-            + glob.glob("psutil/arch/openbsd/*.c")
+            + ["matrix_psutil/_psutil_bsd.c"]
+            + glob.glob("matrix_psutil/arch/bsd/*.c")
+            + glob.glob("matrix_psutil/arch/openbsd/*.c")
         ),
         define_macros=macros,
         libraries=["kvm"],
@@ -348,12 +348,12 @@ elif OPENBSD:
 elif NETBSD:
     macros.append(("PSUTIL_NETBSD", 1))
     ext = Extension(
-        'psutil._psutil_bsd',
+        'matrix_psutil._psutil_bsd',
         sources=(
             sources
-            + ["psutil/_psutil_bsd.c"]
-            + glob.glob("psutil/arch/bsd/*.c")
-            + glob.glob("psutil/arch/netbsd/*.c")
+            + ["matrix_psutil/_psutil_bsd.c"]
+            + glob.glob("matrix_psutil/arch/bsd/*.c")
+            + glob.glob("matrix_psutil/arch/netbsd/*.c")
         ),
         define_macros=macros,
         libraries=["kvm"],
@@ -370,11 +370,11 @@ elif LINUX:
 
     macros.append(("PSUTIL_LINUX", 1))
     ext = Extension(
-        'psutil._psutil_linux',
+        'matrix_psutil._psutil_linux',
         sources=(
             sources
-            + ["psutil/_psutil_linux.c"]
-            + glob.glob("psutil/arch/linux/*.c")
+            + ["matrix_psutil/_psutil_linux.c"]
+            + glob.glob("matrix_psutil/arch/linux/*.c")
         ),
         define_macros=macros,
         # fmt: off
@@ -386,12 +386,12 @@ elif LINUX:
 elif SUNOS:
     macros.append(("PSUTIL_SUNOS", 1))
     ext = Extension(
-        'psutil._psutil_sunos',
+        'matrix_psutil._psutil_sunos',
         sources=sources
         + [
-            'psutil/_psutil_sunos.c',
-            'psutil/arch/solaris/v10/ifaddrs.c',
-            'psutil/arch/solaris/environ.c',
+            'matrix_psutil/_psutil_sunos.c',
+            'matrix_psutil/arch/solaris/v10/ifaddrs.c',
+            'matrix_psutil/arch/solaris/environ.c',
         ],
         define_macros=macros,
         libraries=['kstat', 'nsl', 'socket'],
@@ -404,13 +404,13 @@ elif SUNOS:
 elif AIX:
     macros.append(("PSUTIL_AIX", 1))
     ext = Extension(
-        'psutil._psutil_aix',
+        'matrix_psutil._psutil_aix',
         sources=sources
         + [
-            'psutil/_psutil_aix.c',
-            'psutil/arch/aix/net_connections.c',
-            'psutil/arch/aix/common.c',
-            'psutil/arch/aix/ifaddrs.c',
+            'matrix_psutil/_psutil_aix.c',
+            'matrix_psutil/arch/aix/net_connections.c',
+            'matrix_psutil/arch/aix/common.c',
+            'matrix_psutil/arch/aix/ifaddrs.c',
         ],
         libraries=['perfstat'],
         define_macros=macros,
@@ -426,7 +426,7 @@ else:
 
 if POSIX:
     posix_extension = Extension(
-        'psutil._psutil_posix',
+        'matrix_psutil._psutil_posix',
         define_macros=macros,
         sources=sources,
         # fmt: off
@@ -450,13 +450,15 @@ if POSIX:
             if get_sunos_update() >= 4:
                 # MIB compliance starts with SunOS 5.10 Update 4:
                 posix_extension.define_macros.append(('NEW_MIB_COMPLIANT', 1))
-            posix_extension.sources.append('psutil/arch/solaris/v10/ifaddrs.c')
+            posix_extension.sources.append(
+                'matrix_psutil/arch/solaris/v10/ifaddrs.c'
+            )
             posix_extension.define_macros.append(('PSUTIL_SUNOS10', 1))
         else:
             # Other releases are by default considered to be new mib compliant.
             posix_extension.define_macros.append(('NEW_MIB_COMPLIANT', 1))
     elif AIX:
-        posix_extension.sources.append('psutil/arch/aix/ifaddrs.c')
+        posix_extension.sources.append('matrix_psutil/arch/aix/ifaddrs.c')
 
     extensions = [ext, posix_extension]
 else:
@@ -465,7 +467,7 @@ else:
 
 def main():
     kwargs = dict(
-        name='psutil',
+        name='matrix_psutil',
         version=VERSION,
         description=__doc__.replace('\n', ' ').strip() if __doc__ else '',
         long_description=get_long_description(),
@@ -484,7 +486,7 @@ def main():
         url='https://github.com/giampaolo/psutil',
         platforms='Platform Independent',
         license='BSD-3-Clause',
-        packages=['psutil', 'psutil.tests'],
+        packages=['matrix_psutil', 'matrix_psutil.tests'],
         ext_modules=extensions,
         options=options,
         classifiers=[

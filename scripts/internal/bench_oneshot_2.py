@@ -13,7 +13,7 @@ import sys
 import pyperf  # requires "pip install pyperf"
 from bench_oneshot import names
 
-import psutil
+import matrix_psutil as psutil
 
 
 p = psutil.Process()

@@ -1589,7 +1589,7 @@ Version 6.0.0 introduces some changes which affect backward compatibility:
 - 603_, [Linux]: `Process.ionice()`_ set value range is incorrect.
   (patch by spacewander)
 - 645_, [Linux]: `cpu_times_percent()`_ may produce negative results.
-- 656_: ``from psutil import *`` does not work.
+- 656_: ``from matrix_psutil import *`` does not work.
 
 3.1.0
 =====
@@ -1707,7 +1707,7 @@ Version 6.0.0 introduces some changes which affect backward compatibility:
 
 **Bug fixes**
 
-- 496_, [SunOS], **[critical]**: can't import psutil.
+- 496_, [SunOS], **[critical]**: can't import matrix_psutil.
 - 547_, [POSIX]: `Process.username()`_ may raise ``KeyError`` if UID can't be resolved.
 - 551_, [Windows]: get rid of the unicode hack for `net_io_counters()`_ NIC names.
 - 556_, [Linux]: lots of file handles were left open.

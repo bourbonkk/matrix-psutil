@@ -14,7 +14,7 @@ giampaolo    ttys000    2017-03-25 23:28 (10.0.2.2)     sshd
 
 from datetime import datetime
 
-import psutil
+import matrix_psutil as psutil
 
 
 def main():

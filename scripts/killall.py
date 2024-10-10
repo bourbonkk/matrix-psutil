@@ -9,7 +9,7 @@
 import os
 import sys
 
-import psutil
+import matrix_psutil as psutil
 
 
 def main():

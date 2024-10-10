@@ -90,8 +90,8 @@ import datetime
 import socket
 import sys
 
-import psutil
-from psutil._common import bytes2human
+import matrix_psutil as psutil
+from matrix_psutil._common import bytes2human
 
 
 ACCESS_DENIED = ''

@@ -23,7 +23,7 @@ from socket import AF_INET
 from socket import SOCK_DGRAM
 from socket import SOCK_STREAM
 
-import psutil
+import matrix_psutil as psutil
 
 
 AD = "-"

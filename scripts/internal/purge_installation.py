@@ -6,7 +6,7 @@
 
 """Purge psutil installation by removing psutil-related files and
 directories found in site-packages directories. This is needed mainly
-because sometimes "import psutil" imports a leftover installation
+because sometimes "import matrix_psutil" imports a leftover installation
 from site-packages directory instead of the main working directory.
 """
 
@@ -15,7 +15,7 @@ import shutil
 import site
 
 
-PKGNAME = "psutil"
+PKGNAME = "matrix_psutil"
 
 
 def rmpath(path):

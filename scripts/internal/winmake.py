@@ -213,7 +213,8 @@ def build():
     sh('%s -c "import setuptools"' % PYTHON)
 
     # "build_ext -i" copies compiled *.pyd files in ./psutil directory in
-    # order to allow "import psutil" when using the interactive interpreter
+    # order to allow "import matrix_psutil"
+    # when using the interactive interpreter
     # from within psutil root directory.
     cmd = [PYTHON, "setup.py", "build_ext", "-i"]
     if sys.version_info[:2] >= (3, 6) and (os.cpu_count() or 1) > 1:
@@ -241,7 +242,7 @@ def build():
         p.wait()
 
     # Make sure it actually worked.
-    sh('%s -c "import psutil"' % PYTHON)
+    sh('%s -c "import matrix_psutil as psutil"' % PYTHON)
     win_colorprint("build + import successful", GREEN)
 
 
@@ -295,7 +296,7 @@ def install():
 def uninstall():
     """Uninstall psutil."""
     # Uninstalling psutil on Windows seems to be tricky.
-    # On "import psutil" tests may import a psutil version living in
+    # On "import matrix_psutil" tests may import a psutil version living in
     # C:\PythonXY\Lib\site-packages which is not what we want, so
     # we try both "pip uninstall psutil" and manually remove stuff
     # from site-packages.
@@ -306,7 +307,7 @@ def uninstall():
         os.chdir('C:\\')
         while True:
             try:
-                import psutil  # NOQA
+                import matrix_psutil as psutil  # NOQA
             except ImportError:
                 break
             else:
@@ -505,7 +506,7 @@ def print_api_speed():
 def print_sysinfo():
     """Print system info."""
     build()
-    from psutil.tests import print_sysinfo
+    from matrix_psutil.tests import print_sysinfo
 
     print_sysinfo()
 

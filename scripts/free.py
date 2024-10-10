@@ -12,7 +12,7 @@ Mem:      10125520    8625996    1499524          0     349500    3307836
 Swap:            0          0          0
 """
 
-import psutil
+import matrix_psutil as psutil
 
 
 def main():

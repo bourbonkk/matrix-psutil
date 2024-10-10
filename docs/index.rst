@@ -1,5 +1,5 @@
-.. module:: psutil
-   :synopsis: psutil module
+.. module:: matrix_psutil
+   :synopsis: matrix_psutil module
 .. moduleauthor:: Giampaolo Rodola' <grodola@gmail.com>
 
 psutil documentation
@@ -41,20 +41,20 @@ psutil currently supports the following platforms:
 Supported Python versions are **2.7** and **3.6+**.
 `PyPy <http://pypy.org/>`__ is also known to work.
 
-The psutil documentation you're reading is distributed as a single HTML page.
+The matrix_psutil documentation you're reading is distributed as a single HTML page.
 
 Funding
 =======
 
-While psutil is free software and will always be, the project would benefit
+While matrix_psutil is free software and will always be, the project would benefit
 immensely from some funding.
 Keeping up with bug reports and maintenance has become hardly sustainable for
 me alone in terms of time.
-If you're a company that's making significant use of psutil you can consider
+If you're a company that's making significant use of matrix_psutil you can consider
 becoming a sponsor via `GitHub <https://github.com/sponsors/giampaolo>`__,
 `Open Collective <https://opencollective.com/psutil>`__ or
 `PayPal <https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=A9ZS7PKKRM3S8>`__
-and have your logo displayed in here and psutil `doc <https://psutil.readthedocs.io>`__.
+and have your logo displayed in here and matrix_psutil `doc <https://psutil.readthedocs.io>`__.
 
 Sponsors
 --------
@@ -101,7 +101,7 @@ Install
 
 On Linux, Windows, macOS::
 
-  pip install psutil
+  pip install matrix_psutil
 
 For other platforms see more detailed
 `install <https://github.com/giampaolo/psutil/blob/master/INSTALL.rst>`_
@@ -151,8 +151,8 @@ CPU
   The order of the list is consistent across calls.
   Example output on Linux:
 
-    >>> import psutil
-    >>> psutil.cpu_times()
+    >>> import matrix_psutil
+    >>> matrix_psutil.cpu_times()
     scputimes(user=17411.7, nice=77.99, system=3797.02, idle=51266.57, iowait=732.58, irq=0.01, softirq=142.43, steal=0.0, guest=0.0, guest_nice=0.0)
 
   .. versionchanged:: 4.1.0 added *interrupt* and *dpc* fields on Windows.
@@ -183,15 +183,15 @@ CPU
   called from different threads, at different intervals, and still return
   meaningful and independent results.
 
-    >>> import psutil
+    >>> import matrix_psutil
     >>> # blocking
-    >>> psutil.cpu_percent(interval=1)
+    >>> matrix_psutil.cpu_percent(interval=1)
     2.0
     >>> # non-blocking (percentage since last call)
-    >>> psutil.cpu_percent(interval=None)
+    >>> matrix_psutil.cpu_percent(interval=None)
     2.9
     >>> # blocking, per-cpu
-    >>> psutil.cpu_percent(interval=1, percpu=True)
+    >>> matrix_psutil.cpu_percent(interval=1, percpu=True)
     [2.0, 1.0]
     >>>
 
@@ -234,10 +234,10 @@ CPU
   ``None``.
   Example on a system having 2 cores + Hyper Threading:
 
-    >>> import psutil
-    >>> psutil.cpu_count()
+    >>> import matrix_psutil
+    >>> matrix_psutil.cpu_count()
     4
-    >>> psutil.cpu_count(logical=False)
+    >>> matrix_psutil.cpu_count(logical=False)
     2
 
   Note that ``psutil.cpu_count()`` may not necessarily be equivalent to the
@@ -268,8 +268,8 @@ CPU
 
   .. code-block:: python
 
-     >>> import psutil
-     >>> psutil.cpu_stats()
+     >>> import matrix_psutil
+     >>> matrix_psutil.cpu_stats()
      scpustats(ctx_switches=20455687, interrupts=6598984, soft_interrupts=2134212, syscalls=0)
 
   .. versionadded:: 4.1.0
@@ -290,10 +290,10 @@ CPU
 
     .. code-block:: python
 
-       >>> import psutil
-       >>> psutil.cpu_freq()
+       >>> import matrix_psutil
+       >>> matrix_psutil.cpu_freq()
        scpufreq(current=931.42925, min=800.0, max=3500.0)
-       >>> psutil.cpu_freq(percpu=True)
+       >>> matrix_psutil.cpu_freq(percpu=True)
        [scpufreq(current=2394.945, min=800.0, max=3500.0),
         scpufreq(current=2236.812, min=800.0, max=3500.0),
         scpufreq(current=1703.609, min=800.0, max=3500.0),
@@ -325,13 +325,13 @@ CPU
 
     .. code-block:: python
 
-       >>> import psutil
-       >>> psutil.getloadavg()
+       >>> import matrix_psutil
+       >>> matrix_psutil.getloadavg()
        (3.14, 3.89, 4.67)
-       >>> psutil.cpu_count()
+       >>> matrix_psutil.cpu_count()
        10
        >>> # percentage representation
-       >>> [x / psutil.cpu_count() * 100 for x in psutil.getloadavg()]
+       >>> [x / matrix_psutil.cpu_count() * 100 for x in matrix_psutil.getloadavg()]
        [31.4, 38.9, 46.7]
 
     Availability: Unix, Windows
@@ -385,8 +385,8 @@ Memory
     cross platform fashion simply rely on **available** and **percent**
     fields.
 
-  >>> import psutil
-  >>> mem = psutil.virtual_memory()
+  >>> import matrix_psutil
+  >>> mem = matrix_psutil.virtual_memory()
   >>> mem
   svmem(total=10367352832, available=6472179712, percent=37.6, used=8186245120, free=2181107712, active=4748992512, inactive=2758115328, buffers=790724608, cached=3500347392, shared=787554304, slab=199348224)
   >>>
@@ -418,8 +418,8 @@ Memory
   See `meminfo.py`_ script providing an example on how to convert bytes in a
   human readable form.
 
-    >>> import psutil
-    >>> psutil.swap_memory()
+    >>> import matrix_psutil
+    >>> matrix_psutil.swap_memory()
     sswap(total=2097147904L, used=886620160L, free=1210527744L, percent=42.3, sin=1050411008, sout=1906720768)
 
   .. versionchanged:: 5.2.3 on Linux this function relies on /proc fs instead
@@ -451,8 +451,8 @@ Disks
   * **opts**: a comma-separated string indicating different mount options for
     the drive/partition. Platform-dependent.
 
-  >>> import psutil
-  >>> psutil.disk_partitions()
+  >>> import matrix_psutil
+  >>> matrix_psutil.disk_partitions()
   [sdiskpart(device='/dev/sda3', mountpoint='/', fstype='ext4', opts='rw,errors=remount-ro'),
    sdiskpart(device='/dev/sda7', mountpoint='/home', fstype='ext4', opts='rw')]
 
@@ -470,8 +470,8 @@ Disks
   (see `BPO-12442`_).
   See `disk_usage.py`_ script providing an example usage.
 
-    >>> import psutil
-    >>> psutil.disk_usage('/')
+    >>> import matrix_psutil
+    >>> matrix_psutil.disk_usage('/')
     sdiskusage(total=21378641920, used=4809781248, free=15482871808, percent=22.5)
 
   .. note::
@@ -514,7 +514,7 @@ Disks
   See `iotop.py`_ for an example application.
   On some systems such as Linux, on a very busy or long-lived system, the
   numbers returned by the kernel may overflow and wrap (restart from zero).
-  If *nowrap* is ``True`` psutil will detect and adjust those numbers across
+  If *nowrap* is ``True`` matrix_psutil will detect and adjust those numbers across
   function calls and add "old value" to "new value" so that the returned
   numbers will always be increasing or remain the same, but never decrease.
   ``disk_io_counters.cache_clear()`` can be used to invalidate the *nowrap*
@@ -524,11 +524,11 @@ Disks
   On diskless machines this function will return ``None`` or ``{}`` if
   *perdisk* is ``True``.
 
-    >>> import psutil
-    >>> psutil.disk_io_counters()
+    >>> import matrix_psutil
+    >>> matrix_psutil.disk_io_counters()
     sdiskio(read_count=8141, write_count=2431, read_bytes=290203, write_bytes=537676, read_time=5868, write_time=94922)
     >>>
-    >>> psutil.disk_io_counters(perdisk=True)
+    >>> matrix_psutil.disk_io_counters(perdisk=True)
     {'sda1': sdiskio(read_count=920, write_count=1, read_bytes=2933248, write_bytes=512, read_time=6016, write_time=4),
      'sda2': sdiskio(read_count=18707, write_count=8830, read_bytes=6060, write_bytes=3443, read_time=24585, write_time=1572),
      'sdb1': sdiskio(read_count=161, write_count=0, read_bytes=786432, write_bytes=0, read_time=44, write_time=0)}
@@ -571,7 +571,7 @@ Network
   names as the keys and the named tuple described above as the values.
   On some systems such as Linux, on a very busy or long-lived system, the
   numbers returned by the kernel may overflow and wrap (restart from zero).
-  If *nowrap* is ``True`` psutil will detect and adjust those numbers across
+  If *nowrap* is ``True`` matrix_psutil will detect and adjust those numbers across
   function calls and add "old value" to "new value" so that the returned
   numbers will always be increasing or remain the same, but never decrease.
   ``net_io_counters.cache_clear()`` can be used to invalidate the *nowrap*
@@ -579,11 +579,11 @@ Network
   On machines with no network interfaces this function will return ``None`` or
   ``{}`` if *pernic* is ``True``.
 
-    >>> import psutil
-    >>> psutil.net_io_counters()
+    >>> import matrix_psutil
+    >>> matrix_psutil.net_io_counters()
     snetio(bytes_sent=14508483, bytes_recv=62749361, packets_sent=84311, packets_recv=94888, errin=0, errout=0, dropin=0, dropout=0)
     >>>
-    >>> psutil.net_io_counters(pernic=True)
+    >>> matrix_psutil.net_io_counters(pernic=True)
     {'lo': snetio(bytes_sent=547971, bytes_recv=547971, packets_sent=5075, packets_recv=5075, errin=0, errout=0, dropin=0, dropout=0),
     'wlan0': snetio(bytes_sent=13921765, bytes_recv=62162574, packets_sent=79097, packets_recv=89648, errin=0, errout=0, dropin=0, dropout=0)}
 
@@ -656,8 +656,8 @@ Network
   Also, see `netstat.py`_ example script.
   Example:
 
-    >>> import psutil
-    >>> psutil.net_connections()
+    >>> import matrix_psutil
+    >>> matrix_psutil.net_connections()
     [pconn(fd=115, family=<AddressFamily.AF_INET: 2>, type=<SocketType.SOCK_STREAM: 1>, laddr=addr(ip='10.0.0.1', port=48776), raddr=addr(ip='93.186.135.91', port=80), status='ESTABLISHED', pid=1254),
      pconn(fd=117, family=<AddressFamily.AF_INET: 2>, type=<SocketType.SOCK_STREAM: 1>, laddr=addr(ip='10.0.0.1', port=43761), raddr=addr(ip='72.14.234.100', port=80), status='CLOSING', pid=2987),
      pconn(fd=-1, family=<AddressFamily.AF_INET: 2>, type=<SocketType.SOCK_STREAM: 1>, laddr=addr(ip='10.0.0.1', port=60759), raddr=addr(ip='72.14.234.104', port=80), status='ESTABLISHED', pid=None),
@@ -703,8 +703,8 @@ Network
 
   Example::
 
-    >>> import psutil
-    >>> psutil.net_if_addrs()
+    >>> import matrix_psutil
+    >>> matrix_psutil.net_if_addrs()
     {'lo': [snicaddr(family=<AddressFamily.AF_INET: 2>, address='127.0.0.1', netmask='255.0.0.0', broadcast='127.0.0.1', ptp=None),
             snicaddr(family=<AddressFamily.AF_INET6: 10>, address='::1', netmask='ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff', broadcast=None, ptp=None),
             snicaddr(family=<AddressFamily.AF_LINK: 17>, address='00:00:00:00:00:00', netmask=None, broadcast='00:00:00:00:00:00', ptp=None)],
@@ -759,8 +759,8 @@ Network
 
   Example:
 
-    >>> import psutil
-    >>> psutil.net_if_stats()
+    >>> import matrix_psutil
+    >>> matrix_psutil.net_if_stats()
     {'eth0': snicstats(isup=True, duplex=<NicDuplex.NIC_DUPLEX_FULL: 2>, speed=100, mtu=1500, flags='up,broadcast,running,multicast'),
      'lo': snicstats(isup=True, duplex=<NicDuplex.NIC_DUPLEX_UNKNOWN: 0>, speed=0, mtu=65536, flags='up,loopback,running')}
 
@@ -785,8 +785,8 @@ Sensors
   If sensors are not supported by the OS an empty dict is returned.
   Example::
 
-    >>> import psutil
-    >>> psutil.sensors_temperatures()
+    >>> import matrix_psutil
+    >>> matrix_psutil.sensors_temperatures()
     {'acpitz': [shwtemp(label='', current=47.0, high=103.0, critical=103.0)],
      'asus': [shwtemp(label='', current=47.0, high=None, critical=None)],
      'coretemp': [shwtemp(label='Physical id 0', current=52.0, high=100.0, critical=100.0),
@@ -811,8 +811,8 @@ Sensors
   If sensors are not supported by the OS an empty dict is returned.
   Example::
 
-    >>> import psutil
-    >>> psutil.sensors_fans()
+    >>> import matrix_psutil
+    >>> matrix_psutil.sensors_fans()
     {'asus': [sfan(label='cpu_fan', current=3200)]}
 
   See also `fans.py`_  and `sensors.py`_ for an example application.
@@ -839,14 +839,14 @@ Sensors
 
   Example::
 
-    >>> import psutil
+    >>> import matrix_psutil
     >>>
     >>> def secs2hours(secs):
     ...     mm, ss = divmod(secs, 60)
     ...     hh, mm = divmod(mm, 60)
     ...     return "%d:%02d:%02d" % (hh, mm, ss)
     ...
-    >>> battery = psutil.sensors_battery()
+    >>> battery = matrix_psutil.sensors_battery()
     >>> battery
     sbattery(percent=93, secsleft=16628, power_plugged=False)
     >>> print("charge = %s%%, time left = %s" % (battery.percent, secs2hours(battery.secsleft)))
@@ -870,8 +870,8 @@ Other system info
 
   .. code-block:: python
 
-     >>> import psutil, datetime
-     >>> psutil.boot_time()
+     >>> import matrix_psutil, datetime
+     >>> matrix_psutil.boot_time()
      1389563460.0
      >>> datetime.datetime.fromtimestamp(psutil.boot_time()).strftime("%Y-%m-%d %H:%M:%S")
      '2014-01-12 22:51:00'
@@ -896,8 +896,8 @@ Other system info
 
   Example::
 
-    >>> import psutil
-    >>> psutil.users()
+    >>> import matrix_psutil
+    >>> matrix_psutil.users()
     [suser(name='giampaolo', terminal='pts/2', host='localhost', started=1340737536.0, pid=1352),
      suser(name='giampaolo', terminal='pts/3', host='localhost', started=1340737792.0, pid=1788)]
 
@@ -916,8 +916,8 @@ Functions
   To iterate over all processes and avoid race conditions :func:`process_iter()`
   should be preferred.
 
-  >>> import psutil
-  >>> psutil.pids()
+  >>> import matrix_psutil
+  >>> matrix_psutil.pids()
   [1, 2, 3, 5, 7, 8, 9, 10, 11, 12, 13, 14, 15, 17, 18, 19, ..., 32498]
 
   .. versionchanged::
@@ -943,8 +943,8 @@ Functions
 
   Example::
 
-    >>> import psutil
-    >>> for proc in psutil.process_iter(['pid', 'name', 'username']):
+    >>> import matrix_psutil
+    >>> for proc in matrix_psutil.process_iter(['pid', 'name', 'username']):
     ...     print(proc.info)
     ...
     {'name': 'systemd', 'pid': 1, 'username': 'root'}
@@ -954,8 +954,8 @@ Functions
 
   A dict comprehensions to create a ``{pid: info, ...}`` data structure::
 
-    >>> import psutil
-    >>> procs = {p.pid: p.info for p in psutil.process_iter(['name', 'username'])}
+    >>> import matrix_psutil
+    >>> procs = {p.pid: p.info for p in matrix_psutil.process_iter(['name', 'username'])}
     >>> procs
     {1: {'name': 'systemd', 'username': 'root'},
      2: {'name': 'kthreadd', 'username': 'root'},
@@ -964,7 +964,7 @@ Functions
 
   Clear internal cache::
 
-    >>> psutil.process_iter.cache_clear()
+    >>> matrix_psutil.process_iter.cache_clear()
 
   .. versionchanged::
     5.3.0 added "attrs" and "ad_value" parameters.
@@ -978,7 +978,7 @@ Functions
 .. function:: pid_exists(pid)
 
   Check whether the given PID exists in the current process list. This is
-  faster than doing ``pid in psutil.pids()`` and should be preferred.
+  faster than doing ``pid in matrix_psutil.pids()`` and should be preferred.
 
 .. function:: wait_procs(procs, timeout=None, callback=None)
 
@@ -1002,15 +1002,15 @@ Functions
 
   Example which terminates and waits all the children of this process::
 
-    import psutil
+    import matrix_psutil
 
     def on_terminate(proc):
         print("process {} terminated with exit code {}".format(proc, proc.returncode))
 
-    procs = psutil.Process().children()
+    procs = matrix_psutil.Process().children()
     for p in procs:
         p.terminate()
-    gone, alive = psutil.wait_procs(procs, timeout=3, callback=on_terminate)
+    gone, alive = matrix_psutil.wait_procs(procs, timeout=3, callback=on_terminate)
     for p in alive:
         p.kill()
 
@@ -1117,8 +1117,8 @@ Process class
     about the process. If you're lucky, you'll get a hell of a speedup.
     Example:
 
-    >>> import psutil
-    >>> p = psutil.Process()
+    >>> import matrix_psutil
+    >>> p = matrix_psutil.Process()
     >>> with p.oneshot():
     ...     p.name()  # execute internal routine once collecting multiple info
     ...     p.cpu_times()  # return cached value
@@ -1201,8 +1201,8 @@ Process class
     longer exists), this may be an empty string. The return value is cached
     after first call.
 
-    >>> import psutil
-    >>> psutil.Process().exe()
+    >>> import matrix_psutil
+    >>> matrix_psutil.Process().exe()
     '/usr/bin/python2.7'
 
   .. method:: cmdline()
@@ -1210,8 +1210,8 @@ Process class
     The command line this process has been called with as a list of strings.
     The return value is not cached because the cmdline of a process may change.
 
-    >>> import psutil
-    >>> psutil.Process().cmdline()
+    >>> import matrix_psutil
+    >>> matrix_psutil.Process().cmdline()
     ['python', 'manage.py', 'runserver']
 
   .. method:: environ()
@@ -1219,8 +1219,8 @@ Process class
     The environment variables of the process as a dict.  Note: this might not
     reflect changes made after the process started.
 
-    >>> import psutil
-    >>> psutil.Process().environ()
+    >>> import matrix_psutil
+    >>> matrix_psutil.Process().environ()
     {'LC_NUMERIC': 'it_IT.UTF-8', 'QT_QPA_PLATFORMTHEME': 'appmenu-qt5', 'IM_CONFIG_PHASE': '1', 'XDG_GREETER_DATA_DIR': '/var/lib/lightdm-data/giampaolo', 'XDG_CURRENT_DESKTOP': 'Unity', 'UPSTART_EVENTS': 'started starting', 'GNOME_KEYRING_PID': '', 'XDG_VTNR': '7', 'QT_IM_MODULE': 'ibus', 'LOGNAME': 'giampaolo', 'USER': 'giampaolo', 'PATH': '/home/giampaolo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/home/giampaolo/svn/sysconf/bin', 'LC_PAPER': 'it_IT.UTF-8', 'GNOME_KEYRING_CONTROL': '', 'GTK_IM_MODULE': 'ibus', 'DISPLAY': ':0', 'LANG': 'en_US.UTF-8', 'LESS_TERMCAP_se': '\x1b[0m', 'TERM': 'xterm-256color', 'SHELL': '/bin/bash', 'XDG_SESSION_PATH': '/org/freedesktop/DisplayManager/Session0', 'XAUTHORITY': '/home/giampaolo/.Xauthority', 'LANGUAGE': 'en_US', 'COMPIZ_CONFIG_PROFILE': 'ubuntu', 'LC_MONETARY': 'it_IT.UTF-8', 'QT_LINUX_ACCESSIBILITY_ALWAYS_ON': '1', 'LESS_TERMCAP_me': '\x1b[0m', 'LESS_TERMCAP_md': '\x1b[01;38;5;74m', 'LESS_TERMCAP_mb': '\x1b[01;31m', 'HISTSIZE': '100000', 'UPSTART_INSTANCE': '', 'CLUTTER_IM_MODULE': 'xim', 'WINDOWID': '58786407', 'EDITOR': 'vim', 'SESSIONTYPE': 'gnome-session', 'XMODIFIERS': '@im=ibus', 'GPG_AGENT_INFO': '/home/giampaolo/.gnupg/S.gpg-agent:0:1', 'HOME': '/home/giampaolo', 'HISTFILESIZE': '100000', 'QT4_IM_MODULE': 'xim', 'GTK2_MODULES': 'overlay-scrollbar', 'XDG_SESSION_DESKTOP': 'ubuntu', 'SHLVL': '1', 'XDG_RUNTIME_DIR': '/run/user/1000', 'INSTANCE': 'Unity', 'LC_ADDRESS': 'it_IT.UTF-8', 'SSH_AUTH_SOCK': '/run/user/1000/keyring/ssh', 'VTE_VERSION': '4205', 'GDMSESSION': 'ubuntu', 'MANDATORY_PATH': '/usr/share/gconf/ubuntu.mandatory.path', 'VISUAL': 'vim', 'DESKTOP_SESSION': 'ubuntu', 'QT_ACCESSIBILITY': '1', 'XDG_SEAT_PATH': '/org/freedesktop/DisplayManager/Seat0', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'LESSOPEN': '| /usr/bin/lesspipe %s', 'XDG_SESSION_ID': 'c2', 'DBUS_SESSION_BUS_ADDRESS': 'unix:abstract=/tmp/dbus-9GAJpvnt8r', '_': '/usr/bin/python', 'DEFAULTS_PATH': '/usr/share/gconf/ubuntu.default.path', 'LC_IDENTIFICATION': 'it_IT.UTF-8', 'LESS_TERMCAP_ue': '\x1b[0m', 'UPSTART_SESSION': 'unix:abstract=/com/ubuntu/upstart-session/1000/1294', 'XDG_CONFIG_DIRS': '/etc/xdg/xdg-ubuntu:/usr/share/upstart/xdg:/etc/xdg', 'GTK_MODULES': 'gail:atk-bridge:unity-gtk-module', 'XDG_SESSION_TYPE': 'x11', 'PYTHONSTARTUP': '/home/giampaolo/.pythonstart', 'LC_NAME': 'it_IT.UTF-8', 'OLDPWD': '/home/giampaolo/svn/curio_giampaolo/tests', 'GDM_LANG': 'en_US', 'LC_TELEPHONE': 'it_IT.UTF-8', 'HISTCONTROL': 'ignoredups:erasedups', 'LC_MEASUREMENT': 'it_IT.UTF-8', 'PWD': '/home/giampaolo/svn/curio_giampaolo', 'JOB': 'gnome-session', 'LESS_TERMCAP_us': '\x1b[04;38;5;146m', 'UPSTART_JOB': 'unity-settings-daemon', 'LC_TIME': 'it_IT.UTF-8', 'LESS_TERMCAP_so': '\x1b[38;5;246m', 'PAGER': 'less', 'XDG_DATA_DIRS': '/usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop', 'XDG_SEAT': 'seat0'}
 
     .. note::
@@ -1238,8 +1238,8 @@ Process class
     The process creation time as a floating point number expressed in seconds
     since the epoch. The return value is cached after first call.
 
-      >>> import psutil, datetime
-      >>> p = psutil.Process()
+      >>> import matrix_psutil, datetime
+      >>> p = matrix_psutil.Process()
       >>> p.create_time()
       1307289803.47
       >>> datetime.datetime.fromtimestamp(p.create_time()).strftime("%Y-%m-%d %H:%M:%S")
@@ -1260,8 +1260,8 @@ Process class
     Internally, :meth:`as_dict` uses :meth:`oneshot` context manager so
     there's no need you use it also.
 
-      >>> import psutil
-      >>> p = psutil.Process()
+      >>> import matrix_psutil
+      >>> p = matrix_psutil.Process()
       >>> p.as_dict(attrs=['pid', 'name', 'username'])
       {'username': 'giampaolo', 'pid': 12366, 'name': 'python'}
       >>>
@@ -1336,8 +1336,8 @@ Process class
     On UNIX this is a number which usually goes from ``-20`` to ``20``.
     The higher the nice value, the lower the priority of the process.
 
-      >>> import psutil
-      >>> p = psutil.Process()
+      >>> import matrix_psutil
+      >>> p = matrix_psutil.Process()
       >>> p.nice(10)  # set
       >>> p.nice()  # get
       10
@@ -1386,9 +1386,9 @@ Process class
     Here's an example on how to set the highest I/O priority depending on what
     platform you're on::
 
-      >>> import psutil
-      >>> p = psutil.Process()
-      >>> if psutil.LINUX:
+      >>> import matrix_psutil
+      >>> p = matrix_psutil.Process()
+      >>> if matrix_psutil.LINUX:
       ...     p.ionice(psutil.IOPRIO_CLASS_RT, value=7)
       ... else:
       ...     p.ionice(psutil.IOPRIO_HIGH)
@@ -1412,8 +1412,8 @@ Process class
     and integer or :data:`psutil.RLIMIT_* <psutil.RLIM_INFINITY>`.
     Example:
 
-      >>> import psutil
-      >>> p = psutil.Process()
+      >>> import matrix_psutil
+      >>> p = matrix_psutil.Process()
       >>> p.rlimit(psutil.RLIMIT_NOFILE, (128, 128))   # process can open max 128 file descriptors
       >>> p.rlimit(psutil.RLIMIT_FSIZE, (1024, 1024))  # can create files no bigger than 1024 bytes
       >>> p.rlimit(psutil.RLIMIT_FSIZE)                # get
@@ -1461,8 +1461,8 @@ Process class
     - **other_bytes** *(Windows)*: the number of bytes transferred during
       operations other than read and write operations.
 
-    >>> import psutil
-    >>> p = psutil.Process()
+    >>> import matrix_psutil
+    >>> p = matrix_psutil.Process()
     >>> p.io_counters()
     pio(read_count=454556, write_count=3456, read_bytes=110592, write_bytes=0, read_chars=769931, write_chars=203)
 
@@ -1524,8 +1524,8 @@ Process class
       This value is excluded from `user` and `system` times count (because the
       CPU is not doing any work).
 
-    >>> import psutil
-    >>> p = psutil.Process()
+    >>> import matrix_psutil
+    >>> p = matrix_psutil.Process()
     >>> p.cpu_times()
     pcputimes(user=0.03, system=0.67, children_user=0.0, children_system=0.0, iowait=0.08)
     >>> sum(p.cpu_times()[:2])  # cumulative, excluding children and iowait
@@ -1551,8 +1551,8 @@ Process class
     second time with at least ``0.1`` seconds between calls.
     Example:
 
-      >>> import psutil
-      >>> p = psutil.Process()
+      >>> import matrix_psutil
+      >>> p = matrix_psutil.Process()
       >>> # blocking
       >>> p.cpu_percent(interval=1)
       2.0
@@ -1575,7 +1575,7 @@ Process class
       It must be noted that ``taskmgr.exe`` on Windows does not behave like
       this (it would report 50% usage instead).
       To emulate Windows ``taskmgr.exe`` behavior you can do:
-      ``p.cpu_percent() / psutil.cpu_count()``.
+      ``p.cpu_percent() / matrix_psutil.cpu_count()``.
 
     .. warning::
       the first time this method is called with interval = ``0.0`` or
@@ -1595,10 +1595,10 @@ Process class
     On some systems such as Linux this may not necessarily mean all available
     logical CPUs as in ``list(range(psutil.cpu_count()))``).
 
-      >>> import psutil
-      >>> psutil.cpu_count()
+      >>> import matrix_psutil
+      >>> matrix_psutil.cpu_count()
       4
-      >>> p = psutil.Process()
+      >>> p = matrix_psutil.Process()
       >>> # get
       >>> p.cpu_affinity()
       [0, 1, 2, 3]
@@ -1698,8 +1698,8 @@ Process class
     For on explanation of Windows fields rely on `PROCESS_MEMORY_COUNTERS_EX`_
     structure doc. Example on Linux:
 
-      >>> import psutil
-      >>> p = psutil.Process()
+      >>> import matrix_psutil
+      >>> p = matrix_psutil.Process()
       >>> p.memory_info()
       pmem(rss=15491072, vms=84025344, shared=5206016, text=2555904, lib=0, data=9891840, dirty=0)
 
@@ -1747,8 +1747,8 @@ Process class
 
     Example on Linux:
 
-      >>> import psutil
-      >>> p = psutil.Process()
+      >>> import matrix_psutil
+      >>> p = matrix_psutil.Process()
       >>> p.memory_full_info()
       pfullmem(rss=10199040, vms=52133888, shared=3887104, text=2867200, lib=0, data=5967872, dirty=0, uss=6545408, pss=6872064, swap=0)
       >>>
@@ -1807,8 +1807,8 @@ Process class
     | swap          |         |              |           |
     +---------------+---------+--------------+-----------+
 
-      >>> import psutil
-      >>> p = psutil.Process()
+      >>> import matrix_psutil
+      >>> p = matrix_psutil.Process()
       >>> p.memory_maps()
       [pmmap_grouped(path='/lib/x8664-linux-gnu/libutil-2.15.so', rss=32768, size=2125824, pss=32768, shared_clean=0, shared_dirty=0, private_clean=20480, private_dirty=12288, referenced=32768, anonymous=12288, swap=0),
        pmmap_grouped(path='/lib/x8664-linux-gnu/libc-2.15.so', rss=3821568, size=3842048, pss=3821568, shared_clean=0, shared_dirty=0, private_clean=0, private_dirty=3821568, referenced=3575808, anonymous=3821568, swap=0),
@@ -1868,9 +1868,9 @@ Process class
       `os.open`_ C call when the file was opened (e.g. `os.O_RDONLY`_,
       `os.O_TRUNC`_, etc).
 
-    >>> import psutil
+    >>> import matrix_psutil
     >>> f = open('file.ext', 'w')
-    >>> p = psutil.Process()
+    >>> p = matrix_psutil.Process()
     >>> p.open_files()
     [popenfile(path='/home/giampaolo/svn/psutil/file.ext', fd=3, position=0, mode='w', flags=32769)]
 
@@ -1878,7 +1878,7 @@ Process class
       on Windows this method is not reliable due to some limitations of the
       underlying Windows API which may hang when retrieving certain file
       handles.
-      In order to work around that psutil spawns a thread to determine the file
+      In order to work around that matrix_psutil spawns a thread to determine the file
       handle name and kills it if it's not responding after 100ms.
       That implies that this method on Windows is not guaranteed to enumerate
       all regular file handles (see
@@ -1952,8 +1952,8 @@ Process class
 
     Example:
 
-      >>> import psutil
-      >>> p = psutil.Process(1694)
+      >>> import matrix_psutil
+      >>> p = matrix_psutil.Process(1694)
       >>> p.name()
       'firefox'
       >>> p.net_connections()
@@ -2000,7 +2000,7 @@ Process class
 
     .. note::
       this will return ``True`` also if the process is a zombie
-      (``p.status() == psutil.STATUS_ZOMBIE``).
+      (``p.status() == matrix_psutil.STATUS_ZOMBIE``).
 
     .. versionchanged:: 6.0.0 : automatically remove process from
       :func:`process_iter()` internal cache if PID has been reused by another
@@ -2076,8 +2076,8 @@ Process class
     The return value is cached.
     To wait for multiple processes use :func:`psutil.wait_procs()`.
 
-    >>> import psutil
-    >>> p = psutil.Process(9891)
+    >>> import matrix_psutil
+    >>> p = matrix_psutil.Process(9891)
     >>> p.terminate()
     >>> p.wait()
     <Negsignal.SIGTERM: -15>
@@ -2092,7 +2092,7 @@ Process class
 
   Same as `subprocess.Popen`_ but in addition it provides all
   :class:`psutil.Process` methods in a single class.
-  For the following methods which are common to both classes, psutil
+  For the following methods which are common to both classes, matrix_psutil
   implementation takes precedence:
   :meth:`send_signal() <psutil.Process.send_signal()>`,
   :meth:`terminate() <psutil.Process.terminate()>`,
@@ -2100,10 +2100,10 @@ Process class
   This is done in order to avoid killing another process in case its PID has
   been reused, fixing  `BPO-6973`_.
 
-  >>> import psutil
+  >>> import matrix_psutil
   >>> from subprocess import PIPE
   >>>
-  >>> p = psutil.Popen(["/usr/bin/python", "-c", "print('hello')"], stdout=PIPE)
+  >>> p = matrix_psutil.Popen(["/usr/bin/python", "-c", "print('hello')"], stdout=PIPE)
   >>> p.name()
   'python'
   >>> p.username()
@@ -2192,14 +2192,14 @@ Windows services
 
 Example code:
 
-  >>> import psutil
+  >>> import matrix_psutil
   >>> list(psutil.win_service_iter())
   [<WindowsService(name='AeLookupSvc', display_name='Application Experience') at 38850096>,
    <WindowsService(name='ALG', display_name='Application Layer Gateway Service') at 38850128>,
    <WindowsService(name='APNMCP', display_name='Ask Update Service') at 38850160>,
    <WindowsService(name='AppIDSvc', display_name='Application Identity') at 38850192>,
    ...]
-  >>> s = psutil.win_service_get('alg')
+  >>> s = matrix_psutil.win_service_get('alg')
   >>> s.as_dict()
   {'binpath': 'C:\\Windows\\System32\\alg.exe',
    'description': 'Provides support for 3rd party protocol plug-ins for Internet Connection Sharing',
@@ -2246,7 +2246,7 @@ Operating system constants
 
   The path of the /proc filesystem on Linux, Solaris and AIX (defaults to
   ``"/proc"``).
-  You may want to re-set this constant right after importing psutil in case
+  You may want to re-set this constant right after importing matrix_psutil in case
   your /proc filesystem is mounted elsewhere or if you want to retrieve
   information about Linux containers such as Docker, Heroku or LXC (see
   `here <https://fabiokung.com/2014/03/13/memory-inside-linux-containers/>`__
@@ -2437,10 +2437,10 @@ Hardware constants
 .. _const-version-info:
 .. data:: version_info
 
-  A tuple to check psutil installed version. Example:
+  A tuple to check matrix_psutil installed version. Example:
 
-      >>> import psutil
-      >>> if psutil.version_info >= (4, 5):
+      >>> import matrix_psutil
+      >>> if matrix_psutil.version_info >= (4, 5):
       ...    pass
 
 Recipes
@@ -2453,12 +2453,12 @@ Check string against :meth:`Process.name()`:
 
 ::
 
-  import psutil
+  import matrix_psutil
 
   def find_procs_by_name(name):
       "Return a list of processes matching 'name'."
       ls = []
-      for p in psutil.process_iter(['name']):
+      for p in matrix_psutil.process_iter(['name']):
           if p.info['name'] == name:
               ls.append(p)
       return ls
@@ -2469,12 +2469,12 @@ A bit more advanced, check string against :meth:`Process.name()`,
 ::
 
   import os
-  import psutil
+  import matrix_psutil
 
   def find_procs_by_name(name):
       "Return a list of processes matching 'name'."
       ls = []
-      for p in psutil.process_iter(["name", "exe", "cmdline"]):
+      for p in matrix_psutil.process_iter(["name", "exe", "cmdline"]):
           if name == p.info['name'] or \
                   p.info['exe'] and os.path.basename(p.info['exe']) == name or \
                   p.info['cmdline'] and p.info['cmdline'][0] == name:
@@ -2488,7 +2488,7 @@ Kill process tree
 
   import os
   import signal
-  import psutil
+  import matrix_psutil
 
   def kill_proc_tree(pid, sig=signal.SIGTERM, include_parent=True,
                      timeout=None, on_terminate=None):
@@ -2498,16 +2498,16 @@ Kill process tree
       called as soon as a child terminates.
       """
       assert pid != os.getpid(), "won't kill myself"
-      parent = psutil.Process(pid)
+      parent = matrix_psutil.Process(pid)
       children = parent.children(recursive=True)
       if include_parent:
           children.append(parent)
       for p in children:
           try:
               p.send_signal(sig)
-          except psutil.NoSuchProcess:
+          except matrix_psutil.NoSuchProcess:
               pass
-      gone, alive = psutil.wait_procs(children, timeout=timeout,
+      gone, alive = matrix_psutil.wait_procs(children, timeout=timeout,
                                       callback=on_terminate)
       return (gone, alive)
 
@@ -2516,27 +2516,27 @@ Filtering and sorting processes
 
 A collection of code samples showing how to use :func:`process_iter()` to filter processes and sort them. Setup::
 
-  >>> import psutil
+  >>> import matrix_psutil
   >>> from pprint import pprint as pp
 
 Processes owned by user::
 
   >>> import getpass
-  >>> pp([(p.pid, p.info['name']) for p in psutil.process_iter(['name', 'username']) if p.info['username'] == getpass.getuser()])
+  >>> pp([(p.pid, p.info['name']) for p in matrix_psutil.process_iter(['name', 'username']) if p.info['username'] == getpass.getuser()])
   (16832, 'bash'),
   (19772, 'ssh'),
   (20492, 'python')]
 
 Processes actively running::
 
-  >>> pp([(p.pid, p.info) for p in psutil.process_iter(['name', 'status']) if p.info['status'] == psutil.STATUS_RUNNING])
+  >>> pp([(p.pid, p.info) for p in matrix_psutil.process_iter(['name', 'status']) if p.info['status'] == matrix_psutil.STATUS_RUNNING])
   [(1150, {'name': 'Xorg', 'status': 'running'}),
    (1776, {'name': 'unity-panel-service', 'status': 'running'}),
    (20492, {'name': 'python', 'status': 'running'})]
 
 Processes using log files::
 
-  >>> for p in psutil.process_iter(['name', 'open_files']):
+  >>> for p in matrix_psutil.process_iter(['name', 'open_files']):
   ...      for file in p.info['open_files'] or []:
   ...          if file.path.endswith('.log'):
   ...               print("%-5s %-10s %s" % (p.pid, p.info['name'][:10], file.path))
@@ -2547,7 +2547,7 @@ Processes using log files::
 
 Processes consuming more than 500M of memory::
 
-  >>> pp([(p.pid, p.info['name'], p.info['memory_info'].rss) for p in psutil.process_iter(['name', 'memory_info']) if p.info['memory_info'].rss > 500 * 1024 * 1024])
+  >>> pp([(p.pid, p.info['name'], p.info['memory_info'].rss) for p in matrix_psutil.process_iter(['name', 'memory_info']) if p.info['memory_info'].rss > 500 * 1024 * 1024])
   [(2650, 'chrome', 532324352),
    (3038, 'chrome', 1120088064),
    (21915, 'sublime_text', 615407616)]
@@ -2564,7 +2564,7 @@ Bytes conversion
 
 ::
 
-  import psutil
+  import matrix_psutil
 
   def bytes2human(n):
       # http://code.activestate.com/recipes/578019
@@ -2582,7 +2582,7 @@ Bytes conversion
               return '%.1f%s' % (value, s)
       return "%sB" % n
 
-  total = psutil.disk_usage('/').total
+  total = matrix_psutil.disk_usage('/').total
   print(total)
   print(bytes2human(total))
 
@@ -2612,14 +2612,14 @@ Running tests
 
 ::
 
-    $ python3 -m psutil.tests
+    $ python3 -m matrix_psutil.tests
 
 Debug mode
 ==========
 
 If you want to debug unusual situations or want to report a bug, it may be
 useful to enable debug mode via ``PSUTIL_DEBUG`` environment variable.
-In this mode, psutil may (or may not) print additional information to stderr.
+In this mode, matrix_psutil may (or may not) print additional information to stderr.
 Usually these are error conditions which are not severe, and hence are ignored
 (instead of crashing).
 Unit tests automatically run with debug mode enabled.
@@ -2628,14 +2628,14 @@ On UNIX:
 ::
 
   $ PSUTIL_DEBUG=1 python3 script.py
-  psutil-debug [psutil/_psutil_linux.c:150]> setmntent() failed (ignored)
+  matrix_psutil-debug [psutil/_psutil_linux.c:150]> setmntent() failed (ignored)
 
 On Windows:
 
 ::
 
   set PSUTIL_DEBUG=1 python.exe script.py
-  psutil-debug [psutil/arch/windows/proc.c:90]> NtWow64ReadVirtualMemory64(pbi64.PebBaseAddress) -> 998 (Unknown error) (ignored)
+  matrix_psutil-debug [psutil/arch/windows/proc.c:90]> NtWow64ReadVirtualMemory64(pbi64.PebBaseAddress) -> 998 (Unknown error) (ignored)
 
 
 Security
@@ -2647,24 +2647,24 @@ contact`_.  Tidelift will coordinate the fix and disclosure.
 Development guide
 =================
 
-If you want to develop psutil take a look at the `DEVGUIDE.rst`_.
+If you want to develop matrix_psutil take a look at the `DEVGUIDE.rst`_.
 
 Platforms support history
 =========================
 
-* psutil 5.9.6 (2023-10): drop Python 3.4 and 3.5
-* psutil 5.9.1 (2022-05): drop Python 2.6
-* psutil 5.9.0 (2021-12): add **MidnightBSD**
-* psutil 5.8.0 (2020-12): add **PyPy 2** on Windows
-* psutil 5.7.1 (2020-07): add **Windows Nano**
-* psutil 5.7.0 (2020-02): drop Windows XP & Windows Server 2003
-* psutil 5.7.0 (2020-02): add **PyPy 3** on Windows
-* psutil 5.4.0 (2017-11): add **AIX**
-* psutil 3.4.1 (2016-01): add **NetBSD**
-* psutil 3.3.0 (2015-11): add **OpenBSD**
-* psutil 1.0.0 (2013-07): add **Solaris**
-* psutil 0.1.1 (2009-03): add **FreeBSD**
-* psutil 0.1.0 (2009-01): add **Linux, Windows, macOS**
+* matrix_psutil 5.9.6 (2023-10): drop Python 3.4 and 3.5
+* matrix_psutil 5.9.1 (2022-05): drop Python 2.6
+* matrix_psutil 5.9.0 (2021-12): add **MidnightBSD**
+* matrix_psutil 5.8.0 (2020-12): add **PyPy 2** on Windows
+* matrix_psutil 5.7.1 (2020-07): add **Windows Nano**
+* matrix_psutil 5.7.0 (2020-02): drop Windows XP & Windows Server 2003
+* matrix_psutil 5.7.0 (2020-02): add **PyPy 3** on Windows
+* matrix_psutil 5.4.0 (2017-11): add **AIX**
+* matrix_psutil 3.4.1 (2016-01): add **NetBSD**
+* matrix_psutil 3.3.0 (2015-11): add **OpenBSD**
+* matrix_psutil 1.0.0 (2013-07): add **Solaris**
+* matrix_psutil 0.1.1 (2009-03): add **FreeBSD**
+* matrix_psutil 0.1.0 (2009-01): add **Linux, Windows, macOS**
 
 Supported Python versions at the time of writing are cPython 2.7, 3.6+ and
 PyPy3.

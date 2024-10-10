@@ -50,8 +50,8 @@ from __future__ import print_function
 import time
 from collections import defaultdict
 
-import psutil
-from psutil._common import print_color
+import matrix_psutil as psutil
+from matrix_psutil._common import print_color
 
 
 def main():

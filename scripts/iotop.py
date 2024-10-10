@@ -38,8 +38,8 @@ try:
 except ImportError:
     sys.exit('platform not supported')
 
-import psutil
-from psutil._common import bytes2human
+import matrix_psutil as psutil
+from matrix_psutil._common import bytes2human
 
 
 win = curses.initscr()

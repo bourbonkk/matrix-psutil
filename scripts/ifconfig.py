@@ -46,8 +46,8 @@ from __future__ import print_function
 
 import socket
 
-import psutil
-from psutil._common import bytes2human
+import matrix_psutil as psutil
+from matrix_psutil._common import bytes2human
 
 
 af_map = {

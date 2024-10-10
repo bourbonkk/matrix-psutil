@@ -15,7 +15,7 @@ from __future__ import print_function
 
 import sys
 
-import psutil
+import matrix_psutil as psutil
 
 
 def pidof(pgname):

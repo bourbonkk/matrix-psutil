@@ -39,7 +39,7 @@ from __future__ import print_function
 
 import sys
 
-import psutil
+import matrix_psutil as psutil
 
 
 if not (psutil.LINUX or psutil.MACOS or psutil.WINDOWS):

@@ -77,8 +77,8 @@ import os
 import sys
 from timeit import default_timer as timer
 
-import psutil
-from psutil._common import print_color
+import matrix_psutil as psutil
+from matrix_psutil._common import print_color
 
 
 TIMES = 300

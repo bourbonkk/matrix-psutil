@@ -45,8 +45,8 @@ import os
 import sys
 import time
 
-import psutil
-from psutil._compat import get_terminal_size
+import matrix_psutil as psutil
+from matrix_psutil._compat import get_terminal_size
 
 
 if not hasattr(psutil.Process, "cpu_num"):

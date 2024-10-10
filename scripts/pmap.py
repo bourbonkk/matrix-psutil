@@ -30,9 +30,9 @@ ffffffffff600000         0K  r-xp    [vsyscall]
 
 import sys
 
-import psutil
-from psutil._common import bytes2human
-from psutil._compat import get_terminal_size
+import matrix_psutil as psutil
+from matrix_psutil._common import bytes2human
+from matrix_psutil._compat import get_terminal_size
 
 
 def safe_print(s):

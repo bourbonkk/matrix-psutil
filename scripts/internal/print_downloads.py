@@ -21,7 +21,7 @@ import sys
 
 import pypinfo  # NOQA
 
-from psutil._common import memoize
+from matrix_psutil._common import memoize
 
 
 AUTH_FILE = os.path.expanduser("~/.pypinfo.json")

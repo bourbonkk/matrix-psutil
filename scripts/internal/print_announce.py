@@ -14,7 +14,7 @@ import re
 import subprocess
 import sys
 
-from psutil import __version__
+from matrix_psutil import __version__
 
 
 HERE = os.path.abspath(os.path.dirname(__file__))

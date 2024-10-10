@@ -22,13 +22,13 @@ import zipfile
 
 import requests
 
-from psutil import __version__
-from psutil._common import bytes2human
-from psutil.tests import safe_rmpath
+from matrix_psutil import __version__
+from matrix_psutil._common import bytes2human
+from matrix_psutil.tests import safe_rmpath
 
 
 USER = "giampaolo"
-PROJECT = "psutil"
+PROJECT = "matrix_psutil"
 PROJECT_VERSION = __version__
 OUTFILE = "wheels-github.zip"
 TOKEN = ""

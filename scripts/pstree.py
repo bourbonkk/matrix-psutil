@@ -32,7 +32,7 @@ from __future__ import print_function
 import collections
 import sys
 
-import psutil
+import matrix_psutil as psutil
 
 
 def print_tree(parent, tree, indent=''):

@@ -46,7 +46,7 @@ clean:  ## Remove all build files.
 	@rm -rfv \
 		*.core \
 		*.egg-info \
-		*\@psutil-* \
+		*\@matrix_psutil-* \
 		.coverage \
 		.failed-tests.txt \
 		.pytest_cache \
@@ -60,17 +60,17 @@ clean:  ## Remove all build files.
 .PHONY: build
 build:  ## Compile (in parallel) without installing.
 	@# "build_ext -i" copies compiled *.so files in ./psutil directory in order
-	@# to allow "import psutil" when using the interactive interpreter from
+	@# to allow "import matrix_psutil" when using the interactive interpreter from
 	@# within  this directory.
 	$(PYTHON_ENV_VARS) $(PYTHON) setup.py build_ext -i $(SETUP_BUILD_EXT_ARGS)
-	$(PYTHON_ENV_VARS) $(PYTHON) -c "import psutil"  # make sure it actually worked
+	$(PYTHON_ENV_VARS) $(PYTHON) -c "import matrix_psutil"  # make sure it actually worked
 
 install:  ## Install this package as current user in "edit" mode.
 	${MAKE} build
 	$(PYTHON_ENV_VARS) $(PYTHON) setup.py develop $(SETUP_INSTALL_ARGS)
 
 uninstall:  ## Uninstall this package via pip.
-	cd ..; $(PYTHON_ENV_VARS) $(PYTHON) -m pip uninstall -y -v psutil || true
+	cd ..; $(PYTHON_ENV_VARS) $(PYTHON) -m pip uninstall -y -v matrix-psutil || true
 	$(PYTHON_ENV_VARS) $(PYTHON) scripts/internal/purge_installation.py
 
 install-pip:  ## Install pip (no-op if already installed).
@@ -100,55 +100,55 @@ install-git-hooks:  ## Install GIT pre-commit hook.
 
 test:  ## Run all tests. To run a specific test do "make test ARGS=psutil.tests.test_system.TestDiskAPIs"
 	${MAKE} build
-	$(PYTHON_ENV_VARS) $(PYTHON) -m pytest $(PYTEST_ARGS) --ignore=psutil/tests/test_memleaks.py $(ARGS)
+	$(PYTHON_ENV_VARS) $(PYTHON) -m pytest $(PYTEST_ARGS) --ignore=matrix_psutil/tests/test_memleaks.py $(ARGS)
 
 test-parallel:  ## Run all tests in parallel.
 	${MAKE} build
-	$(PYTHON_ENV_VARS) $(PYTHON) -m pytest $(PYTEST_ARGS) --ignore=psutil/tests/test_memleaks.py -n auto --dist loadgroup $(ARGS)
+	$(PYTHON_ENV_VARS) $(PYTHON) -m pytest $(PYTEST_ARGS) --ignore=matrix_psutil/tests/test_memleaks.py -n auto --dist loadgroup $(ARGS)
 
 test-process:  ## Run process-related API tests.
 	${MAKE} build
-	$(PYTHON_ENV_VARS) $(PYTHON) -m pytest $(PYTEST_ARGS) $(ARGS) psutil/tests/test_process.py
+	$(PYTHON_ENV_VARS) $(PYTHON) -m pytest $(PYTEST_ARGS) $(ARGS) matrix_psutil/tests/test_process.py
 
 test-process-all:  ## Run tests which iterate over all process PIDs.
 	${MAKE} build
-	$(PYTHON_ENV_VARS) $(PYTHON) -m pytest $(PYTEST_ARGS) $(ARGS) psutil/tests/test_process_all.py
+	$(PYTHON_ENV_VARS) $(PYTHON) -m pytest $(PYTEST_ARGS) $(ARGS) matrix_psutil/tests/test_process_all.py
 
 test-system:  ## Run system-related API tests.
 	${MAKE} build
-	$(PYTHON_ENV_VARS) $(PYTHON) -m pytest $(PYTEST_ARGS) $(ARGS) psutil/tests/test_system.py
+	$(PYTHON_ENV_VARS) $(PYTHON) -m pytest $(PYTEST_ARGS) $(ARGS) matrix_psutil/tests/test_system.py
 
 test-misc:  ## Run miscellaneous tests.
 	${MAKE} build
-	$(PYTHON_ENV_VARS) $(PYTHON) -m pytest $(PYTEST_ARGS) $(ARGS) psutil/tests/test_misc.py
+	$(PYTHON_ENV_VARS) $(PYTHON) -m pytest $(PYTEST_ARGS) $(ARGS) matrix_psutil/tests/test_misc.py
 
 test-testutils:  ## Run test utils tests.
 	${MAKE} build
-	$(PYTHON_ENV_VARS) $(PYTHON) -m pytest $(PYTEST_ARGS) $(ARGS) psutil/tests/test_testutils.py
+	$(PYTHON_ENV_VARS) $(PYTHON) -m pytest $(PYTEST_ARGS) $(ARGS) matrix_psutil/tests/test_testutils.py
 
 test-unicode:  ## Test APIs dealing with strings.
 	${MAKE} build
-	$(PYTHON_ENV_VARS) $(PYTHON) -m pytest $(PYTEST_ARGS) $(ARGS) psutil/tests/test_unicode.py
+	$(PYTHON_ENV_VARS) $(PYTHON) -m pytest $(PYTEST_ARGS) $(ARGS) matrix_psutil/tests/test_unicode.py
 
 test-contracts:  ## APIs sanity tests.
 	${MAKE} build
-	$(PYTHON_ENV_VARS) $(PYTHON) -m pytest $(PYTEST_ARGS) $(ARGS) psutil/tests/test_contracts.py
+	$(PYTHON_ENV_VARS) $(PYTHON) -m pytest $(PYTEST_ARGS) $(ARGS) matrix_psutil/tests/test_contracts.py
 
 test-connections:  ## Test psutil.net_connections() and Process.net_connections().
 	${MAKE} build
-	$(PYTHON_ENV_VARS) $(PYTHON) -m pytest $(PYTEST_ARGS) $(ARGS) psutil/tests/test_connections.py
+	$(PYTHON_ENV_VARS) $(PYTHON) -m pytest $(PYTEST_ARGS) $(ARGS) matrix_psutil/tests/test_connections.py
 
 test-posix:  ## POSIX specific tests.
 	${MAKE} build
-	$(PYTHON_ENV_VARS) $(PYTHON) -m pytest $(PYTEST_ARGS) $(ARGS) psutil/tests/test_posix.py
+	$(PYTHON_ENV_VARS) $(PYTHON) -m pytest $(PYTEST_ARGS) $(ARGS) matrix_psutil/tests/test_posix.py
 
 test-platform:  ## Run specific platform tests only.
 	${MAKE} build
-	$(PYTHON_ENV_VARS) $(PYTHON) -m pytest $(PYTEST_ARGS) $(ARGS) psutil/tests/test_`$(PYTHON) -c 'import psutil; print([x.lower() for x in ("LINUX", "BSD", "OSX", "SUNOS", "WINDOWS", "AIX") if getattr(psutil, x)][0])'`.py
+	$(PYTHON_ENV_VARS) $(PYTHON) -m pytest $(PYTEST_ARGS) $(ARGS) matrix_psutil/tests/test_`$(PYTHON) -c 'import matrix_psutil; print([x.lower() for x in ("LINUX", "BSD", "OSX", "SUNOS", "WINDOWS", "AIX") if getattr(matrix_psutil, x)][0])'`.py
 
 test-memleaks:  ## Memory leak tests.
 	${MAKE} build
-	$(PYTHON_ENV_VARS) $(PYTHON) -m pytest $(PYTEST_ARGS) $(ARGS) psutil/tests/test_memleaks.py
+	$(PYTHON_ENV_VARS) $(PYTHON) -m pytest $(PYTEST_ARGS) $(ARGS) matrix_psutil/tests/test_memleaks.py
 
 test-last-failed:  ## Re-run tests which failed on last run
 	${MAKE} build
@@ -158,7 +158,7 @@ test-coverage:  ## Run test coverage.
 	${MAKE} build
 	# Note: coverage options are controlled by .coveragerc file
 	rm -rf .coverage htmlcov
-	$(PYTHON_ENV_VARS) $(PYTHON) -m coverage run -m pytest $(PYTEST_ARGS) --ignore=psutil/tests/test_memleaks.py $(ARGS)
+	$(PYTHON_ENV_VARS) $(PYTHON) -m coverage run -m pytest $(PYTEST_ARGS) --ignore=matrix_psutil/tests/test_memleaks.py $(ARGS)
 	$(PYTHON) -m coverage report
 	@echo "writing results to htmlcov/index.html"
 	$(PYTHON) -m coverage html
@@ -234,7 +234,7 @@ create-wheels:  ## Create .whl files
 check-sdist:  ## Check sanity of source distribution.
 	$(PYTHON_ENV_VARS) $(PYTHON) -m virtualenv --clear --no-wheel --quiet build/venv
 	$(PYTHON_ENV_VARS) build/venv/bin/python -m pip install -v --isolated --quiet dist/*.tar.gz
-	$(PYTHON_ENV_VARS) build/venv/bin/python -c "import os; os.chdir('build/venv'); import psutil"
+	$(PYTHON_ENV_VARS) build/venv/bin/python -c "import os; os.chdir('build/venv'); import matrix_psutil"
 	$(PYTHON) -m twine check --strict dist/*.tar.gz
 
 check-wheels:  ## Check sanity of wheels.
@@ -249,12 +249,12 @@ pre-release:  ## Check if we're ready to produce a new release.
 	@$(PYTHON) -c \
 		"import requests, sys; \
 		from packaging.version import parse; \
-		from psutil import __version__; \
+		from matrix_psutil import __version__; \
 		res = requests.get('https://pypi.org/pypi/psutil/json', timeout=5); \
 		versions = sorted(res.json()['releases'], key=parse, reverse=True); \
 		sys.exit('version %r already exists on PYPI' % __version__) if __version__ in versions else 0"
 	@$(PYTHON) -c \
-		"from psutil import __version__ as ver; \
+		"from matrix_psutil import __version__ as ver; \
 		doc = open('docs/index.rst').read(); \
 		history = open('HISTORY.rst').read(); \
 		assert ver in doc, '%r not found in docs/index.rst' % ver; \
@@ -308,7 +308,7 @@ print-hashes:  ## Prints hashes of files in dist/ directory
 	$(PYTHON) scripts/internal/print_hashes.py dist/
 
 print-sysinfo:  ## Prints system info
-	$(PYTHON) -c "from psutil.tests import print_sysinfo; print_sysinfo()"
+	$(PYTHON) -c "from matrix_psutil.tests import print_sysinfo; print_sysinfo()"
 
 # ===================================================================
 # Misc

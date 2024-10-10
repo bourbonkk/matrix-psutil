@@ -85,7 +85,7 @@ Code organization
 
 .. code-block:: bash
 
-    psutil/__init__.py                   # main psutil namespace ("import psutil")
+    psutil/__init__.py                   # main psutil namespace ("import matrix_psutil")
     psutil/_ps{platform}.py              # platform-specific python wrapper
     psutil/_psutil_{platform}.c          # platform-specific C extension
     psutil/tests/test_process|system.py  # main test suite

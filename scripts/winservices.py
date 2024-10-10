@@ -33,7 +33,7 @@ binpath: C:\Windows\system32\svchost.exe -k netsvcs
 import os
 import sys
 
-import psutil
+import matrix_psutil as psutil
 
 
 if os.name != 'nt':

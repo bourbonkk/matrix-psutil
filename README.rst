@@ -171,7 +171,7 @@ CPU
 
 .. code-block:: python
 
-    >>> import psutil
+    >>> import matrix_psutil
     >>>
     >>> psutil.cpu_times()
     scputimes(user=3961.46, nice=169.729, system=2150.659, idle=16900.540, iowait=629.59, irq=0.0, softirq=19.42, steal=0.0, guest=0, guest_nice=0.0)
@@ -270,7 +270,7 @@ Sensors
 
 .. code-block:: python
 
-    >>> import psutil
+    >>> import matrix_psutil
     >>> psutil.sensors_temperatures()
     {'acpitz': [shwtemp(label='', current=47.0, high=103.0, critical=103.0)],
      'asus': [shwtemp(label='', current=47.0, high=None, critical=None)],
@@ -289,7 +289,7 @@ Other system info
 
 .. code-block:: python
 
-    >>> import psutil
+    >>> import matrix_psutil
     >>> psutil.users()
     [suser(name='giampaolo', terminal='pts/2', host='localhost', started=1340737536.0, pid=1352),
      suser(name='giampaolo', terminal='pts/3', host='localhost', started=1340737792.0, pid=1788)]
@@ -303,7 +303,7 @@ Process management
 
 .. code-block:: python
 
-    >>> import psutil
+    >>> import matrix_psutil
     >>> psutil.pids()
     [1, 2, 3, 4, 5, 6, 7, 46, 48, 50, 51, 178, 182, 222, 223, 224, 268, 1215,
      1216, 1220, 1221, 1243, 1244, 1301, 1601, 2237, 2355, 2637, 2774, 3932,
@@ -441,7 +441,7 @@ Further process APIs
 
 .. code-block:: python
 
-    >>> import psutil
+    >>> import matrix_psutil
     >>> for proc in psutil.process_iter(['pid', 'name']):
     ...     print(proc.info)
     ...

@@ -17,7 +17,7 @@ from __future__ import print_function
 
 import sys
 
-import psutil
+import matrix_psutil as psutil
 
 
 def secs2hours(secs):

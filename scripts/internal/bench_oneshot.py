@@ -16,7 +16,7 @@ import sys
 import textwrap
 import timeit
 
-import psutil
+import matrix_psutil as psutil
 
 
 ITERATIONS = 1000
@@ -110,7 +110,7 @@ names = sorted(set(names))
 
 setup = textwrap.dedent("""
     from __main__ import names
-    import psutil
+    import matrix_psutil as psutil
 
     def call_normal(funs):
         for fun in funs:
